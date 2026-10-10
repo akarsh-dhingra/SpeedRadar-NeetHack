@@ -1,0 +1,832 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Spend Radar report</title><style>
+:root{--bg:#fbfaf7;--fg:#1d1f21;--muted:#5d6166;--line:#dedbd3;--accent:#2f5d8a;--bad:#a33a2b;--ok:#2e6b3f}
+@media (prefers-color-scheme: dark){:root{--bg:#141618;--fg:#e8e6e1;--muted:#a3a7ac;--line:#30343a;--accent:#8ab4e0;--bad:#e3826f;--ok:#7fc495}}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 ui-sans-serif,system-ui,sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px}
+h1{font-size:1.6rem}h2{margin-top:2rem;border-bottom:1px solid var(--line);padding-bottom:.3rem}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:.9rem}
+th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}th{background:color-mix(in srgb,var(--line) 40%,transparent)}
+code{font-size:.85em}del{color:var(--muted)}strong{color:var(--accent)}a{color:var(--accent)}
+</style></head><body><h1>Spend Radar report — Acme Observability Inc. (fictional)</h1>
+<ul>
+<li>Run <code>1010-7bf26d</code> · commit <code>22f00b0</code> · neatlogs trace <code>288f07d84bb84e15754a241eef40d779</code></li>
+<li><strong>Data mode: real data</strong> · LLM models used: gemini-2.5-flash, gemini-3.5-flash-lite, gemini-3.6-flash, nvidia/nemotron-3-super-120b-a12b:free</li>
+<li>Competitor comparison is <strong>people cost only</strong> (headcount × Acme's loaded cost, an estimate). Infra/cloud is checked against Acme's own budget only.</li>
+</ul>
+<h2>Findings</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Finding</th>
+<th>Policy</th>
+<th>Confidence</th>
+<th>Audit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engineering</td>
+<td>Acme engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the median would mean -9 to -0 people, ≈ $-1,611,728 to $-84,091 a year at Acme's loaded cost (estimate). [1][2][10][11][12][3][4][5][6][7][8][9]</td>
+<td>met</td>
+<td>0.48</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>ML/AI</td>
+<td>Acme ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the median would mean -22 to -19 people, ≈ $-5,280,000 to $-4,466,786 a year at Acme's loaded cost (estimate). [13][14][15][16][17][18][19][20][21][22][23][24]</td>
+<td><strong style="color:var(--bad)">violated</strong></td>
+<td>0.00</td>
+<td>downgraded</td>
+</tr>
+<tr>
+<td>Sales</td>
+<td>Acme sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the median would mean +5 to +7 people, ≈ $765,262 to $1,040,714 a year at Acme's loaded cost (estimate). [25][26][27][28][29][30][31][32][33][34][35][36]</td>
+<td>met</td>
+<td>0.50</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>Marketing</td>
+<td>Acme marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the median would mean -10 to -10 people, ≈ $-1,502,727 to $-1,502,727 a year at Acme's loaded cost (estimate). [37][38][39][40][41][42][43][44][45][46][47][48]</td>
+<td>met</td>
+<td>0.42</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>Internal checks</td>
+<td>Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.</td>
+<td>—</td>
+<td>1.00</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>Internal checks</td>
+<td>Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.</td>
+<td>—</td>
+<td>1.00</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>Internal checks</td>
+<td>Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.</td>
+<td>—</td>
+<td>1.00</td>
+<td>confirmed</td>
+</tr>
+<tr>
+<td>Infra/cloud</td>
+<td>1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724. [49][50][51][52][53][54][55]</td>
+<td><strong style="color:var(--bad)">violated</strong></td>
+<td>1.00</td>
+<td>confirmed</td>
+</tr>
+</tbody>
+</table>
+<h2>Overturned claims</h2>
+<p>None this run. Every finding above survived the self-audit.</p>
+<h2>Competitor evidence</h2>
+<table>
+<thead>
+<tr>
+<th>Company</th>
+<th>Category</th>
+<th>Signal</th>
+<th>Headcount</th>
+<th>As of</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Honeycomb</td>
+<td>total</td>
+<td>headcount.total</td>
+<td>294</td>
+<td>2026-10-10</td>
+<td>[56]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>Engineering</td>
+<td>role_headcount</td>
+<td>97</td>
+<td>2026-10-10</td>
+<td>[3]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>Engineering</td>
+<td>function_timeseries</td>
+<td>97</td>
+<td>2026-08-01</td>
+<td>[4]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>Sales</td>
+<td>role_headcount</td>
+<td>63</td>
+<td>2026-10-10</td>
+<td>[27]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>Sales</td>
+<td>function_timeseries</td>
+<td>63</td>
+<td>2026-08-01</td>
+<td>[28]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>Marketing</td>
+<td>role_headcount</td>
+<td>22</td>
+<td>2026-10-10</td>
+<td>[39]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>Marketing</td>
+<td>function_timeseries</td>
+<td>22</td>
+<td>2026-08-01</td>
+<td>[40]</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>ML/AI</td>
+<td>ml_share_job_search</td>
+<td>21</td>
+<td>2026-10-10</td>
+<td>[15] — 5/23 engineering titles classified ml_ai × engineering headcount 97</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>ML/AI</td>
+<td>ml_share_engineering_2y</td>
+<td>21</td>
+<td>2026-10-10</td>
+<td>[16] — 10/47 engineering titles classified ml_ai × engineering headcount 97</td>
+</tr>
+<tr>
+<td>Honeycomb</td>
+<td>—</td>
+<td>missing</td>
+<td>—</td>
+<td>—</td>
+<td>ml_ai: too few classified titles in recent_titles; ml_ai: too few classified titles in recent_titles</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>total</td>
+<td>headcount.total</td>
+<td>448</td>
+<td>2026-10-10</td>
+<td>[57]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>Engineering</td>
+<td>role_headcount</td>
+<td>193</td>
+<td>2026-10-10</td>
+<td>[5]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>Engineering</td>
+<td>function_timeseries</td>
+<td>193</td>
+<td>2026-08-01</td>
+<td>[6]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>Sales</td>
+<td>role_headcount</td>
+<td>56</td>
+<td>2026-10-10</td>
+<td>[29]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>Sales</td>
+<td>function_timeseries</td>
+<td>56</td>
+<td>2026-08-01</td>
+<td>[30]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>Marketing</td>
+<td>role_headcount</td>
+<td>19</td>
+<td>2026-10-10</td>
+<td>[41]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>Marketing</td>
+<td>function_timeseries</td>
+<td>19</td>
+<td>2026-08-01</td>
+<td>[42]</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>ML/AI</td>
+<td>ml_share_recent_titles</td>
+<td>0</td>
+<td>2026-10-10</td>
+<td>[17] — 0/4 engineering titles classified ml_ai × engineering headcount 193</td>
+</tr>
+<tr>
+<td>Sentry</td>
+<td>ML/AI</td>
+<td>ml_share_job_search</td>
+<td>5</td>
+<td>2026-10-10</td>
+<td>[18] — 1/42 engineering titles classified ml_ai × engineering headcount 193</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>total</td>
+<td>headcount.total</td>
+<td>242</td>
+<td>2026-10-10</td>
+<td>[58]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>Engineering</td>
+<td>role_headcount</td>
+<td>95</td>
+<td>2026-10-10</td>
+<td>[7]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>Engineering</td>
+<td>function_timeseries</td>
+<td>95</td>
+<td>2026-08-01</td>
+<td>[8]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>Sales</td>
+<td>role_headcount</td>
+<td>50</td>
+<td>2026-10-10</td>
+<td>[31]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>Sales</td>
+<td>function_timeseries</td>
+<td>50</td>
+<td>2026-08-01</td>
+<td>[32]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>Marketing</td>
+<td>role_headcount</td>
+<td>10</td>
+<td>2026-10-10</td>
+<td>[43]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>Marketing</td>
+<td>function_timeseries</td>
+<td>10</td>
+<td>2026-08-01</td>
+<td>[44]</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>ML/AI</td>
+<td>ml_share_job_search</td>
+<td>41</td>
+<td>2026-10-10</td>
+<td>[19] — 6/14 engineering titles classified ml_ai × engineering headcount 95</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>ML/AI</td>
+<td>ml_share_engineering_2y</td>
+<td>32</td>
+<td>2026-10-10</td>
+<td>[20] — 7/21 engineering titles classified ml_ai × engineering headcount 95</td>
+</tr>
+<tr>
+<td>Arize</td>
+<td>—</td>
+<td>missing</td>
+<td>—</td>
+<td>—</td>
+<td>ml_ai: too few classified titles in recent_titles; ml_ai: too few classified titles in recent_titles</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>total</td>
+<td>headcount.total</td>
+<td>139</td>
+<td>2026-10-10</td>
+<td>[59]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>Engineering</td>
+<td>role_headcount</td>
+<td>52</td>
+<td>2026-10-10</td>
+<td>[9]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>Engineering</td>
+<td>function_timeseries</td>
+<td>51</td>
+<td>2026-08-01</td>
+<td>[10]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>Sales</td>
+<td>role_headcount</td>
+<td>35</td>
+<td>2026-10-10</td>
+<td>[33]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>Sales</td>
+<td>function_timeseries</td>
+<td>35</td>
+<td>2026-08-01</td>
+<td>[34]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>Marketing</td>
+<td>role_headcount</td>
+<td>3</td>
+<td>2026-10-10</td>
+<td>[45]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>Marketing</td>
+<td>function_timeseries</td>
+<td>3</td>
+<td>2026-08-01</td>
+<td>[46]</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>ML/AI</td>
+<td>ml_share_job_search</td>
+<td>0</td>
+<td>2026-10-10</td>
+<td>[21] — 0/4 engineering titles classified ml_ai × engineering headcount 52</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>ML/AI</td>
+<td>ml_share_engineering_2y</td>
+<td>0</td>
+<td>2026-10-10</td>
+<td>[22] — 0/12 engineering titles classified ml_ai × engineering headcount 52</td>
+</tr>
+<tr>
+<td>Chronosphere</td>
+<td>—</td>
+<td>missing</td>
+<td>—</td>
+<td>—</td>
+<td>hiring: no recent job titles; ml_ai: too few classified titles in recent_titles; ml_ai: too few classified titles in recent_titles</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>total</td>
+<td>headcount.total</td>
+<td>1910</td>
+<td>2026-10-10</td>
+<td>[60]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>Engineering</td>
+<td>role_headcount</td>
+<td>781</td>
+<td>2026-10-10</td>
+<td>[11]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>Engineering</td>
+<td>function_timeseries</td>
+<td>702</td>
+<td>2025-11-01</td>
+<td>[12]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>Sales</td>
+<td>role_headcount</td>
+<td>431</td>
+<td>2026-10-10</td>
+<td>[35]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>Sales</td>
+<td>function_timeseries</td>
+<td>399</td>
+<td>2025-11-01</td>
+<td>[36]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>Marketing</td>
+<td>role_headcount</td>
+<td>51</td>
+<td>2026-10-10</td>
+<td>[47]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>Marketing</td>
+<td>function_timeseries</td>
+<td>48</td>
+<td>2025-11-01</td>
+<td>[48]</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>ML/AI</td>
+<td>ml_share_recent_titles</td>
+<td>0</td>
+<td>2026-10-10</td>
+<td>[23] — 0/9 engineering titles classified ml_ai × engineering headcount 781</td>
+</tr>
+<tr>
+<td>Grafana Labs</td>
+<td>ML/AI</td>
+<td>ml_share_job_search</td>
+<td>0</td>
+<td>2026-10-10</td>
+<td>[24] — 0/35 engineering titles classified ml_ai × engineering headcount 781</td>
+</tr>
+</tbody>
+</table>
+<h2>Acme's own numbers</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Headcount (end FY27)</th>
+<th>People cost FY27</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engineering</td>
+<td>130</td>
+<td>$22,940,000</td>
+<td>[1][2]</td>
+</tr>
+<tr>
+<td>ML/AI</td>
+<td>22</td>
+<td>$4,320,000</td>
+<td>[13][14]</td>
+</tr>
+<tr>
+<td>Sales</td>
+<td>64</td>
+<td>$9,455,000</td>
+<td>[25][26]</td>
+</tr>
+<tr>
+<td>Marketing</td>
+<td>24</td>
+<td>$3,262,500</td>
+<td>[37][38]</td>
+</tr>
+<tr>
+<td>other</td>
+<td>90</td>
+<td>$10,875,000</td>
+<td>[61][62]</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Invoice</th>
+<th>Vendor</th>
+<th>Cost centre → category</th>
+<th>Line items</th>
+<th>Stated total</th>
+<th>Parser</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>INV-202604-001</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$98,724.00</td>
+<td>$98,724.00</td>
+<td>pdfplumber</td>
+<td>[49]</td>
+</tr>
+<tr>
+<td>INV-202605-002</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$92,083.00</td>
+<td>$92,083.00</td>
+<td>pdfplumber</td>
+<td>[50]</td>
+</tr>
+<tr>
+<td>INV-202606-003</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$92,370.00</td>
+<td>$92,370.00</td>
+<td>pdfplumber</td>
+<td>[51]</td>
+</tr>
+<tr>
+<td>INV-202607-004</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$89,435.00</td>
+<td>$96,935.00 ⚠️ mismatch</td>
+<td>llm:gemini-3.5-flash-lite</td>
+<td>[52]</td>
+</tr>
+<tr>
+<td>INV-202608-005</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$85,423.00</td>
+<td>$85,423.00</td>
+<td>pdfplumber</td>
+<td>[53]</td>
+</tr>
+<tr>
+<td>INV-202609-006</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$85,142.00</td>
+<td>$85,142.00</td>
+<td>pdfplumber</td>
+<td>[54]</td>
+</tr>
+<tr>
+<td>INV-202605-007</td>
+<td>Tensorforge GPU</td>
+<td>ML Platform → ml_ai</td>
+<td>$28,084.00</td>
+<td>$28,084.00</td>
+<td>pdfplumber</td>
+<td>[63]</td>
+</tr>
+<tr>
+<td>INV-202608-008</td>
+<td>Tensorforge GPU</td>
+<td>Marketing → marketing</td>
+<td>$32,752.00</td>
+<td>$32,752.00</td>
+<td>pdfplumber</td>
+<td>[64]</td>
+</tr>
+<tr>
+<td>INV-202606-009</td>
+<td>Brightloop Media</td>
+<td>Marketing → marketing</td>
+<td>$38,840.00</td>
+<td>$38,840.00</td>
+<td>pdfplumber</td>
+<td>[65]</td>
+</tr>
+<tr>
+<td>INV-202609-010</td>
+<td>Brightloop Media</td>
+<td>Marketing → marketing</td>
+<td>$35,456.00</td>
+<td>$35,456.00</td>
+<td>pdfplumber</td>
+<td>[66]</td>
+</tr>
+<tr>
+<td>INV-202607-011</td>
+<td>Pipewise CRM</td>
+<td>Sales → sales</td>
+<td>$5,400.00</td>
+<td>$5,400.00</td>
+<td>pdfplumber</td>
+<td>[67]</td>
+</tr>
+<tr>
+<td>INV-202610-012</td>
+<td>Nimbus Cloud Ltd</td>
+<td>Infrastructure → infra_cloud</td>
+<td>$91,287.00</td>
+<td>$91,287.00</td>
+<td>llm:gemini-3.5-flash-lite</td>
+<td>[55]</td>
+</tr>
+</tbody>
+</table>
+<h2>Flags, gaps and notes</h2>
+<ul>
+<li>⚠️ budget_fy27.xlsx: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)</li>
+<li>⚠️ invoices/04_nimbus_2026-07.pdf: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)</li>
+<li>⚠️ Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice</li>
+<li>Not analysed: <code>invoices/13_brightloop_2026-10.pdf</code> — tool_error: LLM PDF reader failed: gemini-3.5-flash-lite: non-retryable: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'Request contains an invalid argument.', 'status': 'INVALID_ARGUM</li>
+</ul>
+<h2>How the agent recovered</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Failure</th>
+<th>Options</th>
+<th>Chosen</th>
+<th>Rule default</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t02</td>
+<td>verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,2</td>
+<td>narrow_range, mark_low_confidence, skip</td>
+<td><strong>narrow_range</strong></td>
+<td>mark_low_confidence</td>
+<td>Re-read People!row 10 in budget_fy27.xlsx to rule out a parse slip. (gemini-3.6-flash)</td>
+</tr>
+<tr>
+<td>t02n</td>
+<td>verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,2</td>
+<td>narrow_range, mark_low_confidence, skip</td>
+<td><strong>mark_low_confidence</strong></td>
+<td>mark_low_confidence</td>
+<td>Line item sum (3,262,500.00) differs from stated total (3,310,500.00) by 1.45% after narrow_range re-read; keeping data flagged as low confi (gemini-3.6-flash)</td>
+</tr>
+<tr>
+<td>t07</td>
+<td>verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 9</td>
+<td>reparse_alt, mark_low_confidence, skip</td>
+<td><strong>reparse_alt</strong></td>
+<td>mark_low_confidence</td>
+<td>Line items sum mismatch in text mode; re-parsing with LLM reader to accurately capture table layout and line items. (gemini-3.6-flash)</td>
+</tr>
+<tr>
+<td>t07r</td>
+<td>verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 9</td>
+<td>reparse_alt, mark_low_confidence, skip</td>
+<td><strong>mark_low_confidence</strong></td>
+<td>mark_low_confidence</td>
+<td>Line items sum does not match stated total after reparse_alt attempt. (gemini-3.6-flash)</td>
+</tr>
+<tr>
+<td>t15</td>
+<td>tool_error: tool_error: no text layer (likely a scanned image)</td>
+<td>reparse_alt, skip</td>
+<td><strong>reparse_alt</strong></td>
+<td>skip</td>
+<td>The file has no text layer (scanned image), so re-reading with the LLM reader parser is required. (gemini-3.6-flash)</td>
+</tr>
+<tr>
+<td>t16</td>
+<td>tool_error: tool_error: pdfplumber could not open file: PdfminerException: No /Root object</td>
+<td>reparse_alt, skip</td>
+<td><strong>reparse_alt</strong></td>
+<td>skip</td>
+<td>pdfplumber failed to parse PDF in text mode, switching to LLM reader parser (gemini-3.6-flash)</td>
+</tr>
+<tr>
+<td>t16r</td>
+<td>tool_error: tool_error: LLM PDF reader failed: gemini-3.5-flash-lite: non-retryable: 400 I</td>
+<td>reparse_alt, skip</td>
+<td><strong>skip</strong></td>
+<td>skip</td>
+<td>LLM PDF reader failed with invalid argument after reparse_alt has been attempted. (gemini-2.5-flash)</td>
+</tr>
+<tr>
+<td>t19</td>
+<td>verify:signals failed: Honeycomb:ml_ai: 1 ML/AI signals</td>
+<td>fetch_more_signal, mark_low_confidence</td>
+<td><strong>fetch_more_signal</strong></td>
+<td>mark_low_confidence</td>
+<td>Low number of ML/AI signals for Honeycomb.io, need more data for classification. (gemini-2.5-flash)</td>
+</tr>
+<tr>
+<td>t25</td>
+<td>verify:signals failed: Arize:ml_ai: 1 ML/AI signals</td>
+<td>fetch_more_signal, mark_low_confidence</td>
+<td><strong>fetch_more_signal</strong></td>
+<td>mark_low_confidence</td>
+<td>Only 1 ML/AI signal found for Arize, trying to find more data. (gemini-2.5-flash)</td>
+</tr>
+<tr>
+<td>t28</td>
+<td>verify:signals failed: Chronosphere:ml_ai: 1 ML/AI signals</td>
+<td>fetch_more_signal, mark_low_confidence</td>
+<td><strong>fetch_more_signal</strong></td>
+<td>mark_low_confidence</td>
+<td>ML/AI signal count is low (1) for Chronosphere, need more independent signals to verify or supplement. (gemini-2.5-flash)</td>
+</tr>
+</tbody>
+</table>
+<h2>Confidence formula</h2>
+<p><code>confidence = checks × signals × freshness</code>, computed in <code>spendradar/verify.py</code> from this run's checks (passed/total), number and agreement of independent signals, and age of the oldest input. Audit downgrades halve it; overturns zero it.</p>
+<h2>Sources</h2>
+<ol>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 3, 2027-03 (fetched 2026-10-10T08:40:24)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 4, sum of 12 months (fetched 2026-10-10T08:40:24)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.by_role_absolute.Engineering (fetched 2026-10-10T08:34:39)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Engineering[2026-08-01] (fetched 2026-10-10T08:34:39)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.by_role_absolute.Engineering (fetched 2026-10-10T08:35:25)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Engineering[2026-08-01] (fetched 2026-10-10T08:35:25)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.by_role_absolute.Engineering (fetched 2026-10-10T08:35:50)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Engineering[2026-08-01] (fetched 2026-10-10T08:35:50)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.by_role_absolute.Engineering (fetched 2026-10-10T08:36:47)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Engineering[2026-08-01] (fetched 2026-10-10T08:36:47)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.by_role_absolute.Engineering (fetched 2026-10-10T08:37:20)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Engineering[2025-11-01] (fetched 2026-10-10T08:37:20)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 5, 2027-03 (fetched 2026-10-10T08:40:24)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 6, sum of 12 months (fetched 2026-10-10T08:40:24)</li>
+<li>derived: <code>/job/search?domain=honeycomb.io</code> job_listings[].job_details.title (since 2025-10-10) (fetched 2026-10-10T08:34:40) — 5/23 engineering titles classified ml_ai × engineering headcount 97</li>
+<li>derived: <code>/job/search?domain=honeycomb.io</code> job_listings[].job_details.title (since 2024-10-10, category=Engineering) (fetched 2026-10-10T08:42:22) — 10/47 engineering titles classified ml_ai × engineering headcount 97</li>
+<li>derived: <code>/company/enrich?domain=sentry.io</code> hiring.recent_titles_csv (fetched 2026-10-10T08:35:25) — 0/4 engineering titles classified ml_ai × engineering headcount 193</li>
+<li>derived: <code>/job/search?domain=sentry.io</code> job_listings[].job_details.title (since 2025-10-10) (fetched 2026-10-10T08:35:26) — 1/42 engineering titles classified ml_ai × engineering headcount 193</li>
+<li>derived: <code>/job/search?domain=arize.com</code> job_listings[].job_details.title (since 2025-10-10) (fetched 2026-10-10T08:35:51) — 6/14 engineering titles classified ml_ai × engineering headcount 95</li>
+<li>derived: <code>/job/search?domain=arize.com</code> job_listings[].job_details.title (since 2024-10-10, category=Engineering) (fetched 2026-10-10T08:43:21) — 7/21 engineering titles classified ml_ai × engineering headcount 95</li>
+<li>derived: <code>/job/search?domain=chronosphere.io</code> job_listings[].job_details.title (since 2025-10-10) (fetched 2026-10-10T08:36:49) — 0/4 engineering titles classified ml_ai × engineering headcount 52</li>
+<li>derived: <code>/job/search?domain=chronosphere.io</code> job_listings[].job_details.title (since 2024-10-10, category=Engineering) (fetched 2026-10-10T08:43:46) — 0/12 engineering titles classified ml_ai × engineering headcount 52</li>
+<li>derived: <code>/company/enrich?domain=grafana.com</code> hiring.recent_titles_csv (fetched 2026-10-10T08:37:20) — 0/9 engineering titles classified ml_ai × engineering headcount 781</li>
+<li>derived: <code>/job/search?domain=grafana.com</code> job_listings[].job_details.title (since 2025-10-10) (fetched 2026-10-10T08:37:22) — 0/35 engineering titles classified ml_ai × engineering headcount 781</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 7, 2027-03 (fetched 2026-10-10T08:40:24)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 8, sum of 12 months (fetched 2026-10-10T08:40:24)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.by_role_absolute.Sales+Business Development (fetched 2026-10-10T08:34:39)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Sales+Business Development[2026-08-01] (fetched 2026-10-10T08:34:39)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.by_role_absolute.Sales+Business Development (fetched 2026-10-10T08:35:25)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Sales+Business Development[2026-08-01] (fetched 2026-10-10T08:35:25)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.by_role_absolute.Sales+Business Development (fetched 2026-10-10T08:35:50)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Sales+Business Development[2026-08-01] (fetched 2026-10-10T08:35:50)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.by_role_absolute.Sales+Business Development (fetched 2026-10-10T08:36:47)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Sales+Business Development[2026-08-01] (fetched 2026-10-10T08:36:47)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.by_role_absolute.Sales+Business Development (fetched 2026-10-10T08:37:20)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Sales+Business Development[2025-11-01] (fetched 2026-10-10T08:37:20)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 9, 2027-03 (fetched 2026-10-10T08:40:24)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 10, sum of 12 months (fetched 2026-10-10T08:40:28)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.by_role_absolute.Marketing (fetched 2026-10-10T08:34:39)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Marketing[2026-08-01] (fetched 2026-10-10T08:34:39)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.by_role_absolute.Marketing (fetched 2026-10-10T08:35:25)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Marketing[2026-08-01] (fetched 2026-10-10T08:35:25)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.by_role_absolute.Marketing (fetched 2026-10-10T08:35:50)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Marketing[2026-08-01] (fetched 2026-10-10T08:35:50)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.by_role_absolute.Marketing (fetched 2026-10-10T08:36:47)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Marketing[2026-08-01] (fetched 2026-10-10T08:36:47)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.by_role_absolute.Marketing (fetched 2026-10-10T08:37:20)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.by_function_timeseries.CURRENT_FUNCTION.Marketing[2025-11-01] (fetched 2026-10-10T08:37:20)</li>
+<li>file: <code>data/acme/invoices/01_nimbus_2026-04.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:40:42)</li>
+<li>file: <code>data/acme/invoices/02_nimbus_2026-05.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:40:42)</li>
+<li>file: <code>data/acme/invoices/03_nimbus_2026-06.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:40:42)</li>
+<li>file: <code>data/acme/invoices/04_nimbus_2026-07.pdf</code> line items, parser=llm:gemini-3.5-flash-lite (fetched 2026-10-10T08:40:52)</li>
+<li>file: <code>data/acme/invoices/05_nimbus_2026-08.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+<li>file: <code>data/acme/invoices/06_nimbus_2026-09.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+<li>file: <code>data/acme/invoices/12_nimbus_2026-10.pdf</code> line items, parser=llm:gemini-3.5-flash-lite (fetched 2026-10-10T08:41:17)</li>
+<li>crustdata: <code>/company/enrich?domain=honeycomb.io</code> headcount.total (fetched 2026-10-10)</li>
+<li>crustdata: <code>/company/enrich?domain=sentry.io</code> headcount.total (fetched 2026-10-10)</li>
+<li>crustdata: <code>/company/enrich?domain=arize.com</code> headcount.total (fetched 2026-10-10)</li>
+<li>crustdata: <code>/company/enrich?domain=chronosphere.io</code> headcount.total (fetched 2026-10-10)</li>
+<li>crustdata: <code>/company/enrich?domain=grafana.com</code> headcount.total (fetched 2026-10-10)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 11, 2027-03 (fetched 2026-10-10T08:40:24)</li>
+<li>file: <code>data/acme/budget_fy27.xlsx</code> People!row 12, sum of 12 months (fetched 2026-10-10T08:40:24)</li>
+<li>file: <code>data/acme/invoices/07_tensorforge_2026-05.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+<li>file: <code>data/acme/invoices/08_tensorforge_2026-08.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+<li>file: <code>data/acme/invoices/09_brightloop_2026-06.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+<li>file: <code>data/acme/invoices/10_brightloop_2026-09.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+<li>file: <code>data/acme/invoices/11_pipewise_2026-07.pdf</code> line items, parser=pdfplumber (fetched 2026-10-10T08:41:04)</li>
+</ol>
+<h2>Run cost</h2>
+<ul>
+<li>LLM: gemini-2.5-flash: 10 calls, 2875+14843 tokens, gemini-3.6-flash: 6 calls, 1820+2714 tokens, gemini-3.5-flash-lite: 13 calls, 5256+7171 tokens, nvidia/nemotron-3-super-120b-a12b:free: 1 calls, 309+398 tokens</li>
+<li>Crustdata credits (this run): 5.40</li>
+<li>LLM response cache: off</li>
+</ul></body></html>

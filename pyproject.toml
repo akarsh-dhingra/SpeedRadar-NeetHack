@@ -12,6 +12,7 @@ dependencies = [
     "pdfplumber>=0.11",
     "neatlogs[google-genai]",
     "google-genai>=1.55.0",
+    "markdown>=3.11",
 ]
 
 [dependency-groups]

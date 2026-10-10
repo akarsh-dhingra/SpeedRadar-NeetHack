@@ -121,4 +121,27 @@ def write(state: RunState) -> Path:
 
     path = Path("runs") / state.run_id / "report.md"
     path.write_text("\n".join(out))
+    write_html(path)
     return path
+
+
+HTML_HEAD = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Spend Radar report</title><style>
+:root{--bg:#fbfaf7;--fg:#1d1f21;--muted:#5d6166;--line:#dedbd3;--accent:#2f5d8a;--bad:#a33a2b;--ok:#2e6b3f}
+@media (prefers-color-scheme: dark){:root{--bg:#141618;--fg:#e8e6e1;--muted:#a3a7ac;--line:#30343a;--accent:#8ab4e0;--bad:#e3826f;--ok:#7fc495}}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 ui-sans-serif,system-ui,sans-serif;max-width:1100px;margin:0 auto;padding:24px 16px}
+h1{font-size:1.6rem}h2{margin-top:2rem;border-bottom:1px solid var(--line);padding-bottom:.3rem}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:.9rem}
+th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}th{background:color-mix(in srgb,var(--line) 40%,transparent)}
+code{font-size:.85em}del{color:var(--muted)}strong{color:var(--accent)}a{color:var(--accent)}
+</style></head><body>"""
+
+
+def write_html(md_path: Path) -> Path:
+    import markdown
+
+    body = markdown.markdown(md_path.read_text(), extensions=["tables"])
+    body = body.replace("<strong>violated</strong>", '<strong style="color:var(--bad)">violated</strong>')
+    out = md_path.with_suffix(".html")
+    out.write_text(HTML_HEAD + body + "</body></html>")
+    return out
