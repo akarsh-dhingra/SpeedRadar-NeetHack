@@ -1,75 +1,5 @@
 [
  {
-  "run_id": "1010-7bf26d",
-  "trace_ids": [
-   "288f07d84bb84e15754a241eef40d779"
-  ],
-  "llm_usd": 0.06922,
-  "per_model": {
-   "gemini-2.5-flash": {
-    "calls": 10,
-    "tokens_in": 2875,
-    "tokens_out": 14843,
-    "usd": 0.03797
-   },
-   "gemini-3.6-flash": {
-    "calls": 6,
-    "tokens_in": 1820,
-    "tokens_out": 2714,
-    "usd": 0.01154
-   },
-   "gemini-3.5-flash-lite": {
-    "calls": 13,
-    "tokens_in": 5256,
-    "tokens_out": 7171,
-    "usd": 0.0195
-   },
-   "nvidia/nemotron-3-super-120b-a12b:free": {
-    "calls": 1,
-    "tokens_in": 309,
-    "tokens_out": 398,
-    "usd": 0.0002
-   }
-  },
-  "unpriced_models": [],
-  "llm_calls": 30,
-  "tokens_in": 10260,
-  "tokens_out": 25126,
-  "crustdata_credits_this_run": 5.4,
-  "crustdata_credits_cold": 20.8,
-  "competitors": 5,
-  "job_results": 360
- },
- {
-  "run_id": "1010-4d1835",
-  "trace_ids": [
-   "0dcf22977776591d6c8e47e0dffeed33"
-  ],
-  "llm_usd": 0.02904,
-  "per_model": {
-   "gpt-5-nano": {
-    "calls": 27,
-    "tokens_in": 11398,
-    "tokens_out": 66721,
-    "usd": 0.02726
-   },
-   "gemini-3.5-flash-lite": {
-    "calls": 3,
-    "tokens_in": 1602,
-    "tokens_out": 519,
-    "usd": 0.00178
-   }
-  },
-  "unpriced_models": [],
-  "llm_calls": 30,
-  "tokens_in": 13000,
-  "tokens_out": 67240,
-  "crustdata_credits_this_run": 0.0,
-  "crustdata_credits_cold": 20.8,
-  "competitors": 5,
-  "job_results": 360
- },
- {
   "run_id": "1010-767322",
   "trace_ids": [
    "5c512d38b1cc95f99d0682619343c0b0"
@@ -122,6 +52,93 @@
   "llm_calls": 30,
   "tokens_in": 13270,
   "tokens_out": 68930,
+  "crustdata_credits_this_run": 0.0,
+  "crustdata_credits_cold": 20.8,
+  "competitors": 5,
+  "job_results": 360
+ },
+ {
+  "run_id": "1010-4d1835",
+  "trace_ids": [
+   "0dcf22977776591d6c8e47e0dffeed33"
+  ],
+  "llm_usd": 0.02904,
+  "per_model": {
+   "gpt-5-nano": {
+    "calls": 27,
+    "tokens_in": 11398,
+    "tokens_out": 66721,
+    "usd": 0.02726
+   },
+   "gemini-3.5-flash-lite": {
+    "calls": 3,
+    "tokens_in": 1602,
+    "tokens_out": 519,
+    "usd": 0.00178
+   }
+  },
+  "unpriced_models": [],
+  "llm_calls": 30,
+  "tokens_in": 13000,
+  "tokens_out": 67240,
+  "crustdata_credits_this_run": 0.0,
+  "crustdata_credits_cold": 20.8,
+  "competitors": 5,
+  "job_results": 360
+ },
+ {
+  "run_id": "1010-bd4980",
+  "trace_ids": [
+   "96bb795859c9f184fbcebb996b0e5b8f"
+  ],
+  "llm_usd": 0.02699,
+  "per_model": {
+   "gpt-5-nano": {
+    "calls": 27,
+    "tokens_in": 12307,
+    "tokens_out": 61797,
+    "usd": 0.02533
+   },
+   "gemini-3.5-flash-lite": {
+    "calls": 3,
+    "tokens_in": 1540,
+    "tokens_out": 477,
+    "usd": 0.00165
+   }
+  },
+  "unpriced_models": [],
+  "llm_calls": 30,
+  "tokens_in": 13847,
+  "tokens_out": 62274,
+  "crustdata_credits_this_run": 0.0,
+  "crustdata_credits_cold": 20.8,
+  "competitors": 5,
+  "job_results": 360
+ },
+ {
+  "run_id": "1010-a67b26",
+  "trace_ids": [
+   "c4c0b55ade5fdbae4032698bc949e0ac"
+  ],
+  "llm_usd": 0.02922,
+  "per_model": {
+   "gpt-5-nano": {
+    "calls": 27,
+    "tokens_in": 11417,
+    "tokens_out": 67537,
+    "usd": 0.02759
+   },
+   "gemini-3.5-flash-lite": {
+    "calls": 3,
+    "tokens_in": 1541,
+    "tokens_out": 467,
+    "usd": 0.00163
+   }
+  },
+  "unpriced_models": [],
+  "llm_calls": 30,
+  "tokens_in": 12958,
+  "tokens_out": 68004,
   "crustdata_credits_this_run": 0.0,
   "crustdata_credits_cold": 20.8,
   "competitors": 5,

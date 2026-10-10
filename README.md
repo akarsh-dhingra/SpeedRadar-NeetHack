@@ -88,12 +88,15 @@ All numbers come from scorecards in [`evidence/evals/`](evidence/evals/).
 |---|---|---|---|---|---|
 | 1010-b31657 (before fix) | 11a5108 | 5/5 | 0 | 2/5 | 26.6 |
 | 1010-7bf26d (after fix, evidence) | 22f00b0 | 5/5 | 0 | 5/5 | 5.4 |
+| 5 evidence runs on gpt-5-nano, 0 fallback hops | bb61e37 | 5/5 in all 5 | 0 | 5/5 | 0 (cached) |
+| fixture run (Sentry marketing ×5 planted) | bb61e37 | 6/6 | 0 | 5/5 | 0 (cached) |
 
 Case studies (each n = 1 per side, with caveats stated):
 - [01: reasoning calls took ~2 minutes each](evidence/case-studies/01-unbounded-llm-latency.md). Mean reasoning-call latency went from 120.9 s to 6.5 s after adding a per-call timeout with fallback.
 - [02: one weak category threw away 3 of 5 peers](evidence/case-studies/02-competitor-substitution.md). Substitutions went from 3 to 0, and credits from 26.6 to 5.4.
+- [03: bugs that only showed on fallback models](evidence/case-studies/03-fallback-model-quality.md). Runs that crashed went from 1/3 to 0/3, and the mis-categorised invoice from caught 0/3 to 3/3 on the main model.
 
-Paid-equivalent cost per run (n = 1): **$0.0692 LLM + 20.8 Crustdata credits** with no cache.
+Paid-equivalent cost per run (n = 5, gpt-5-nano): **$0.0285 LLM** (range $0.0270–$0.0296) **+ 20.8 Crustdata credits** with no cache.
 
 ## Run it yourself
 
@@ -117,8 +120,9 @@ ln -sf ../../scripts/pre-commit .git/hooks/pre-commit # gitleaks + .env-value se
 - **ML/AI is the weakest estimate.** Crustdata has no ML role, so ML share comes from LLM-classified job titles. The self-audit overturned the ML/AI finding in runs 1010-b31657 and 1010-a32118, and downgraded it in 1010-7bf26d.
 - **Fictional company data.** Acme and its vendors are invented; only competitor data is real.
 - **Crustdata coverage.** Function timeseries for large companies stop at 2025-11 (the freshness penalty applies). Chronosphere has no hiring data.
-- **Free LLM tiers.** Development ran on Gemini free tier and OpenRouter `:free` models, which may use prompts for training. Only fictional and public data was sent; **real customer finance data must not go through free tiers.** Daily quotas are small: `gemini-3.8-flash` stopped after 15 requests on 10 Oct.
-- **Small samples.** Before/after comparisons so far are n = 1 per side and used different model mixes; see each case study.
+- **LLM providers.** The main model is OpenAI gpt-5-nano (hackathon-provided credits). Fallbacks are Gemini free tier and OpenRouter `:free` models, which may use prompts for training. Only fictional and public data was sent; **real customer finance data must not go through free tiers.** Daily quotas are small: `gemini-3.8-flash` stopped after 15 requests on 10 Oct.
+- **Small samples.** Case studies 01–02 are n = 1 per side with different model mixes. The gpt-5-nano batch (n = 5, 0 fallback hops) is the clean baseline.
+- **Audit variance.** On identical data, the ML/AI verdict varied across gpt-5-nano runs (confirmed / overturned / downgraded).
 - **Business costs are paid-equivalent estimates**, not invoices.
 
 ## Built during neatHack

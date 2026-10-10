@@ -6,13 +6,13 @@ Akarsh enters these into cfo.ai to build the plan, which must cover **pricing, c
 
 | Input | Value | Type | Source |
 |---|---|---|---|
-| LLM cost per run (paid-equivalent) | **$0.0692** | MEASURED tokens × PUBLISHED prices | `business/unit_costs.md`. Run `1010-7bf26d`, 30 LLM calls, 10,260 in / 25,126 out tokens. n = 1 for now; target n = 5 |
+| LLM cost per run (paid-equivalent) | **$0.0285** (range $0.0270–$0.0296) | MEASURED tokens × PUBLISHED prices | `business/unit_costs.md`: 5 evidence runs on gpt-5-nano ($0.05 / $0.40 per 1M tokens), ~30 LLM calls and ~13K in / ~66K out tokens per run. An earlier Gemini Flash run cost $0.0692 (n = 1) |
 | Crustdata credits per run, no cache | **20.8 credits** | MEASURED | 5 competitors × 2 credits (enrich) + 360 job results × 0.03 |
 | Crustdata USD per credit | **? (to fill)** | PUBLISHED, not public | Crustdata sells credits in the dashboard: https://app.crustdata.com/billing/credits |
 | Hosting, one small instance | ≈ $0.0208/h → **≈ $15.2/month** at 730 h | PUBLISHED (third-party) | instances.vantage.sh/aws/ec2/t3.small, checked 2026-10-10. The page does not confirm region and OS; check the AWS console before relying on it |
-| Development spend during the hackathon | **$0** | MEASURED | Free tiers only (Gemini free tier, OpenRouter `:free`, Crustdata hackathon credits) |
+| Development spend during the hackathon | **$0** to the team | MEASURED | Gemini free tier, OpenRouter `:free`, hackathon-provided OpenAI and Crustdata credits |
 
-Why paid-equivalent: we developed on free tiers, but a paying customer's runs cannot depend on free quotas. Gemini Flash prices rise on 2027-01-01 (3.6/3.8-flash go from $0.75/$3.75 to $1.50/$7.50 per 1M tokens). Model a price increase from Q1 2027.
+Why paid-equivalent: we developed on free tiers, but a paying customer's runs cannot depend on free quotas. The main model is now gpt-5-nano. If we fall back to Gemini Flash, note that its prices rise on 2027-01-01 (3.6/3.8-flash go from $0.75/$3.75 to $1.50/$7.50 per 1M tokens).
 
 ## 2. Usage assumptions
 
@@ -30,7 +30,7 @@ Why paid-equivalent: we developed on free tiers, but a paying customer's runs ca
 | Team | $399 | 3 entities, 10 competitors, 40 runs/month, report history, CSV export |
 | Enterprise | from $1,500 | SSO, custom policy rules, private deployment (customer data stays off free LLM tiers) |
 
-Per-run variable cost for Starter = 8 × ($0.0692 + 20.8 × Crustdata $/credit). Gross margin depends mainly on the Crustdata credit price, so fill that in first.
+Per-run variable cost for Starter = 8 × ($0.0285 + 20.8 × Crustdata $/credit). Gross margin depends mainly on the Crustdata credit price, so fill that in first.
 
 ## 4. Customer-growth scenarios (ASSUMPTION, deliberately modest)
 
