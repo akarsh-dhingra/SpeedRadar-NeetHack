@@ -81,3 +81,89 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 **Image:** the before trace's `decide:recovery` span list (trace `af0df27e2d3433e0c608fb28a018a22d`) next to the case-study table.
 
 **Sources:** `evidence/case-studies/02-competitor-substitution.md`, scorecards `20261010T141541-11a5108-before-fix.json` and `20261010T141541-22f00b0-after-fix-02.json`.
+
+---
+
+## Post 4 — eval scorecard across commits (Sun afternoon)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> #neatHack: I stopped trusting "it looks better" and made Spend Radar score itself against a ground-truth file the agent never reads. Every run's @neatlogs trace id goes into the scorecard.
+>
+> Two commits so far:
+>
+> 11a5108 → 22f00b0
+> planted errors caught: 5/5 → 5/5
+> unsupported numbers: 0 → 0
+> peers kept: 2/5 → 5/5
+> Crustdata credits: 26.6 → 5.4
+> recovery decisions (non-default): 13 (10) → 10 (7)
+>
+> Honest caveat: n = 1 per side, both runs used fallback models, and the provider mix differs. So it's indicative, not clean. Same-mix n = 3 runs: {{n3_results}}, after the free-tier quota resets.
+>
+> Accuracy didn't move. Waste did.
+
+**Image:** the scorecard table from `evidence/evals/README.md`, with the two trace ids visible in the neatlogs dashboard.
+
+**Sources:** `evidence/evals/README.md`, `20261010T141541-11a5108-before-fix.json`, `20261010T141541-22f00b0-after-fix-02.json`.
+
+**Posted:** —  
+**Link:** —
+
+---
+
+## Post 5 — self-audit overturning its own claims (Sun night)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> The part of Spend Radar I trust most is the part that argues with it. #neatHack
+>
+> Before reporting, a self-audit recomputes each finding, checks its sources, and looks for contradictions. An LLM gives a verdict, and a second provider gives an independent opinion.
+>
+> It overturned the ML/AI finding in runs 1010-b31657 and 1010-a32118 (the competitor signals contradicted each other), and downgraded it in 1010-7bf26d. In a fixture run, a marketing figure disagreed 19 vs 95 and was downgraded.
+>
+> Then the @neatlogs trace caught a bug in the auditor itself: the "second opinion" used the same model as the first verdict, so it wasn't independent. Fixed: it must now be a different model.
+>
+> Overturned claims go in the report, not in the bin.
+>
+> Final scorecard: {{N}} claims caught before reporting.
+
+**Image:** the report's "Overturned claims" section next to the `audit:f_ml_ai` span (trace `af0df27e2d3433e0c608fb28a018a22d`).
+
+**Sources:** `README.md` (Limitations), `evidence/traces.md` (trace `36362eb966cdbb85dcb2fb1b280e1034`, run 1010-9e86fc), commit `15d1109`.
+
+**Posted:** —  
+**Link:** —
+
+---
+
+## Post 6 — cfo.ai unit economics from real tokens (Mon)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> What does one Spend Radar run cost? I didn't guess. I read it off the @neatlogs traces. #neatHack
+>
+> Evidence run 1010-7bf26d (LLM cache off):
+> 30 LLM calls
+> 10,260 tokens in / 25,126 out
+> paid-equivalent LLM cost: $0.0692
+> Crustdata: 20.8 credits on a cold run (5 competitors x 2 credits + job results x 0.03)
+>
+> I built on free tiers, so actual spend was $0. These are what a paying deployment would face: measured tokens x the published paid price of the same model.
+>
+> Those numbers went into cfo.ai: monthly cost {{monthly_cost}}, price {{price}}, runway {{runway_months}} months.
+>
+> Caveats: n = 1 run (target 5), and Crustdata doesn't publish a USD price per credit ({{usd_per_credit}} needed).
+
+**Image:** the per-model table from `business/unit_costs.md` beside the cfo.ai plan screen.
+
+**Sources:** `business/unit_costs.md`, trace `288f07d84bb84e15754a241eef40d779`.
+
+**Posted:** —  
+**Link:** —

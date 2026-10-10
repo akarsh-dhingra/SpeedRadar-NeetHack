@@ -1,0 +1,214 @@
+{
+  "run_timestamp": "2026-10-10T16:33:42",
+  "models": [
+    "gemini-3.5-flash-lite"
+  ],
+  "n": 30,
+  "correct": 29,
+  "accuracy": 0.9666666666666667,
+  "ml_ai_precision": 1.0,
+  "ml_ai_recall": 1.0,
+  "ml_ai_tp": 8,
+  "ml_ai_fp": 0,
+  "ml_ai_fn": 0,
+  "confusion": {
+    "engineering->engineering": 7,
+    "engineering->missing": 1,
+    "marketing->marketing": 4,
+    "ml_ai->ml_ai": 8,
+    "other->other": 5,
+    "sales->sales": 5
+  },
+  "rows": [
+    {
+      "title": "Senior Software Engineer, Streaming Platform",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Staff Site Reliability Engineer",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Security Engineer, IAM",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Data Engineer",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Senior Software Engineer II - LLM Observability ",
+      "label": "engineering",
+      "predicted": "missing",
+      "correct": false
+    },
+    {
+      "title": "Staff Software Engineer, AI Developer Tooling",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Senior Mobile Engineer - Instrumentation SDK (iOS) | Ireland | Remote",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Developer Relations Engineer",
+      "label": "engineering",
+      "predicted": "engineering",
+      "correct": true
+    },
+    {
+      "title": "Senior AI Engineer – Notebooks",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Staff AI Engineer",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Senior AI Engineer II",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "AI Engineer - Instrumentation",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Engineering Manager, Machine Learning",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Research Science Intern (PhD)",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Applied Science Intern",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Research Manager - Foundation & World Models",
+      "label": "ml_ai",
+      "predicted": "ml_ai",
+      "correct": true
+    },
+    {
+      "title": "Enterprise Account Executive - West",
+      "label": "sales",
+      "predicted": "sales",
+      "correct": true
+    },
+    {
+      "title": "Sales Development Rep - EMEA",
+      "label": "sales",
+      "predicted": "sales",
+      "correct": true
+    },
+    {
+      "title": "Senior Sales Engineer",
+      "label": "sales",
+      "predicted": "sales",
+      "correct": true
+    },
+    {
+      "title": "Technical Customer Success Manager- EAST",
+      "label": "sales",
+      "predicted": "sales",
+      "correct": true
+    },
+    {
+      "title": "Senior Solution Architect",
+      "label": "sales",
+      "predicted": "sales",
+      "correct": true
+    },
+    {
+      "title": "Product Marketing Manager",
+      "label": "marketing",
+      "predicted": "marketing",
+      "correct": true
+    },
+    {
+      "title": "Growth Marketing Manager",
+      "label": "marketing",
+      "predicted": "marketing",
+      "correct": true
+    },
+    {
+      "title": "Event Marketing Manager - Global Sponsorships (NAMER/LATAM)",
+      "label": "marketing",
+      "predicted": "marketing",
+      "correct": true
+    },
+    {
+      "title": "Senior Public Relations Manager (EMEA)",
+      "label": "marketing",
+      "predicted": "marketing",
+      "correct": true
+    },
+    {
+      "title": "Senior Product Manager - Platform",
+      "label": "other",
+      "predicted": "other",
+      "correct": true
+    },
+    {
+      "title": "UX Designer",
+      "label": "other",
+      "predicted": "other",
+      "correct": true
+    },
+    {
+      "title": "Strategic Finance Analyst",
+      "label": "other",
+      "predicted": "other",
+      "correct": true
+    },
+    {
+      "title": "Recruiter II, G&A",
+      "label": "other",
+      "predicted": "other",
+      "correct": true
+    },
+    {
+      "title": "Intern (Summer 2027)",
+      "label": "other",
+      "predicted": "other",
+      "correct": true
+    }
+  ],
+  "usage": [
+    {
+      "model": "gemini-3.5-flash-lite",
+      "tokens_in": 396,
+      "tokens_out": 514,
+      "latency_s": 2.73,
+      "cached": false,
+      "reasks": 0
+    }
+  ]
+}

@@ -65,3 +65,16 @@ def test_ml_share_needs_three_titles():
                "d": {"category": "sales"}}
     assert analysis.ml_share(["a", "b"], classes) is None
     assert analysis.ml_share(["a", "b", "c", "d"], classes) == (1 / 3, 1, 3)
+
+
+def test_classify_keeps_titles_with_stray_whitespace(monkeypatch):
+    from spendradar import llm
+    from spendradar.tools import classify
+
+    def fake_complete(role, prompt, system=None, schema=None):
+        labels = [classify.TitleLabel(title="Senior SWE - LLM Observability", category="engineering")]
+        return llm.LLMResult(text="", parsed=classify.TitleBatch(labels=labels), model="m")
+
+    monkeypatch.setattr(llm, "complete", fake_complete)
+    out, _ = classify.classify_titles(["Senior SWE - LLM Observability "])
+    assert out == {"Senior SWE - LLM Observability ": {"category": "engineering", "model": "m"}}

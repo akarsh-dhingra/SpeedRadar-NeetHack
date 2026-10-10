@@ -19,6 +19,9 @@ PRICES = {
     "gemini-3.8-flash": (0.75, 3.75),   # rises to 1.50 / 7.50 on 2027-01-01
     "gemini-3.5-flash-lite": (0.30, 2.50),
     "gemini-3.1-flash-lite": (0.25, 1.50),
+    # Gemma 4 is free-only on the Gemini API (no paid price listed). PROXY: OpenRouter's paid
+    # price for the same model, https://openrouter.ai/api/v1/models (google/gemma-4-31b-it).
+    "gemma-4-31b-it": (0.09, 0.34),
     # https://openrouter.ai/api/v1/models, the paid (non-:free) variant of the same model
     "nvidia/nemotron-3-super-120b-a12b:free": (0.08, 0.45),
     "google/gemma-4-31b-it:free": (0.09, 0.34),
