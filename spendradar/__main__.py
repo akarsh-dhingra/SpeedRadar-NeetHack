@@ -56,6 +56,7 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--crash-after-step", type=int, default=None, help="simulate a crash (resume demo)")
         p.add_argument("--fixtures", default=None, help="EVALS ONLY: folder of altered Crustdata fixtures")
     sub.add_parser("ledger")
+    sub.add_parser("export", help="write evidence/frontend_data.json for a front end (docs/frontend-data.md)")
     e = sub.add_parser("eval")
     e.add_argument("--n", type=int, default=1)
     e.add_argument("--variant", default="eval")
@@ -69,6 +70,12 @@ def main(argv: list[str] | None = None) -> None:
         from spendradar import llm
 
         print(json.dumps(llm.LEDGER.summary(), indent=1))
+        return
+
+    if args.cmd == "export":
+        from spendradar import export
+
+        print(f"wrote {export.build()}")
         return
 
     if args.cmd == "eval":
