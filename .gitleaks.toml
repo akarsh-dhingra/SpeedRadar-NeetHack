@@ -18,6 +18,6 @@ description = "neatlogs API key assigned in code or config"
 regex = '''(?i)neatlogs[_-]?(api)?[_-]?key\s*[:=]\s*["']?[0-9a-zA-Z_\-]{16,}'''
 
 [[rules]]
-id = "smallest-api-key"
-description = "smallest API key (sk_ + 32 hex)"
+id = "sk-underscore-hex-key"
+description = "provider API key, sk_ + 32 hex"
 regex = '''sk_[0-9a-f]{32}'''

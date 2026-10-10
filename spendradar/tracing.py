@@ -20,7 +20,7 @@ SECRET_ENV_VARS = (
     "GEMINI_API_KEY",
     "OPENROUTER_API_KEY",
     "CRUSTDATA_API_KEY",
-    "SMALLEST_API_KEY",
+    "OPENAI_API_KEY",
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
 )
@@ -32,7 +32,8 @@ KEY_PATTERNS = [
     re.compile(r"sk-or-[0-9A-Za-z_\-]{20,}"),  # OpenRouter
     re.compile(r"sk-ant-[0-9A-Za-z_\-]{20,}"),  # Anthropic
     re.compile(r"AKIA[0-9A-Z]{16}"),  # AWS access key id
-    re.compile(r"sk_[0-9a-f]{32}"),  # smallest (gpt-5-nano)
+    re.compile(r"sk_[0-9a-f]{32}"),  # sk_ + 32 hex provider keys
+    re.compile(r"sk-(proj-|svcacct-|admin-)?[0-9A-Za-z_\-]{20,}"),  # OpenAI
     re.compile(r"(?i)bearer\s+[0-9A-Za-z._\-]{16,}"),
 ]
 MASK = "***"
@@ -85,7 +86,7 @@ def init_tracing(run_id: str, extra_tags: list[str] | None = None) -> list[str]:
     neatlogs.init(
         api_key=os.environ["NEATLOGS_API_KEY"],
         workflow_name="spendradar",
-        instrumentations=["google_genai"],
+        instrumentations=["google_genai", "openai"],
         tags=tags,
         mask=mask_secrets,
     )

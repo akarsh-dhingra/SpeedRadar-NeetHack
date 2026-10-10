@@ -13,6 +13,8 @@ from pathlib import Path
 
 # USD per 1M tokens (input, output incl. thinking). Checked 2026-10-10.
 PRICES = {
+    # https://developers.openai.com/api/docs/pricing (standard tier), checked 2026-10-10
+    "gpt-5-nano": (0.05, 0.40),
     # https://ai.google.dev/gemini-api/docs/pricing (paid tier, standard)
     "gemini-2.5-flash": (0.30, 2.50),
     "gemini-3.6-flash": (0.75, 3.75),   # rises to 1.50 / 7.50 on 2027-01-01

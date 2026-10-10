@@ -3,6 +3,13 @@ import pytest
 from spendradar import llm
 
 
+@pytest.fixture(autouse=True)
+def _only_free_providers(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "test")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test")
+
+
 def test_openrouter_refuses_non_free_model():
     with pytest.raises(llm.NotFreeModelError):
         llm._call_openrouter("openai/gpt-5", "hi", None, None, None)
@@ -47,8 +54,10 @@ def test_exclude_removes_model_from_chain(tmp_path, monkeypatch):
     monkeypatch.setattr(llm, "cache_enabled", lambda: False)
     monkeypatch.setattr(ledger, "wait_turn", lambda m: None)
     used = []
-    monkeypatch.setattr(llm, "_call_openrouter", lambda m, *a, **k: (used.append(m), ("ok", None, 1, 1))[1])
-    first = llm.CONFIG["roles"]["second_opinion"]["openrouter"][0]
+    fake = lambda m, *a, **k: (used.append(m), ("ok", None, 1, 1))[1]  # noqa: E731
+    monkeypatch.setattr(llm, "_call_openrouter", fake)
+    monkeypatch.setattr(llm, "_call_gemini", fake)
+    first = llm._chain("second_opinion")[0][1]
     res = llm._run_chain("second_opinion", "p", None, None, None, None, exclude=(first,))
     assert res.model != first and first not in used
 
@@ -73,3 +82,16 @@ def test_json_reask_stays_on_the_same_role(monkeypatch):
     monkeypatch.setattr(llm, "_run_chain", fake_chain)
     res = llm.complete("reason", "p", schema=V)
     assert roles == ["reason", "reason"] and res.parsed.verdict == "confirm" and res.reasks == 1
+
+
+def test_paid_model_skipped_after_daily_usd_cap(tmp_path, monkeypatch):
+    ledger = llm.Ledger(tmp_path / "ledger.json")
+    monkeypatch.setitem(llm.CONFIG, "max_usd_per_day", 0.01)
+    ledger.record("gpt-5-nano", 100_000, 20_000)  # 0.005 + 0.008 = $0.013
+    assert ledger.usd_today() > 0.01 and ledger.remaining("gpt-5-nano") == 0
+
+
+def test_missing_key_drops_provider(monkeypatch):
+    assert all(p != "openai" for p, _ in llm._chain("reason"))
+    monkeypatch.setenv("OPENAI_API_KEY", "x")
+    assert llm._chain("reason")[0] == ("openai", "gpt-5-nano")

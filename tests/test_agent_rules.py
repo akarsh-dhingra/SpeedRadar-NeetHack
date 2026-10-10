@@ -6,7 +6,9 @@ from spendradar.models import RunState, Task
 
 def test_recovery_menus():
     t = Task(id="t", tool="read_invoice", args={"path": "x.pdf"})
-    assert agent._options_for(t, "tool_error") == (["reparse_alt", "skip"], "skip")
+    assert agent._options_for(t, "tool_error") == (["reparse_alt", "skip"], "reparse_alt")
+    t_llm = Task(id="t", tool="read_invoice", args={"path": "x.pdf", "mode": "llm"})
+    assert agent._options_for(t_llm, "tool_error") == (["reparse_alt", "skip"], "skip")
     assert agent._options_for(Task(id="t", tool="fetch_jobs"), "tool_error")[0] == ["mark_low_confidence", "skip"]
     assert agent._options_for(Task(id="t", tool="fetch_competitor"), "verify:has_data failed")[0] == [
         "substitute_competitor", "skip"]

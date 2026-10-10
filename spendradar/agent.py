@@ -352,7 +352,9 @@ RECOVERY = {
 def _options_for(task: Task, failure: str) -> tuple[list[str], str]:
     """Applicable recovery menu + what a fixed rule would do (the 'default')."""
     if task.tool == "read_invoice" and failure.startswith("tool_error"):
-        return ["reparse_alt", "skip"], "skip"
+        # The rule default matters when no model is reachable: a file with no text layer is
+        # exactly what the LLM reader is for; anything else (e.g. corrupt) gets skipped.
+        return ["reparse_alt", "skip"], ("reparse_alt" if task.args.get("mode", "text") == "text" else "skip")
     if task.tool == "read_invoice":
         return ["reparse_alt", "mark_low_confidence", "skip"], "mark_low_confidence"
     if task.tool == "read_budget":

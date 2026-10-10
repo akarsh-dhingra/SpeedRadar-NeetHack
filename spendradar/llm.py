@@ -34,6 +34,7 @@ CONFIG = yaml.safe_load(Path("config.yaml").read_text())["llm"]
 LEDGER_PATH = Path("cache/ledger.json")
 CACHE_DIR = Path("cache/llm")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+PROVIDER_KEYS = {"openai": "OPENAI_API_KEY", "gemini": "GEMINI_API_KEY", "openrouter": "OPENROUTER_API_KEY"}
 
 
 class LLMError(RuntimeError):
@@ -89,12 +90,16 @@ class Ledger:
 
     def limits(self, model: str) -> dict:
         lim = CONFIG["limits"]
+        if model in lim:
+            return lim[model]
         if model.endswith(":free"):
             return lim["openrouter_free"]
         return lim.get(model, lim["default_gemini"])
 
     def remaining(self, model: str) -> int:
         d = self._day(model)
+        if model in CONFIG.get("paid_prices", {}) and self.usd_today() >= CONFIG["max_usd_per_day"]:
+            return 0  # paid spend cap reached: route to free models
         return 0 if d["exhausted"] else max(0, self.limits(model)["rpd"] - d["requests"])
 
     def wait_turn(self, model: str) -> None:
@@ -111,7 +116,13 @@ class Ledger:
             d["requests"] += 1
             d["tokens_in"] += tokens_in
             d["tokens_out"] += tokens_out
+            price = CONFIG.get("paid_prices", {}).get(model)
+            if price:  # paid model: track real dollars against the daily cap
+                d["usd"] = round(d.get("usd", 0.0) + tokens_in / 1e6 * price[0] + tokens_out / 1e6 * price[1], 6)
             self._save()
+
+    def usd_today(self) -> float:
+        return sum(v.get("usd", 0.0) for v in self.data.get(date.today().isoformat(), {}).values())
 
     def mark_exhausted(self, model: str) -> None:
         with self.lock:
@@ -223,6 +234,58 @@ def _menu_schema(tools: list[dict]) -> dict:
         "reason": {"type": "string"}}, "required": ["action", "reason"]}
 
 
+_openai_client = None
+
+
+def _openai():
+    global _openai_client
+    if _openai_client is None:  # constructed lazily, i.e. after neatlogs.init()
+        import openai
+
+        _openai_client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"], max_retries=0,
+                                       timeout=CONFIG.get("openai_timeout_s", 60))
+    return _openai_client
+
+
+def _call_openai(model: str, prompt: str, system: str | None, schema: type[BaseModel] | None,
+                 tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None) -> tuple[str, Any, int, int]:
+    import openai
+
+    if attachments:
+        raise ValueError("PDF attachments go to Gemini; the OpenAI route here is text-only")
+    if faults.fire(f"llm:{model}:429") or faults.fire("llm:openai:429"):
+        raise _Retryable("injected", f"[injected] 429 for {model}")
+    messages = ([{"role": "system", "content": system}] if system else []) + [{"role": "user", "content": prompt}]
+    kw: dict[str, Any] = {"model": model, "messages": messages}
+    if schema is not None:
+        kw["response_format"] = {"type": "json_schema", "json_schema": {
+            "name": schema.__name__, "schema": schema.model_json_schema()}}
+    if tools:
+        kw["tools"] = [{"type": "function", "function": t} for t in tools]
+        kw["tool_choice"] = "required"
+    try:
+        r = _openai().chat.completions.create(**kw)
+    except openai.APITimeoutError as e:
+        raise _Retryable("timeout", str(e)[:200]) from e
+    except openai.RateLimitError as e:
+        kind = "day" if "insufficient_quota" in str(e) else "minute"
+        raise _Retryable(kind, str(e)[:300]) from e
+    except openai.InternalServerError as e:
+        raise _Retryable("server", str(e)[:300]) from e
+    except openai.APIConnectionError as e:
+        raise _Retryable("server", str(e)[:300]) from e
+    except openai.APIStatusError as e:
+        raise LLMError(f"{model}: non-retryable {e.status_code}: {str(e)[:200]}") from e
+    msg = r.choices[0].message
+    u = r.usage
+    tin, tout = (u.prompt_tokens, u.completion_tokens) if u else (0, 0)
+    call = None
+    if tools and msg.tool_calls:
+        fn = msg.tool_calls[0].function
+        call = {"name": fn.name, "args": json.loads(fn.arguments or "{}")}
+    return msg.content or "", call, tin, tout
+
+
 def _call_openrouter(model: str, prompt: str, system: str | None, schema: type[BaseModel] | None,
                      tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None) -> tuple[str, Any, int, int]:
     if attachments:
@@ -270,7 +333,9 @@ def _call_openrouter(model: str, prompt: str, system: str | None, schema: type[B
 
 def _chain(role: str) -> list[tuple[str, str]]:
     r = CONFIG["roles"][role]
-    return [("gemini", m) for m in r.get("gemini", [])] + [("openrouter", m) for m in r.get("openrouter", [])]
+    # A provider without a configured key is skipped, so the chain degrades to what is available.
+    return [(prov, m) for prov in ("openai", "gemini", "openrouter") for m in r.get(prov, [])
+            if os.environ.get(PROVIDER_KEYS[prov])]
 
 
 def _cache_key(role: str, prompt: str, system: str | None, schema, tools, attachments=None) -> str:
@@ -305,7 +370,7 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
                 span.set_attribute("spendradar.fallback.to", model)
                 span.set_attribute("spendradar.fallback.provider", provider)
                 span.set_attribute("spendradar.fallback.reasons", json.dumps(errors[-3:]))
-        call = _call_gemini if provider == "gemini" else _call_openrouter
+        call = {"openai": _call_openai, "gemini": _call_gemini, "openrouter": _call_openrouter}[provider]
         for attempt in range(CONFIG["retries_per_model"] + 1):
             LEDGER.wait_turn(model)
             t0 = time.monotonic()
