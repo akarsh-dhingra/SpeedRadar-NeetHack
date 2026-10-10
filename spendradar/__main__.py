@@ -45,12 +45,27 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--evidence", action="store_true", help="LLM cache off; tagged as an evidence run")
         p.add_argument("--crash-after-step", type=int, default=None, help="simulate a crash (resume demo)")
     sub.add_parser("ledger")
+    e = sub.add_parser("eval")
+    e.add_argument("--n", type=int, default=1)
+    e.add_argument("--variant", default="eval")
+    e.add_argument("--evidence", action="store_true")
+    e.add_argument("--score", nargs="*", help="score existing run ids instead of launching runs")
     args = ap.parse_args(argv)
 
     if args.cmd == "ledger":
         from spendradar import llm
 
         print(json.dumps(llm.LEDGER.summary(), indent=1))
+        return
+
+    if args.cmd == "eval":
+        from spendradar import evals
+
+        path = evals.run_eval(args.n, args.variant, args.evidence, args.score)
+        card = json.loads(path.read_text())
+        print(f"scorecard: {path}")
+        print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_without_fallback", "planted_total",
+                                                "summary_all_runs")}, indent=1))
         return
 
     from spendradar import agent  # noqa: F401  (imported after env is ready)
