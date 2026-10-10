@@ -27,7 +27,8 @@ llm:
   retries_per_model: 2          # 429-per-minute / 5xx retries before moving on
   json_reasks: 2                # malformed JSON → re-ask with the validation error
   second_opinion_max_per_run: 5
-  timeout_s: 120
+  timeout_s: 120               # OpenRouter HTTP timeout
+  gemini_timeout_s: 40         # per-call bound; added after run 1010-6f37e8 averaged 143 s/call
 
 crustdata:
   max_credits_per_run: 60

@@ -1,0 +1,1343 @@
+{
+ "run_id": "1010-6f37e8",
+ "goal": "Tell Acme's finance team where competitors out-invest them in people (engineering, ML/AI, sales, marketing), check Acme's own spend files for errors, apply the spend policy, and support every number with a source.",
+ "input_dir": "data/acme",
+ "started_at": "2026-10-10T08:21:21+00:00",
+ "git_sha": "d96e16f",
+ "tags": [
+  "sha:d96e16f",
+  "run:1010-6f37e8",
+  "variant:first-run"
+ ],
+ "trace_id": "6f2d2dd7d3cc60d33157d5ac4f16746a",
+ "phase": "execute",
+ "plan_rationale": "Read all Acme internal financial files (policy, salary table, budget, and invoice PDFs) to check for spend discrepancies and evaluate budget allocation, then fetch competitor data, job postings, and classify titles across all five competitors to evaluate talent and headcount investment in engineering, ML/AI, sales, and marketing.",
+ "queue": [
+  {
+   "id": "t15",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/12_nimbus_2026-10.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus October 2026 invoice.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t16",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/13_brightloop_2026-10.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for BrightLoop October 2026 invoice.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t17",
+   "tool": "fetch_competitor",
+   "args": {
+    "name": "Honeycomb",
+    "domain": "honeycomb.io"
+   },
+   "reason": "Fetch Honeycomb headcount by role, history, funding, and growth.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t18",
+   "tool": "fetch_jobs",
+   "args": {
+    "domain": "honeycomb.io"
+   },
+   "reason": "Fetch Honeycomb job postings from the last 12 months.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t19",
+   "tool": "classify_titles",
+   "args": {
+    "domain": "honeycomb.io"
+   },
+   "reason": "Classify Honeycomb job postings to quantify ML/AI talent acquisition share.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t20",
+   "tool": "fetch_competitor",
+   "args": {
+    "name": "Sentry",
+    "domain": "sentry.io"
+   },
+   "reason": "Fetch Sentry headcount by role, history, funding, and growth.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t21",
+   "tool": "fetch_jobs",
+   "args": {
+    "domain": "sentry.io"
+   },
+   "reason": "Fetch Sentry job postings from the last 12 months.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t22",
+   "tool": "classify_titles",
+   "args": {
+    "domain": "sentry.io"
+   },
+   "reason": "Classify Sentry job postings to quantify ML/AI talent acquisition share.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t23",
+   "tool": "fetch_competitor",
+   "args": {
+    "name": "Arize",
+    "domain": "arize.com"
+   },
+   "reason": "Fetch Arize headcount by role, history, funding, and growth.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t24",
+   "tool": "fetch_jobs",
+   "args": {
+    "domain": "arize.com"
+   },
+   "reason": "Fetch Arize job postings from the last 12 months.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t25",
+   "tool": "classify_titles",
+   "args": {
+    "domain": "arize.com"
+   },
+   "reason": "Classify Arize job postings to quantify ML/AI talent acquisition share.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t26",
+   "tool": "fetch_competitor",
+   "args": {
+    "name": "Chronosphere",
+    "domain": "chronosphere.io"
+   },
+   "reason": "Fetch Chronosphere headcount by role, history, funding, and growth.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t27",
+   "tool": "fetch_jobs",
+   "args": {
+    "domain": "chronosphere.io"
+   },
+   "reason": "Fetch Chronosphere job postings from the last 12 months.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t28",
+   "tool": "classify_titles",
+   "args": {
+    "domain": "chronosphere.io"
+   },
+   "reason": "Classify Chronosphere job postings to quantify ML/AI talent acquisition share.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t29",
+   "tool": "fetch_competitor",
+   "args": {
+    "name": "Grafana Labs",
+    "domain": "grafana.com"
+   },
+   "reason": "Fetch Grafana Labs headcount by role, history, funding, and growth.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t30",
+   "tool": "fetch_jobs",
+   "args": {
+    "domain": "grafana.com"
+   },
+   "reason": "Fetch Grafana Labs job postings from the last 12 months.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  },
+  {
+   "id": "t31",
+   "tool": "classify_titles",
+   "args": {
+    "domain": "grafana.com"
+   },
+   "reason": "Classify Grafana Labs job postings to quantify ML/AI talent acquisition share.",
+   "parent": null,
+   "attempts": 0,
+   "status": "pending"
+  }
+ ],
+ "done": [
+  {
+   "id": "t01",
+   "tool": "read_policy",
+   "args": {
+    "path": "policy.yaml"
+   },
+   "reason": "Load Acme spend and approval policy rules to check compliance.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t02",
+   "tool": "read_salary_table",
+   "args": {
+    "path": "salary_table.csv"
+   },
+   "reason": "Load compensation benchmarks by department and seniority to estimate personnel spend.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t03",
+   "tool": "read_budget",
+   "args": {
+    "path": "budget_fy27.xlsx"
+   },
+   "reason": "Extract Acme FY27 budget allocations across departments and verify monthly sum consistency.",
+   "parent": null,
+   "attempts": 1,
+   "status": "failed"
+  },
+  {
+   "id": "t03n",
+   "tool": "read_budget",
+   "args": {
+    "path": "budget_fy27.xlsx",
+    "row": 10
+   },
+   "reason": "recovery: narrow_range",
+   "parent": "t03",
+   "attempts": 2,
+   "status": "failed"
+  },
+  {
+   "id": "t04",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/01_nimbus_2026-04.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus April 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t05",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/02_nimbus_2026-05.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus May 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t06",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/03_nimbus_2026-06.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus June 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t07",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/04_nimbus_2026-07.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus July 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "failed"
+  },
+  {
+   "id": "t07r",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/04_nimbus_2026-07.pdf",
+    "mode": "llm"
+   },
+   "reason": "recovery: reparse_alt",
+   "parent": "t07",
+   "attempts": 2,
+   "status": "failed"
+  },
+  {
+   "id": "t08",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/05_nimbus_2026-08.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus August 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t09",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/06_nimbus_2026-09.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for Nimbus September 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t10",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/07_tensorforge_2026-05.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for TensorForge May 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t11",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/08_tensorforge_2026-08.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for TensorForge August 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t12",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/09_brightloop_2026-06.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for BrightLoop June 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t13",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/10_brightloop_2026-09.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for BrightLoop September 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  },
+  {
+   "id": "t14",
+   "tool": "read_invoice",
+   "args": {
+    "path": "invoices/11_pipewise_2026-07.pdf",
+    "mode": "text"
+   },
+   "reason": "Extract and verify line items and total for PipeWise July 2026 invoice.",
+   "parent": null,
+   "attempts": 1,
+   "status": "done"
+  }
+ ],
+ "figures": {
+  "hc_engineering": {
+   "id": "hc_engineering",
+   "label": "Acme engineering headcount (end FY27)",
+   "value": 130.0,
+   "unit": "people",
+   "category": "engineering",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 3, 2027-03",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "cost_engineering": {
+   "id": "cost_engineering",
+   "label": "Acme engineering people cost FY27",
+   "value": 22940000.0,
+   "unit": "USD",
+   "category": "engineering",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 4, sum of 12 months",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "hc_ml_ai": {
+   "id": "hc_ml_ai",
+   "label": "Acme ml_ai headcount (end FY27)",
+   "value": 22.0,
+   "unit": "people",
+   "category": "ml_ai",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 5, 2027-03",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "cost_ml_ai": {
+   "id": "cost_ml_ai",
+   "label": "Acme ml_ai people cost FY27",
+   "value": 4320000.0,
+   "unit": "USD",
+   "category": "ml_ai",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 6, sum of 12 months",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "hc_sales": {
+   "id": "hc_sales",
+   "label": "Acme sales headcount (end FY27)",
+   "value": 64.0,
+   "unit": "people",
+   "category": "sales",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 7, 2027-03",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "cost_sales": {
+   "id": "cost_sales",
+   "label": "Acme sales people cost FY27",
+   "value": 9455000.0,
+   "unit": "USD",
+   "category": "sales",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 8, sum of 12 months",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "hc_marketing": {
+   "id": "hc_marketing",
+   "label": "Acme marketing headcount (end FY27)",
+   "value": 24.0,
+   "unit": "people",
+   "category": "marketing",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 9, 2027-03",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "cost_marketing": {
+   "id": "cost_marketing",
+   "label": "Acme marketing people cost FY27",
+   "value": 3262500.0,
+   "unit": "USD",
+   "category": "marketing",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 10, sum of 12 months",
+     "fetched_at": "2026-10-10T08:27:06+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "hc_other": {
+   "id": "hc_other",
+   "label": "Acme other headcount (end FY27)",
+   "value": 90.0,
+   "unit": "people",
+   "category": "other",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 11, 2027-03",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "cost_other": {
+   "id": "cost_other",
+   "label": "Acme other people cost FY27",
+   "value": 10875000.0,
+   "unit": "USD",
+   "category": "other",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/budget_fy27.xlsx",
+     "locator": "People!row 12, sum of 12 months",
+     "fetched_at": "2026-10-10T08:23:41+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_01_nimbus_2026-04": {
+   "id": "inv_01_nimbus_2026-04",
+   "label": "Nimbus Cloud Ltd INV-202604-001",
+   "value": 98724.0,
+   "unit": "USD",
+   "category": "infra_cloud",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/01_nimbus_2026-04.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:29:35+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_02_nimbus_2026-05": {
+   "id": "inv_02_nimbus_2026-05",
+   "label": "Nimbus Cloud Ltd INV-202605-002",
+   "value": 92083.0,
+   "unit": "USD",
+   "category": "infra_cloud",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/02_nimbus_2026-05.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:29:35+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_03_nimbus_2026-06": {
+   "id": "inv_03_nimbus_2026-06",
+   "label": "Nimbus Cloud Ltd INV-202606-003",
+   "value": 92370.0,
+   "unit": "USD",
+   "category": "infra_cloud",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/03_nimbus_2026-06.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:29:35+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_04_nimbus_2026-07": {
+   "id": "inv_04_nimbus_2026-07",
+   "label": "Nimbus Cloud Ltd INV-202607-004",
+   "value": 89435.0,
+   "unit": "USD",
+   "category": "infra_cloud",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/04_nimbus_2026-07.pdf",
+     "locator": "line items, parser=llm:gemini-3.5-flash-lite",
+     "fetched_at": "2026-10-10T08:31:09+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_05_nimbus_2026-08": {
+   "id": "inv_05_nimbus_2026-08",
+   "label": "Nimbus Cloud Ltd INV-202608-005",
+   "value": 85423.0,
+   "unit": "USD",
+   "category": "infra_cloud",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/05_nimbus_2026-08.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_06_nimbus_2026-09": {
+   "id": "inv_06_nimbus_2026-09",
+   "label": "Nimbus Cloud Ltd INV-202609-006",
+   "value": 85142.0,
+   "unit": "USD",
+   "category": "infra_cloud",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/06_nimbus_2026-09.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_07_tensorforge_2026-05": {
+   "id": "inv_07_tensorforge_2026-05",
+   "label": "Tensorforge GPU INV-202605-007",
+   "value": 28084.0,
+   "unit": "USD",
+   "category": "ml_ai",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/07_tensorforge_2026-05.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_08_tensorforge_2026-08": {
+   "id": "inv_08_tensorforge_2026-08",
+   "label": "Tensorforge GPU INV-202608-008",
+   "value": 32752.0,
+   "unit": "USD",
+   "category": "marketing",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/08_tensorforge_2026-08.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_09_brightloop_2026-06": {
+   "id": "inv_09_brightloop_2026-06",
+   "label": "Brightloop Media INV-202606-009",
+   "value": 38840.0,
+   "unit": "USD",
+   "category": "marketing",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/09_brightloop_2026-06.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_10_brightloop_2026-09": {
+   "id": "inv_10_brightloop_2026-09",
+   "label": "Brightloop Media INV-202609-010",
+   "value": 35456.0,
+   "unit": "USD",
+   "category": "marketing",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/10_brightloop_2026-09.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  },
+  "inv_11_pipewise_2026-07": {
+   "id": "inv_11_pipewise_2026-07",
+   "label": "Pipewise CRM INV-202607-011",
+   "value": 5400.0,
+   "unit": "USD",
+   "category": "sales",
+   "sources": [
+    {
+     "kind": "file",
+     "ref": "data/acme/invoices/11_pipewise_2026-07.pdf",
+     "locator": "line items, parser=pdfplumber",
+     "fetched_at": "2026-10-10T08:31:40+00:00",
+     "note": ""
+    }
+   ],
+   "estimate": false
+  }
+ },
+ "competitors": {},
+ "checks": [
+  {
+   "name": "verify:plan_coverage",
+   "target": "plan",
+   "passed": true,
+   "detail": "0 tasks added: "
+  },
+  {
+   "name": "verify:totals",
+   "target": "budget:engineering",
+   "passed": true,
+   "detail": "budget_fy27.xlsx People!row 4: line items sum 22,940,000.00 vs stated 22,940,000.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "budget:ml_ai",
+   "passed": true,
+   "detail": "budget_fy27.xlsx People!row 6: line items sum 4,320,000.00 vs stated 4,320,000.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "budget:sales",
+   "passed": true,
+   "detail": "budget_fy27.xlsx People!row 8: line items sum 9,455,000.00 vs stated 9,455,000.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "budget:marketing",
+   "passed": false,
+   "detail": "budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "budget:other",
+   "passed": true,
+   "detail": "budget_fy27.xlsx People!row 12: line items sum 10,875,000.00 vs stated 10,875,000.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "budget:marketing",
+   "passed": false,
+   "detail": "budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/01_nimbus_2026-04.pdf",
+   "passed": true,
+   "detail": "line items sum 98,724.00 vs stated 98,724.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/02_nimbus_2026-05.pdf",
+   "passed": true,
+   "detail": "line items sum 92,083.00 vs stated 92,083.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/03_nimbus_2026-06.pdf",
+   "passed": true,
+   "detail": "line items sum 92,370.00 vs stated 92,370.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/04_nimbus_2026-07.pdf",
+   "passed": false,
+   "detail": "line items sum 89,435.00 vs stated 96,935.00 (7.74% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/04_nimbus_2026-07.pdf",
+   "passed": false,
+   "detail": "line items sum 89,435.00 vs stated 96,935.00 (7.74% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/05_nimbus_2026-08.pdf",
+   "passed": true,
+   "detail": "line items sum 85,423.00 vs stated 85,423.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/06_nimbus_2026-09.pdf",
+   "passed": true,
+   "detail": "line items sum 85,142.00 vs stated 85,142.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/07_tensorforge_2026-05.pdf",
+   "passed": true,
+   "detail": "line items sum 28,084.00 vs stated 28,084.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/08_tensorforge_2026-08.pdf",
+   "passed": true,
+   "detail": "line items sum 32,752.00 vs stated 32,752.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/09_brightloop_2026-06.pdf",
+   "passed": true,
+   "detail": "line items sum 38,840.00 vs stated 38,840.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/10_brightloop_2026-09.pdf",
+   "passed": true,
+   "detail": "line items sum 35,456.00 vs stated 35,456.00 (0.00% off)"
+  },
+  {
+   "name": "verify:totals",
+   "target": "invoices/11_pipewise_2026-07.pdf",
+   "passed": true,
+   "detail": "line items sum 5,400.00 vs stated 5,400.00 (0.00% off)"
+  }
+ ],
+ "decisions": [
+  {
+   "task_id": "t03",
+   "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+   "options": [
+    "narrow_range",
+    "mark_low_confidence",
+    "skip"
+   ],
+   "chosen": "narrow_range",
+   "reason": "Re-read People!row 10 line items to verify against a potential parse slip.",
+   "model": "gemini-3.8-flash",
+   "default": "mark_low_confidence"
+  },
+  {
+   "task_id": "t03n",
+   "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+   "options": [
+    "narrow_range",
+    "mark_low_confidence",
+    "skip"
+   ],
+   "chosen": "mark_low_confidence",
+   "reason": "Line items sum and stated total differ by 1.45% after re-reading; retaining data with low confidence.",
+   "model": "gemini-3.8-flash",
+   "default": "mark_low_confidence"
+  },
+  {
+   "task_id": "t07",
+   "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+   "options": [
+    "reparse_alt",
+    "mark_low_confidence",
+    "skip"
+   ],
+   "chosen": "reparse_alt",
+   "reason": "Line items sum mismatch in text mode; re-parsing with LLM reader to correctly capture all items.",
+   "model": "gemini-3.8-flash",
+   "default": "mark_low_confidence"
+  },
+  {
+   "task_id": "t07r",
+   "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+   "options": [
+    "reparse_alt",
+    "mark_low_confidence",
+    "skip"
+   ],
+   "chosen": "mark_low_confidence",
+   "reason": "Reparse already attempted; keep the invoice data flagged with low confidence due to unresolved 7.74% totals discrepancy.",
+   "model": "gemini-3.8-flash",
+   "default": "mark_low_confidence"
+  }
+ ],
+ "findings": [],
+ "not_analysed": [],
+ "flags": [
+  {
+   "task": "t03n",
+   "target": "budget_fy27.xlsx",
+   "issue": "budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)"
+  },
+  {
+   "task": "t07r",
+   "target": "invoices/04_nimbus_2026-07.pdf",
+   "issue": "invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)"
+  }
+ ],
+ "notes": [],
+ "invoices": [
+  {
+   "path": "invoices/01_nimbus_2026-04.pdf",
+   "vendor": "Nimbus Cloud Ltd",
+   "number": "INV-202604-001",
+   "date": "2026-04-28",
+   "cost_centre": "Infrastructure",
+   "category": "infra_cloud",
+   "lines": [
+    {
+     "description": "Compute instances",
+     "amount": 57260.0
+    },
+    {
+     "description": "Block + object storage",
+     "amount": 21719.0
+    },
+    {
+     "description": "Network egress",
+     "amount": 11847.0
+    },
+    {
+     "description": "Managed database",
+     "amount": 7898.0
+    }
+   ],
+   "line_sum": 98724.0,
+   "stated_total": 98724.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/02_nimbus_2026-05.pdf",
+   "vendor": "Nimbus Cloud Ltd",
+   "number": "INV-202605-002",
+   "date": "2026-05-28",
+   "cost_centre": "Infrastructure",
+   "category": "infra_cloud",
+   "lines": [
+    {
+     "description": "Compute instances",
+     "amount": 53408.0
+    },
+    {
+     "description": "Block + object storage",
+     "amount": 20258.0
+    },
+    {
+     "description": "Network egress",
+     "amount": 11050.0
+    },
+    {
+     "description": "Managed database",
+     "amount": 7367.0
+    }
+   ],
+   "line_sum": 92083.0,
+   "stated_total": 92083.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/03_nimbus_2026-06.pdf",
+   "vendor": "Nimbus Cloud Ltd",
+   "number": "INV-202606-003",
+   "date": "2026-06-28",
+   "cost_centre": "Infrastructure",
+   "category": "infra_cloud",
+   "lines": [
+    {
+     "description": "Compute instances",
+     "amount": 53575.0
+    },
+    {
+     "description": "Block + object storage",
+     "amount": 20321.0
+    },
+    {
+     "description": "Network egress",
+     "amount": 11084.0
+    },
+    {
+     "description": "Managed database",
+     "amount": 7390.0
+    }
+   ],
+   "line_sum": 92370.0,
+   "stated_total": 92370.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/04_nimbus_2026-07.pdf",
+   "vendor": "Nimbus Cloud Ltd",
+   "number": "INV-202607-004",
+   "date": "2026-07-28",
+   "cost_centre": "Infrastructure",
+   "category": "infra_cloud",
+   "lines": [
+    {
+     "description": "Compute instances",
+     "amount": 51872.0
+    },
+    {
+     "description": "Block + object storage",
+     "amount": 19676.0
+    },
+    {
+     "description": "Network egress",
+     "amount": 10732.0
+    },
+    {
+     "description": "Managed database",
+     "amount": 7155.0
+    }
+   ],
+   "line_sum": 89435.0,
+   "stated_total": 96935.0,
+   "parser": "llm:gemini-3.5-flash-lite",
+   "totals_ok": false
+  },
+  {
+   "path": "invoices/05_nimbus_2026-08.pdf",
+   "vendor": "Nimbus Cloud Ltd",
+   "number": "INV-202608-005",
+   "date": "2026-08-28",
+   "cost_centre": "Infrastructure",
+   "category": "infra_cloud",
+   "lines": [
+    {
+     "description": "Compute instances",
+     "amount": 49545.0
+    },
+    {
+     "description": "Block + object storage",
+     "amount": 18793.0
+    },
+    {
+     "description": "Network egress",
+     "amount": 10251.0
+    },
+    {
+     "description": "Managed database",
+     "amount": 6834.0
+    }
+   ],
+   "line_sum": 85423.0,
+   "stated_total": 85423.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/06_nimbus_2026-09.pdf",
+   "vendor": "Nimbus Cloud Ltd",
+   "number": "INV-202609-006",
+   "date": "2026-09-28",
+   "cost_centre": "Infrastructure",
+   "category": "infra_cloud",
+   "lines": [
+    {
+     "description": "Compute instances",
+     "amount": 49382.0
+    },
+    {
+     "description": "Block + object storage",
+     "amount": 18731.0
+    },
+    {
+     "description": "Network egress",
+     "amount": 10217.0
+    },
+    {
+     "description": "Managed database",
+     "amount": 6812.0
+    }
+   ],
+   "line_sum": 85142.0,
+   "stated_total": 85142.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/07_tensorforge_2026-05.pdf",
+   "vendor": "Tensorforge GPU",
+   "number": "INV-202605-007",
+   "date": "2026-05-28",
+   "cost_centre": "ML Platform",
+   "category": "ml_ai",
+   "lines": [
+    {
+     "description": "A-class GPU hours (training)",
+     "amount": 22467.0
+    },
+    {
+     "description": "Inference endpoints",
+     "amount": 5617.0
+    }
+   ],
+   "line_sum": 28084.0,
+   "stated_total": 28084.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/08_tensorforge_2026-08.pdf",
+   "vendor": "Tensorforge GPU",
+   "number": "INV-202608-008",
+   "date": "2026-08-28",
+   "cost_centre": "Marketing",
+   "category": "marketing",
+   "lines": [
+    {
+     "description": "A-class GPU hours (training)",
+     "amount": 26202.0
+    },
+    {
+     "description": "Inference endpoints",
+     "amount": 6550.0
+    }
+   ],
+   "line_sum": 32752.0,
+   "stated_total": 32752.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/09_brightloop_2026-06.pdf",
+   "vendor": "Brightloop Media",
+   "number": "INV-202606-009",
+   "date": "2026-06-28",
+   "cost_centre": "Marketing",
+   "category": "marketing",
+   "lines": [
+    {
+     "description": "Paid search management",
+     "amount": 23304.0
+    },
+    {
+     "description": "Conference sponsorship",
+     "amount": 15536.0
+    }
+   ],
+   "line_sum": 38840.0,
+   "stated_total": 38840.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/10_brightloop_2026-09.pdf",
+   "vendor": "Brightloop Media",
+   "number": "INV-202609-010",
+   "date": "2026-09-28",
+   "cost_centre": "Marketing",
+   "category": "marketing",
+   "lines": [
+    {
+     "description": "Paid search management",
+     "amount": 21274.0
+    },
+    {
+     "description": "Conference sponsorship",
+     "amount": 14182.0
+    }
+   ],
+   "line_sum": 35456.0,
+   "stated_total": 35456.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  },
+  {
+   "path": "invoices/11_pipewise_2026-07.pdf",
+   "vendor": "Pipewise CRM",
+   "number": "INV-202607-011",
+   "date": "2026-07-28",
+   "cost_centre": "Sales",
+   "category": "sales",
+   "lines": [
+    {
+     "description": "CRM seats (60)",
+     "amount": 4200.0
+    },
+    {
+     "description": "Sales engagement add-on",
+     "amount": 1200.0
+    }
+   ],
+   "line_sum": 5400.0,
+   "stated_total": 5400.0,
+   "parser": "pdfplumber",
+   "totals_ok": true
+  }
+ ],
+ "budget": {
+  "people_cost": {
+   "engineering": 22940000.0,
+   "ml_ai": 4320000.0,
+   "sales": 9455000.0,
+   "marketing": 3262500.0,
+   "other": 10875000.0
+  },
+  "headcount_end": {
+   "engineering": 130,
+   "ml_ai": 22,
+   "sales": 64,
+   "marketing": 24,
+   "other": 90
+  },
+  "non_people": {
+   "infra_cloud": 1104000.0,
+   "sales": 72000.0,
+   "marketing": 456000.0,
+   "ml_ai": 360000.0
+  },
+  "monthly": {
+   "infra_cloud": 92000.0,
+   "sales": 6000.0,
+   "marketing": 38000.0,
+   "ml_ai": 30000.0
+  }
+ },
+ "policy": {
+  "_note": "FICTIONAL SAMPLE DATA — Acme Observability Inc. does not exist.",
+  "basis": "people cost (headcount x loaded cost), FY27, compared with the competitor median per head of company",
+  "rules": [
+   {
+    "id": "ml_ai_parity",
+    "category": "ml_ai",
+    "metric": "share_of_headcount",
+    "rule": "within_pct_of_median",
+    "pct": 20,
+    "text": "ML/AI share of headcount within 20% of competitor median"
+   },
+   {
+    "id": "eng_floor",
+    "category": "engineering",
+    "metric": "share_of_headcount",
+    "rule": "at_least_pct_of_median",
+    "pct": 90,
+    "text": "Engineering share of headcount at least 90% of competitor median"
+   },
+   {
+    "id": "sales_band",
+    "category": "sales",
+    "metric": "share_of_headcount",
+    "rule": "within_pct_of_median",
+    "pct": 25,
+    "text": "Sales share of headcount within 25% of competitor median"
+   },
+   {
+    "id": "marketing_floor",
+    "category": "marketing",
+    "metric": "share_of_headcount",
+    "rule": "at_least_pct_of_median",
+    "pct": 80,
+    "text": "Marketing share of headcount at least 80% of competitor median"
+   },
+   {
+    "id": "infra_budget",
+    "category": "infra_cloud",
+    "metric": "invoice_vs_budget",
+    "rule": "max_over_budget_pct",
+    "pct": 5,
+    "text": "Infra/cloud invoices no more than 5% over monthly budget (internal check only)"
+   }
+  ]
+ },
+ "salary": {
+  "engineering": 185000.0,
+  "ml_ai": 240000.0,
+  "sales": 155000.0,
+  "marketing": 145000.0,
+  "other": 125000.0
+ },
+ "title_classes": {},
+ "llm_usage": {
+  "gemini-3.8-flash": {
+   "calls": 5,
+   "cached_calls": 0,
+   "tokens_in": 2124,
+   "tokens_out": 4535,
+   "latency_s": 604.71,
+   "fallback_hops": 0
+  },
+  "gemini-3.5-flash-lite": {
+   "calls": 1,
+   "cached_calls": 0,
+   "tokens_in": 560,
+   "tokens_out": 205,
+   "latency_s": 2.06,
+   "fallback_hops": 0
+  }
+ },
+ "crustdata_credits": 0.0,
+ "injected": [],
+ "data_mode": "real",
+ "step": 18
+}

@@ -47,7 +47,7 @@ class NotFreeModelError(ValueError):
 class _Retryable(Exception):
     def __init__(self, kind: str, msg: str, retry_after: float | None = None):
         super().__init__(msg)
-        self.kind = kind  # "minute" | "day" | "server" | "injected"
+        self.kind = kind  # "minute" | "day" | "server" | "timeout" | "injected"
         self.retry_after = retry_after
 
 
@@ -141,13 +141,19 @@ def _gemini():
     if _gemini_client is None:  # constructed lazily, i.e. after neatlogs.init()
         from google import genai
 
-        _gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        from google.genai import types
+
+        # Bounded per-call latency: a slow free-tier call times out and the chain moves on.
+        _gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"],
+                                      http_options=types.HttpOptions(timeout=CONFIG["gemini_timeout_s"] * 1000))
     return _gemini_client
 
 
 def _classify_gemini_error(e: Exception) -> _Retryable | None:
     from google.genai import errors
 
+    if isinstance(e, httpx.TimeoutException):
+        return _Retryable("timeout", f"no response within {CONFIG['gemini_timeout_s']}s")
     if isinstance(e, errors.ServerError):
         return _Retryable("server", str(e)[:300])
     if isinstance(e, errors.ClientError) and e.code == 429:
@@ -285,7 +291,7 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
                 if e.kind == "day":
                     LEDGER.mark_exhausted(model)
                     break
-                if e.kind == "injected":  # move on, but never pollute the real quota ledger
+                if e.kind in ("injected", "timeout"):  # move on; never pollute the real quota ledger
                     break
                 if attempt < CONFIG["retries_per_model"]:
                     time.sleep(min(30.0, (2 ** attempt) * 2 + random.random()))
