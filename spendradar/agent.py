@@ -130,12 +130,22 @@ def plan(state: RunState) -> None:
         state.plan_rationale = p.rationale
         for i, t in enumerate(p.tasks):
             args = {k: v for k, v in t.model_dump().items() if k not in ("tool", "reason") and v is not None}
+            if "path" in args:
+                args["path"] = _normalise_path(state.input_dir, args["path"])
             state.queue.append(Task(id=f"t{i + 1:02d}", tool=t.tool, args=args, reason=t.reason))
         span.set_attribute("spendradar.plan.tasks", len(state.queue))
         span.set_attribute("spendradar.plan.model", res.model)
         _verify_plan(state, listing, comps)
     state.phase = "execute"
     save(state)
+
+
+def _normalise_path(input_dir: str, path: str) -> str:
+    """Planner paths must be relative to the input folder; models sometimes prefix the folder."""
+    p, root = path.strip().lstrip("./"), input_dir.rstrip("/").lstrip("./") + "/"
+    while p.startswith(root):
+        p = p[len(root):]
+    return p
 
 
 def _verify_plan(state: RunState, listing: list[dict], comps: dict) -> None:
@@ -470,6 +480,8 @@ def execute(state: RunState) -> None:
             checks, failure = [], f"tool_error: {e}"
         except (ToolError, llm.LLMError) as e:
             checks, failure = [], f"tool_error: {e}"
+        except Exception as e:  # never let one task kill the run; record it and recover
+            checks, failure = [], f"tool_error: unexpected {type(e).__name__}: {str(e)[:200]}"
         state.checks.extend(checks)
         bad = [c for c in checks if not c.passed]
         if failure is None and bad:

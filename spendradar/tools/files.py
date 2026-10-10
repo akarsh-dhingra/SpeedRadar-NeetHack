@@ -101,7 +101,10 @@ def read_pdf(path: str, mode: str = "text") -> dict:
         inv = _parse_invoice_text(text)
         return {"extract": inv.model_dump(), "parser": "pdfplumber", "llm": None}
     if mode == "llm":
-        data = p.read_bytes()
+        try:
+            data = p.read_bytes()
+        except OSError as e:
+            raise ToolError(f"cannot read file: {type(e).__name__}: {e}") from e
         try:
             res = llm.complete(
                 "extract",

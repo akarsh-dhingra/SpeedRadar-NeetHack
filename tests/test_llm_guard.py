@@ -56,3 +56,20 @@ def test_exclude_removes_model_from_chain(tmp_path, monkeypatch):
 def test_menu_schema_enumerates_options():
     sch = llm._menu_schema([{"name": "skip", "description": "d1"}, {"name": "reparse_alt", "description": "d2"}])
     assert sch["properties"]["action"]["enum"] == ["skip", "reparse_alt"] and sch["required"] == ["action", "reason"]
+
+
+def test_json_reask_stays_on_the_same_role(monkeypatch):
+    from pydantic import BaseModel
+
+    class V(BaseModel):
+        verdict: str
+
+    roles = []
+
+    def fake_chain(role, prompt, system, schema, tools, attachments=None, exclude=()):
+        roles.append(role)
+        return llm.LLMResult(text="not json" if len(roles) == 1 else '{"verdict": "confirm"}', model="m")
+
+    monkeypatch.setattr(llm, "_run_chain", fake_chain)
+    res = llm.complete("reason", "p", schema=V)
+    assert roles == ["reason", "reason"] and res.parsed.verdict == "confirm" and res.reasks == 1

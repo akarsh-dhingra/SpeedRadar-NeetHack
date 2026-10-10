@@ -1,0 +1,386 @@
+{
+ "created": "2026-10-10T17:10:03",
+ "variant": "gemma-mix-n3",
+ "evidence": true,
+ "git_sha": "fd9a4ef",
+ "n_runs": 3,
+ "n_runs_without_fallback": 0,
+ "planted_total": 5,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 3,
+   "min": 0,
+   "max": 5,
+   "n": 3
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 3
+  },
+  "overturned": {
+   "mean": 0.333,
+   "min": 0,
+   "max": 1,
+   "n": 3
+  },
+  "downgraded": {
+   "mean": 0.667,
+   "min": 0,
+   "max": 1,
+   "n": 3
+  },
+  "recovery_decisions": {
+   "mean": 9.667,
+   "min": 9,
+   "max": 10,
+   "n": 3
+  },
+  "llm_calls": {
+   "mean": 23.333,
+   "min": 10,
+   "max": 31,
+   "n": 3
+  },
+  "llm_tokens_in": {
+   "mean": 8146.667,
+   "min": 3027,
+   "max": 10785,
+   "n": 3
+  },
+  "llm_tokens_out": {
+   "mean": 11053,
+   "min": 4871,
+   "max": 15718,
+   "n": 3
+  },
+  "llm_latency_s": {
+   "mean": 306.767,
+   "min": 256.5,
+   "max": 387.7,
+   "n": 3
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 3
+  }
+ },
+ "summary_no_fallback_runs": {},
+ "runs": [
+  {
+   "run_id": "1010-7d05cb",
+   "trace_id": "6f93a257acc67b3e7df1a245d10673e8",
+   "git_sha": "fd9a4ef",
+   "tags": [
+    "sha:fd9a4ef",
+    "run:1010-7d05cb",
+    "variant:gemma-mix-n3",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "planted_caught": 5,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_scanned": true,
+    "invoice_corrupt": true
+   },
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.424
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "confirmed",
+     "confidence": 0.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 1,
+   "recovery_decisions": 10,
+   "recovery_non_default": 7,
+   "llm_calls": 31,
+   "llm_tokens_in": 10628,
+   "llm_tokens_out": 15718,
+   "llm_latency_s": 276.1,
+   "fallback_hops": 5,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gemini-3.7-flash",
+    "gemma-4-31b-it",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemini-3.7-flash": {
+     "calls": 8,
+     "cached_calls": 0,
+     "tokens_in": 2901,
+     "tokens_out": 5140,
+     "latency_s": 94.1,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 13,
+     "cached_calls": 0,
+     "tokens_in": 5256,
+     "tokens_out": 7610,
+     "latency_s": 27.32,
+     "fallback_hops": 0
+    },
+    "gemma-4-31b-it": {
+     "calls": 6,
+     "cached_calls": 0,
+     "tokens_in": 1184,
+     "tokens_out": 550,
+     "latency_s": 110.55,
+     "fallback_hops": 1
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 4,
+     "cached_calls": 0,
+     "tokens_in": 1287,
+     "tokens_out": 2418,
+     "latency_s": 44.13,
+     "fallback_hops": 4
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1010-4c9a03",
+   "trace_id": "b16cc16a4424fc85ad5478646523ad6e",
+   "git_sha": "d1ff728",
+   "tags": [
+    "sha:d1ff728",
+    "run:1010-4c9a03",
+    "variant:gemma-mix-n3",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "planted_caught": 4,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": false,
+    "invoice_scanned": true,
+    "invoice_corrupt": true
+   },
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.424
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 1,
+   "downgraded": 1,
+   "recovery_decisions": 10,
+   "recovery_non_default": 7,
+   "llm_calls": 29,
+   "llm_tokens_in": 10785,
+   "llm_tokens_out": 12570,
+   "llm_latency_s": 387.7,
+   "fallback_hops": 11,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gemma-4-31b-it",
+    "google/gemma-4-31b-it:free",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemma-4-31b-it": {
+     "calls": 7,
+     "cached_calls": 0,
+     "tokens_in": 1879,
+     "tokens_out": 2313,
+     "latency_s": 286.73,
+     "fallback_hops": 0
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 6,
+     "cached_calls": 0,
+     "tokens_in": 2541,
+     "tokens_out": 3059,
+     "latency_s": 39.58,
+     "fallback_hops": 10
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 15,
+     "cached_calls": 0,
+     "tokens_in": 6143,
+     "tokens_out": 7148,
+     "latency_s": 58.29,
+     "fallback_hops": 0
+    },
+    "google/gemma-4-31b-it:free": {
+     "calls": 1,
+     "cached_calls": 0,
+     "tokens_in": 222,
+     "tokens_out": 50,
+     "latency_s": 3.12,
+     "fallback_hops": 1
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1010-21b4e0",
+   "trace_id": "682db8d165a0c041fc26ab495438e142",
+   "git_sha": "d1ff728",
+   "tags": [
+    "sha:d1ff728",
+    "run:1010-21b4e0",
+    "variant:gemma-mix-n3",
+    "evidence"
+   ],
+   "phase": "execute",
+   "data_mode": "real",
+   "injected": [],
+   "planted_caught": 0,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": false,
+    "invoice_total_mismatch": false,
+    "invoice_miscategorised": false,
+    "invoice_scanned": false,
+    "invoice_corrupt": false
+   },
+   "people_cost_abs_pct_error": {
+    "engineering": null,
+    "ml_ai": null,
+    "sales": null,
+    "marketing": null,
+    "other": null
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 100.0,
+    "ml_ai": 100.0,
+    "marketing": 100.0,
+    "sales": 100.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {},
+   "overturned": 0,
+   "downgraded": 0,
+   "recovery_decisions": 9,
+   "recovery_non_default": 3,
+   "llm_calls": 10,
+   "llm_tokens_in": 3027,
+   "llm_tokens_out": 4871,
+   "llm_latency_s": 256.5,
+   "fallback_hops": 6,
+   "provider_mix": [
+    "gemma-4-31b-it",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 3,
+     "cached_calls": 0,
+     "tokens_in": 1861,
+     "tokens_out": 4307,
+     "latency_s": 43.7,
+     "fallback_hops": 6
+    },
+    "gemma-4-31b-it": {
+     "calls": 7,
+     "cached_calls": 0,
+     "tokens_in": 1166,
+     "tokens_out": 564,
+     "latency_s": 212.77,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  }
+ ]
+}

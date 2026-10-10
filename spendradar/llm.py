@@ -363,7 +363,8 @@ def complete(role: str, prompt: str, *, system: str | None = None, schema: type[
                 fix = (f"{prompt}\n\nYour previous reply was not valid for the required JSON schema.\n"
                        f"Validation error:\n{str(e)[:1500]}\n\nPrevious reply:\n{current.text[:3000]}\n\n"
                        "Reply again with ONLY corrected JSON.")
-                current = _run_chain("extract", fix, system, schema, None, attachments)
+                # Same role: a re-ask must not quietly hand the decision to a weaker model.
+                current = _run_chain(role, fix, system, schema, None, attachments, exclude)
     raise LLMError(f"JSON still invalid after {reasks} re-asks: {last_err}")
 
 

@@ -58,3 +58,16 @@ def test_agreement_failure_needs_no_llm_and_equal_gap_collapses():
     assert agent.decide_recovery(s, t, "verify:agreement failed", "Sentry:marketing 19–95") == "mark_low_confidence"
     assert s.decisions[-1].model == "rule"
     assert "10 fewer people" in agent._gap_sentence((-10, -10), (-1.5e6, -1.5e6))
+
+
+def test_planner_paths_are_normalised():
+    assert agent._normalise_path("data/acme", "data/acme/invoices/01.pdf") == "invoices/01.pdf"
+    assert agent._normalise_path("data/acme", "./data/acme/budget_fy27.xlsx") == "budget_fy27.xlsx"
+    assert agent._normalise_path("data/acme", "invoices/01.pdf") == "invoices/01.pdf"
+
+
+def test_missing_file_in_llm_mode_is_a_tool_error():
+    from spendradar.tools import files
+
+    with pytest.raises(files.ToolError, match="cannot read file"):
+        files.read_pdf("data/acme/does_not_exist.pdf", mode="llm")
