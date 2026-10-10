@@ -1,0 +1,11 @@
+# Real companies; data from Crustdata. Chosen from the Step 1 probe (spikes/FINDINGS.md).
+# Acme Observability Inc. itself is FICTIONAL.
+competitors:
+  - {name: Honeycomb, domain: honeycomb.io}
+  - {name: Sentry, domain: sentry.io}
+  - {name: Arize, domain: arize.com}
+  - {name: Chronosphere, domain: chronosphere.io}
+  - {name: Grafana Labs, domain: grafana.com}
+substitutes:  # used, in order, when a competitor has no usable data
+  - {name: New Relic, domain: newrelic.com}
+  - {name: Datadog, domain: datadoghq.com}

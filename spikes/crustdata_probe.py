@@ -56,17 +56,30 @@ def main() -> None:
     print(f"account/endpoints -> {r.status_code}")
     if "--prices-only" in sys.argv:
         return
+    for path in ("/account/credits", "/account/usage"):
+        r = client.get(path)
+        print(f"{path} -> {r.status_code} {r.text[:200]}")
 
-    r = client.post(
+    cached = OUT / "enrich.json"
+    if cached.exists():  # never pay twice for the same enrich
+        enrich = json.loads(cached.read_text())["body"]
+        print("company/enrich -> cached")
+    else:
+        enrich = None
+    r = None if enrich is not None else client.post(
         "/company/enrich",
-        json={"domains": list(CANDIDATES.values()), "fields": ["basic_info", "headcount", "funding", "hiring"]},
+        json={"domains": list(CANDIDATES.values()), "fields": ["basic_info", "headcount", "funding", "hiring", "news"]},
     )
-    enrich = r.json() if r.is_success else r.text
-    save("enrich", {"status": r.status_code, "fetched_at": stamp, "body": enrich})
-    print(f"company/enrich -> {r.status_code}")
+    if r is not None:
+        enrich = r.json() if r.is_success else r.text
+        save("enrich", {"status": r.status_code, "fetched_at": stamp, "body": enrich})
+        print(f"company/enrich -> {r.status_code}")
 
     jobs = {}
+    only = [a.split("=", 1)[1] for a in sys.argv if a.startswith("--jobs=")]
     for name, domain in CANDIDATES.items():
+        if "--no-jobs" in sys.argv or (only and domain not in only):
+            continue
         r = client.post(
             "/job/search",
             json={
