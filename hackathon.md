@@ -63,7 +63,7 @@ _TBD_
 - Done: priced Crustdata in USD from the billing page (Company Enrich $0.60–$1.20/record, Search $9/1k records): $6.24–$9.24 per uncached run, ~99% of the cost per run (LLM $0.0285). Wrote the prompt for Ari (`business/cfoai_prompt.md`). Ari built Base and Growth scenarios; exports are in `business/cfoai/`, summary in `business/cfoai_plan.md`. Base: cash-flow positive in month 15, cash low $7,149, 57.7% gross margin. Growth: positive in month 8, 71.4%. With no caching, Team's Base margin is 7.1%. Founder salary, tools and starting cash are labelled placeholders.
 - Tests run: `business/make_cfoai_sheet.py` rebuilds the model independently. The first comparison differed on half-customer months (Python's `round()` rounds half to even, cfo.ai rounds half up); after the fix, customers, revenue, burn and cash match the export on all 24 months of both scenarios to within $0.01.
 
-### 2026-10-10 23:05 IST — held-out eval across industries; fixes for what it exposed (in progress)
+### 2026-10-10 22:53 IST (commit 21de57c; earlier draft wrongly said 23:05) — held-out eval across industries; fixes for what it exposed (in progress)
 - Planned: test whether the agent generalises beyond Acme, the one company it was built against (every recent Acme run scored 5/5).
 - Done:
   - Fixed: all file I/O now UTF-8. On Windows the report write crashed on "→" (6 tests failed on this machine).
@@ -79,3 +79,11 @@ _TBD_
 - Planned: confirm Entire tracks this Claude Code session, then commit the pending work with `Entire-Checkpoint` trailers.
 - Done: `entire session list` and `entire status --detailed` show this session active. The step 15 commit (eb9dfb5) got no trailer: the edits it contains came from a session Entire was not tracking, so there was no session context to link.
 - Tests run: pytest 57 passed (`.venv`).
+- 2026-10-10 23:14 IST follow-up — after-fix results (one evidence run each, LLM cache off):
+  - Kestrel 1010-d514dc: 5/6 → **6/6** (duplicate now caught), 0 false alarms, 0 fallback (trace d9f640f09022a87f323639df6203aa09).
+  - Ledgerly 1010-d94102: 4/5 → **5/5** (duplicate caught), 0 false alarms, 0 fallback (trace 19d1939a2077ba4f7e55850c4e881932). Competitor names now "Ramp", "Brex", … instead of "fetch Ramp data".
+  - Carebridge 1010-da4413: 4/5 → **5/5** (one-off-vendor mis-categorisation caught by the line-item check, audit confirmed corrected category ml_ai), 0 false alarms; 1 fallback hop, so not a clean comparison by our rule (trace 21f52eb2627e8d4da8d67840dd9c3bc3).
+  - Acme 1010-c2cd0c (regression check without the Acme-specific audit hint): **5/5**, 0 false alarms, 0 fallback (trace 8ee89e38980b54f4e6d633b19dea9af8).
+  - Caveats: n = 1 per side; baseline scorecards say commit 771deef but ran with uncommitted UTF-8 and company-name changes (no effect on what is scored; the `-dirty` marker did not exist yet). The new line-item check adds model calls: LLM cost per run went from $0.023–$0.026 to $0.028–$0.040 (n = 2).
+  - Added three more held-out companies, built after the fixes and never used to tune them: Bastion Security (cybersecurity), Parcelwise Commerce (e-commerce logistics), Peoplegraph HR (HR tech). Runs in progress.
+  - `python -m spendradar export` writes `evidence/frontend_data.json` for a front end; format in `docs/frontend-data.md`. cfo.ai round-2 prompts in `business/cfoai_prompts_round2.md`; shared cfo.ai page: https://cfo.ai/s/lwDIEZtRrqJOM07Z.
