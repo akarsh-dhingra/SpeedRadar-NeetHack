@@ -1,0 +1,30 @@
+entire graph stats
+  repo:     /Users/akarsh/neatHack
+  sessions: /Users/akarsh/.claude/projects/-Users-akarsh-neatHack
+  window:   --since 30d · 1 session(s), 2 transcript file(s)
+  covering: 2026-10-10T05:22:57Z → 2026-10-10T08:39:49Z
+
+graph calls: 1 · exploration calls: 68 · graph-first rate: 0% (0/1 sessions)
+
+graph calls by verb
+  verb                      calls    est. tokens
+  help                          1          1,257
+  TOTAL                         1          1,257
+
+exploration calls (what the graph is meant to replace)
+  kind                      calls    est. tokens
+  Read (whole file)             2             82
+  Bash grep/find/read          66         12,251
+  TOTAL                        68         12,333
+
+session tokens (billed, read from transcript usage)
+  input 264 · cache write 329,090 · cache read 20,506,790 · output 151,097 · total 20,987,241
+
+ESTIMATED SAVINGS  ~0 tokens
+  credited graph calls: 0 of 1 (search/neighbors/impact only)
+  Model (assumption, not a measurement): each graph locate call (search/neighbors/impact)
+  is credited with the ONE whole-file read it replaced. Counterfactual = on-disk size of
+  the top-hit file that call pointed at (the repo's median tracked-file size when the path
+  cannot be resolved), minus the bytes the graph call actually returned, floored at 0,
+  converted at 4 bytes = 1 token. Real savings depend on what you would actually have read
+  instead; treat this as an estimate, not ground truth.

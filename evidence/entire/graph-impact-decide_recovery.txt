@@ -1,0 +1,26 @@
+Index: cache-miss (848ms) | Query: 1ms | Total: 850ms
+Impact: decide_recovery (spendradar/agent.py:359) def=359 span=359-387 [function]
+Blast radius: 3 callers (2 direct, 1 transitive), 6 callees, 4 type consumers, 2 data flows, 1 co-change file, 0 siblings.
+Callers (2 direct, 1 transitive; who breaks if behavior changes):
+- execute (spendradar/agent.py:474, def :438)
+- execute (spendradar/agent.py:474, def :438)
+- run_phases (spendradar/agent.py:582, def :574) [via execute]
+Callees (6; what it depends on):
+- json.dumps
+- neatlogs.trace
+- spendradar.choose
+- _usage (spendradar/agent.py:93)
+- _options_for (spendradar/agent.py:339)
+- RecoveryDecision (spendradar/models.py:55) [CONSTRUCTS]
+Type consumers (0 in, 4 out; USES_TYPE/PARAM_TYPE/RETURNS_TYPE):
+- -> Task (spendradar/models.py:38) [PARAM_TYPE]
+- -> Task (spendradar/models.py:38) [USES_TYPE]
+- -> RunState (spendradar/models.py:102) [PARAM_TYPE]
+- -> RunState (spendradar/models.py:102) [USES_TYPE]
+Data flows (0 in, 2 out):
+- -> _usage (spendradar/agent.py:93)
+- -> _options_for (spendradar/agent.py:339)
+Co-change coupling (1; files that historically change with spendradar/agent.py):
+- tests/test_agent_rules.py [files changed together in 2 recent commits]
+Same-container siblings (0):
+- none

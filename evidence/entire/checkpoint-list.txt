@@ -1,0 +1,42 @@
+  branch       main
+  checkpoints  13
+
+● f356ebcd-177  [temporary]  carry forward: uncommitted session files
+  10-10 14:09 (9c389f2) carry forward: uncommitted session files
+
+● 01M4JFF4MFD8JXHPRACJWBJ944  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:09 (22f00b0) step 10: route around known-exhausted models without counting a fallback; rec...
+
+● 01M4JF9GX2X04GJMNPF1CZ5ED3  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:06 (13effec) step 10: stop dropping competitors over one weak category; extra signal fetch...
+
+● 01M4JF7GF17WW5BX461EVE78MD  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:05 (02d7f40) step 9: add eval harness scoring runs against ground truth (scorecards with t...
+
+● 01M4JF53ME3NBZYHR6V4PFY4R0  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:03 (8747783) step 5: stop counting cached LLM calls as spend; add agent rule tests
+
+● 01M4JF3MC0VP8STJD2CY50GYM6  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:03 (11a5108) step 5: add agent loop, state/resume, self-audit, report; bound gemini call l...
+
+● 01M4JE6SV45JHZXJSB59W5W7GF  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:47 (d96e16f) step 4: add file, crustdata, classifier tools and deterministic analysis with...
+
+● 01M4JE09Q44Y4G399W1HMPV6BF  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:43 (2a4542e) step 3: generate fictional Acme finance folder with planted errors and ground...
+
+● 01M4JDXEJ0VATSWYP54MQAP13M  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:42 (0bc2467) fix build-log timestamps to match commit times; add timestamp rule
+
+● 01M4JDWTA7NRVV3B15TN012G2F  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:41 (69f443a) step 2: add llm.py with free-model guard, quota ledger, fallback chain, fault...
+
+● 01M4JDRYHQ28YZ5403GCE91C1V  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:39 (d72a4db) step 2: add gitleaks + .env-value pre-commit secret scan
+
+● 01M4JDQKNKBHTY67DVBEKH164A  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:39 (92ccce6) step 2: add neatlogs tracing with client-side secret masking, tests and probe
+
+● 01M4JDGXGF5QKQGDT0B4DFG6WB  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:35 (effc24d) step 1: record crustdata coverage findings, pick competitor set, add python p...
+
