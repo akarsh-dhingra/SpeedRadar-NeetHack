@@ -26,6 +26,11 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **13:47 IST — Step 4 done.** Tools: `list_files`, `read_spreadsheet` (keeps row numbers), `read_pdf` text (pdfplumber + deterministic parse) and llm (Gemini reads PDF bytes), `crustdata_company` / `crustdata_jobs` (cache, backoff, stale-cache fallback, per-run credit cap, fault injection), `classify_titles` (Flash-Lite, schema-validated), and deterministic `analysis.py` (signals, ranges, agreement, policy compare, gap in heads/USD). Added an "other" staff row to the Acme budget so share-of-headcount is comparable with competitors' company totals.
   - Tests run: pytest 14 passed; live LLM PDF read of the scanned invoice (total 91,287, matching what is printed).
   - Bug found and fixed: Gemini 400 on the corrupt PDF crashed the process; non-retryable provider errors now become `LLMError` → `ToolError`.
+- **14:05 IST — Step 5 (loop) in progress.** Agent loop with LLM plan + coverage check, per-task verification, LLM `decide:recovery` via native function calling, retry cap 3, atomic state save per step, `resume`, simulated crash flag, self-audit (recompute, sources, contradiction evidence, LLM verdict, OpenRouter second opinion), sourced Markdown report.
+  - Run 1010-6f37e8 (trace 6f2d2dd7…): planner/recovery calls averaged 143 s → killed; root cause no client timeout on Gemini → 40 s timeout + fall through to next model (commit 11a5108).
+  - Run 1010-b31657: found cached calls inflating usage totals (fixed 8747783); observed LLM choosing `substitute_competitor` for a single weak ML/AI estimate (under review).
+  - Tests run: pytest 19 passed.
+- **14:05 IST — Step 9 harness written** (`python -m spendradar eval`), scoring planted errors, cost error, unsupported numbers, overturns, LLM usage, provider mix.
 
 ## Demo
 _TBD_

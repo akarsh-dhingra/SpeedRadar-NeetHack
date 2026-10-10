@@ -10,7 +10,10 @@ def test_recovery_menus():
     assert agent._options_for(Task(id="t", tool="fetch_jobs"), "tool_error")[0] == ["mark_low_confidence", "skip"]
     assert agent._options_for(Task(id="t", tool="fetch_competitor"), "verify:has_data failed")[0] == [
         "substitute_competitor", "skip"]
-    assert "fetch_more_signal" in agent._options_for(Task(id="t", tool="classify_titles"), "verify:signals failed")[0]
+    weak = agent._options_for(Task(id="t", tool="classify_titles"), "verify:signals failed")[0]
+    assert "fetch_more_signal" in weak and "substitute_competitor" not in weak
+    after_extra = Task(id="t19mc", tool="classify_titles", parent="t19", reason="recovery: re-estimate after extra signal")
+    assert agent._options_for(after_extra, "verify:signals failed")[0] == ["mark_low_confidence"]
 
 
 def test_narrow_range_reads_row_from_detail():

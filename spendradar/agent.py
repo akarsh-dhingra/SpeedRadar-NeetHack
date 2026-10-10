@@ -194,7 +194,7 @@ def act(state: RunState, task: Task) -> list[Check]:
     if task.tool == "fetch_competitor":
         return _act_competitor(state, a["name"], a["domain"])
     if task.tool == "fetch_jobs":
-        return _act_jobs(state, a["domain"])
+        return _act_jobs(state, a["domain"], a.get("sample", "job_search"))
     if task.tool == "classify_titles":
         return _act_classify(state, a["domain"])
     raise ToolError(f"unknown tool {task.tool}")
@@ -272,13 +272,22 @@ def _act_competitor(state: RunState, name: str, domain: str) -> list[Check]:
     return checks
 
 
-def _act_jobs(state: RunState, domain: str) -> list[Check]:
-    since = (date.today() - timedelta(days=365)).isoformat()
-    res = crustdata.crustdata_jobs(domain, since=since, limit=60)
+JOB_SAMPLES = {  # name -> (days back, job_details.category filter)
+    "job_search": (365, None),
+    "engineering_2y": (730, "Engineering"),
+}
+
+
+def _act_jobs(state: RunState, domain: str, sample: str = "job_search") -> list[Check]:
+    days, category = JOB_SAMPLES[sample]
+    since = (date.today() - timedelta(days=days)).isoformat()
+    res = crustdata.crustdata_jobs(domain, since=since, category=category, limit=60)
     state.crustdata_credits = crustdata.BUDGET.spent
     titles = [t["title"] for t in res["titles"] if t["title"]]
-    state.title_classes.setdefault("_samples", {}).setdefault(domain, {})["job_search"] = titles
-    state.title_classes["_samples"][domain]["job_search_fetched_at"] = res["fetched_at"]
+    sm = state.title_classes.setdefault("_samples", {}).setdefault(domain, {})
+    sm[sample] = titles
+    sm[f"{sample}_fetched_at"] = res["fetched_at"]
+    sm[f"{sample}_query"] = f"since {since}" + (f", category={category}" if category else "")
     return [Check(name="verify:has_data", target=f"jobs:{domain}", passed=len(titles) >= 5,
                   detail=f"{len(titles)} titles since {since} (total {res['total_count']})")]
 
@@ -288,7 +297,7 @@ def _act_classify(state: RunState, domain: str) -> list[Check]:
     sample = state.title_classes.get("_samples", {}).get(domain)
     if not prof or sample is None or "job_search" not in sample:
         raise NotReady(f"competitor/jobs data for {domain} not fetched yet")
-    titles = sample.get("recent_titles_csv", []) + sample.get("job_search", [])
+    titles = sample.get("recent_titles_csv", []) + [t for k in JOB_SAMPLES for t in sample.get(k, [])]
     known = {t: v for t, v in state.title_classes.items() if not t.startswith("_")}
     todo = [t for t in set(titles) if t not in known]
     if todo:
@@ -302,11 +311,12 @@ def _act_classify(state: RunState, domain: str) -> list[Check]:
         "recent_titles": (sample.get("recent_titles_csv", []),
                           Source(kind="crustdata", ref=f"/company/enrich?domain={domain}",
                                  locator="hiring.recent_titles_csv", fetched_at=fetched)),
-        "job_search": (sample.get("job_search", []),
-                       Source(kind="crustdata", ref=f"/job/search?domain={domain}",
-                              locator="job_listings[].job_details.title (last 12 months)",
-                              fetched_at=sample.get("job_search_fetched_at", fetched))),
     }
+    for k in JOB_SAMPLES:
+        if k in sample:
+            samples[k] = (sample[k], Source(kind="crustdata", ref=f"/job/search?domain={domain}",
+                                            locator=f"job_listings[].job_details.title ({sample.get(f'{k}_query', '')})",
+                                            fetched_at=sample.get(f"{k}_fetched_at", fetched)))
     prof.signals = [s for s in prof.signals if s.category != "ml_ai"]
     analysis.add_ml_signals(prof, samples, known)
     r = analysis.category_range(prof, "ml_ai")
@@ -337,7 +347,10 @@ def _options_for(task: Task, failure: str) -> tuple[list[str], str]:
     if task.tool == "fetch_competitor" and ("has_data" in failure or failure.startswith("tool_error")):
         return ["substitute_competitor", "skip"], "skip"
     if task.tool in ("fetch_competitor", "classify_titles"):
-        return ["fetch_more_signal", "mark_low_confidence", "substitute_competitor"], "mark_low_confidence"
+        # One weak category never justifies dropping a competitor's other categories.
+        extra_done = task.parent is not None and task.reason.startswith("recovery: re-estimate")
+        return (["mark_low_confidence"] if extra_done else ["fetch_more_signal", "mark_low_confidence"]), \
+            "mark_low_confidence"
     if task.tool == "fetch_jobs":
         return ["mark_low_confidence", "skip"], "mark_low_confidence"
     return ["mark_low_confidence", "skip"], "skip"
@@ -387,7 +400,8 @@ def apply_recovery(state: RunState, task: Task, chosen: str, detail: str) -> Non
                    parent=task.id, attempts=task.attempts)
     elif chosen == "fetch_more_signal":
         dom = a.get("domain")
-        fix = Task(id=f"{task.id}m", tool="fetch_jobs", args={"domain": dom}, reason="recovery: fetch_more_signal",
+        fix = Task(id=f"{task.id}m", tool="fetch_jobs", args={"domain": dom, "sample": "engineering_2y"},
+                   reason="recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
                    parent=task.id, attempts=task.attempts)
         state.queue.insert(0, Task(id=f"{task.id}mc", tool="classify_titles", args={"domain": dom},
                                    reason="recovery: re-estimate after extra signal", parent=task.id,
@@ -409,13 +423,14 @@ def _substitute(state: RunState, task: Task) -> None:
     used = set(state.competitors) | {n["input"] for n in state.not_analysed}
     sub = next((s for s in comps.get("substitutes", []) if s["domain"] not in used), None)
     dropped = task.args.get("domain")
-    state.competitors.pop(dropped, None)
+    old = state.competitors.pop(dropped, None)
+    dropped_name = task.args.get("name") or (old.name if old else dropped)
     state.not_analysed.append({"input": dropped, "reason": "replaced by substitute competitor"})
     if sub:
-        state.notes.append(f"{task.args.get('name')} replaced by {sub['name']} (substitute list order)")
+        state.notes.append(f"{dropped_name} replaced by {sub['name']} (substitute list order)")
         for i, tool in enumerate(("fetch_competitor", "fetch_jobs", "classify_titles")):
             state.queue.insert(i, Task(id=f"{task.id}s{i}", tool=tool, args={"name": sub["name"], "domain": sub["domain"]},
-                                       reason=f"recovery: substitute for {task.args.get('name')}", parent=task.id))
+                                       reason=f"recovery: substitute for {dropped_name}", parent=task.id))
 
 
 # ----------------------------------------------------------------------------- EXECUTE
