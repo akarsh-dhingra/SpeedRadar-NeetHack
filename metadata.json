@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JFVPWYP358R82RVSJF34QM",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "evidence/build-in-public.md",
+    "evidence/case-studies/01-unbounded-llm-latency.md",
+    "evidence/case-studies/02-competitor-substitution.md",
+    "evidence/evals/20261010T140841-11a5108-before-fix.json",
+    "evidence/evals/20261010T141541-11a5108-before-fix.json",
+    "evidence/evals/20261010T141541-22f00b0-after-fix-02.json",
+    "evidence/evals/README.md",
+    "evidence/traces.md"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 5651,
+    "cache_read_tokens": 1184383,
+    "output_tokens": 4915,
+    "api_call_count": 4
+  }
+}

@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>b05w0yxyi</task-id>
+<tool-use-id>toolu_01FYWtqArXrZWhq2kpc2E544</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-akarsh-neatHack/f356ebcd-1778-45d3-a192-663d385625b4/tasks/b05w0yxyi.output</output-file>
+<status>completed</status>
+<summary>Background command "Run one after-fix evidence run and score it" completed (exit code 0)</summary>
+</task-notification>
