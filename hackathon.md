@@ -40,6 +40,7 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **14:27 IST — Fixture eval + audit fix.** Fixture run 1010-9e86fc: Sentry marketing ×5 caught (6/6), marketing finding downgraded. Found and fixed: the second opinion reused the primary verdict's model once Gemini quota ran out (now excludes it); single-option recoveries skip the LLM. HTML report + sample reports committed. README draft done.
   - All Gemini reasoning models exhausted for the day (3.8-flash 15, 3.6-flash 11, 2.5-flash 18 requests). Next evidence runs after the ~12:30 IST reset.
   - Tests run: pytest 22 passed.
+- **18:1x IST — Secret handling incident (caught before any push).** A new provider key was pasted into the coding-agent chat. Entire's checkpoint transcript stored it unredacted: a 32-hex key scores 4.0 bits of entropy, below Entire's 4.5 threshold, and no built-in pattern matched it. Caught by searching all git objects before pushing. Deleted the local checkpoint ref, added a personal Entire redactor pack (git-ignored), and extended the neatlogs mask and gitleaks rules. Nothing was pushed with the key.
 
 ## Demo
 _TBD_
