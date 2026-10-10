@@ -1,0 +1,15 @@
+Is anything running right now ??
+
+---
+
+Let me know when it's finished
+
+---
+
+<task-notification>
+<task-id>bra1hwqzr</task-id>
+<tool-use-id>toolu_01UzWwwC13Kn15rsz2jdnVsG</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-akarsh-neatHack/f356ebcd-1778-45d3-a192-663d385625b4/tasks/bra1hwqzr.output</output-file>
+<status>completed</status>
+<summary>Background command "Run 3 after-fix evidence runs and score them" completed (exit code 0)</summary>
+</task-notification>
