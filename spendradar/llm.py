@@ -267,14 +267,16 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
         res.cached = True
         return res
 
-    chain = _chain(role)
+    # Models the ledger already knows are out of quota are routed around up front; that is
+    # planned routing, not a fallback. A fallback is a hop after a call failed in *this* request.
+    chain = [(p, m) for p, m in _chain(role) if LEDGER.remaining(m) > 0]
     fallbacks: list[str] = []
     errors: list[str] = []
     for i, (provider, model) in enumerate(chain):
         if LEDGER.remaining(model) <= 0:
             errors.append(f"{model}: daily quota exhausted (ledger)")
             continue
-        if i > 0 and (fallbacks or errors):
+        if i > 0 and errors:
             fallbacks.append(model)
             with neatlogs.trace(f"fallback:{model}", kind="CHAIN") as span:
                 span.set_attribute("spendradar.fallback.to", model)

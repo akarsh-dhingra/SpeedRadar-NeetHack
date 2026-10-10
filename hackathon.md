@@ -31,6 +31,8 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - Run 1010-b31657: found cached calls inflating usage totals (fixed 8747783); observed LLM choosing `substitute_competitor` for a single weak ML/AI estimate (under review).
   - Tests run: pytest 19 passed.
 - **14:05 IST — Step 9 harness written** (`python -m spendradar eval`), scoring planted errors, cost error, unsupported numbers, overturns, LLM usage, provider mix.
+- **14:09 IST — Run 1010-b31657 finished** (trace af0df27e…, commit 11a5108): 5/5 planted errors caught, 0 unsupported numbers in the report, ML/AI finding overturned by the self-audit (Gemini overturn, OpenRouter second opinion: downgrade). Bug: 3 of 5 chosen peers were substituted away (Honeycomb, Arize, Chronosphere → New Relic, Datadog) because one weak ML/AI category triggered `substitute_competitor`. Fixed in 13effec. This run's LLM latency/tokens predate the cached-call accounting fix, so they are inflated.
+- **Case-study plan (from real quota):** gemini-3.8-flash hit its free-tier daily limit after 15 requests (429 PerDay). One run uses ~15 reasoning calls, so ~2–3 runs fit per day across the 3.8/3.6/2.5-flash chain. Plan: today, 1 evidence run after each fix; after the quota reset (~12:30 IST Sun) add runs toward n=3 per side for case study 02 (competitor substitution). Case study 01 (latency) stays n=1 before (killed partial run), stated as such.
 
 ## Demo
 _TBD_

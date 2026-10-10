@@ -21,7 +21,7 @@ llm:
   # AI Studio); these are conservative defaults until read from AI Studio. Daily
   # exhaustion is also learned live from 429 quotaId=*PerDay* responses.
   limits:
-    default_gemini: {rpm: 5, rpd: 100}
+    default_gemini: {rpm: 5, rpd: 100}  # observed 2026-10-10: gemini-3.8-flash returned PerDay 429 after 15 requests
     openrouter_free: {rpm: 20, rpd: 50}   # OpenRouter free tier without credits
 
   retries_per_model: 2          # 429-per-minute / 5xx retries before moving on
