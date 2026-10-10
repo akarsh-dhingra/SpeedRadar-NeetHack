@@ -4,13 +4,15 @@
     "engineering": 22940000,
     "ml_ai": 4320000,
     "sales": 9455000,
-    "marketing": 3262500
+    "marketing": 3262500,
+    "other": 10875000
   },
   "headcount_end_fy27": {
     "engineering": 130,
     "ml_ai": 22,
     "sales": 64,
-    "marketing": 24
+    "marketing": 24,
+    "other": 90
   },
   "non_people_budget_fy27": {
     "infra_cloud": 1104000,

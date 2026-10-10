@@ -26,7 +26,7 @@ def test_injected_fault_does_not_mark_ledger_exhausted(tmp_path, monkeypatch):
     monkeypatch.setattr(llm, "cache_enabled", lambda: False)
     calls = []
 
-    def fake_gemini(model, *a):
+    def fake_gemini(model, *a, **k):
         if faults.fire("llm:429"):
             raise llm._Retryable("injected", "x")
         calls.append(model)

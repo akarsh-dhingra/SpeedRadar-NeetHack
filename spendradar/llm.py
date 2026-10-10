@@ -161,7 +161,7 @@ def _classify_gemini_error(e: Exception) -> _Retryable | None:
 
 
 def _call_gemini(model: str, prompt: str, system: str | None, schema: type[BaseModel] | None,
-                 tools: list[dict] | None) -> tuple[str, Any, int, int]:
+                 tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None) -> tuple[str, Any, int, int]:
     from google.genai import types
 
     if faults.fire(f"llm:{model}:429") or faults.fire("llm:429"):
@@ -175,13 +175,17 @@ def _call_gemini(model: str, prompt: str, system: str | None, schema: type[BaseM
                                       parameters_json_schema=t["parameters"]) for t in tools])]
         cfg["tool_config"] = types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode="ANY"))
     try:
-        r = _gemini().models.generate_content(model=model, contents=prompt,
+        contents: Any = prompt
+        if attachments:
+            contents = [types.Part.from_bytes(data=b, mime_type=mt) for b, mt in attachments] + [prompt]
+        r = _gemini().models.generate_content(model=model, contents=contents,
                                               config=types.GenerateContentConfig(**cfg))
     except Exception as e:
         retry = _classify_gemini_error(e)
         if retry:
             raise retry from e
-        raise
+        # Bad input (e.g. 400 on a corrupt PDF) fails on every model: stop the chain.
+        raise LLMError(f"{model}: non-retryable: {str(e)[:200]}") from e
     u = r.usage_metadata
     tin = (u.prompt_token_count or 0) if u else 0
     tout = ((u.candidates_token_count or 0) + (u.thoughts_token_count or 0)) if u else 0
@@ -193,7 +197,9 @@ def _call_gemini(model: str, prompt: str, system: str | None, schema: type[BaseM
 
 
 def _call_openrouter(model: str, prompt: str, system: str | None, schema: type[BaseModel] | None,
-                     tools: list[dict] | None) -> tuple[str, Any, int, int]:
+                     tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None) -> tuple[str, Any, int, int]:
+    if attachments:
+        raise ValueError("OpenRouter fallback does not take file attachments")
     if not model.endswith(":free"):
         raise NotFreeModelError(f"refusing non-free OpenRouter model {model!r}")
     if faults.fire("llm:openrouter:429"):
@@ -240,14 +246,15 @@ def _chain(role: str) -> list[tuple[str, str]]:
     return [("gemini", m) for m in r.get("gemini", [])] + [("openrouter", m) for m in r.get("openrouter", [])]
 
 
-def _cache_key(role: str, prompt: str, system: str | None, schema, tools) -> str:
-    blob = json.dumps([role, prompt, system, schema.__name__ if schema else None, tools], sort_keys=True)
+def _cache_key(role: str, prompt: str, system: str | None, schema, tools, attachments=None) -> str:
+    att = [hashlib.sha256(b).hexdigest() for b, _ in attachments or []]
+    blob = json.dumps([role, prompt, system, schema.__name__ if schema else None, tools, att], sort_keys=True)
     return hashlib.sha256(blob.encode()).hexdigest()[:24]
 
 
 def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseModel] | None,
-               tools: list[dict] | None) -> LLMResult:
-    key = _cache_key(role, prompt, system, schema, tools)
+               tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None) -> LLMResult:
+    key = _cache_key(role, prompt, system, schema, tools, attachments)
     path = CACHE_DIR / f"{key}.json"
     if cache_enabled() and path.exists():
         res = LLMResult(**json.loads(path.read_text()))
@@ -272,7 +279,7 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
             LEDGER.wait_turn(model)
             t0 = time.monotonic()
             try:
-                text, fcall, tin, tout = call(model, prompt, system, schema, tools)
+                text, fcall, tin, tout = call(model, prompt, system, schema, tools, attachments)
             except _Retryable as e:
                 errors.append(f"{model}: {e.kind}: {str(e)[:120]}")
                 if e.kind == "day":
@@ -299,9 +306,10 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
     raise LLMError(f"all models failed for role {role!r}: " + " | ".join(errors[-6:]))
 
 
-def complete(role: str, prompt: str, *, system: str | None = None, schema: type[T] | None = None) -> LLMResult:
+def complete(role: str, prompt: str, *, system: str | None = None, schema: type[T] | None = None,
+             attachments: list[tuple[bytes, str]] | None = None) -> LLMResult:
     """Text or validated JSON. Malformed JSON is re-asked with the validation error."""
-    res = _run_chain(role, prompt, system, schema, None)
+    res = _run_chain(role, prompt, system, schema, None, attachments)
     if schema is None:
         return res
     reasks, current, last_err = 0, res, None
@@ -321,7 +329,7 @@ def complete(role: str, prompt: str, *, system: str | None = None, schema: type[
                 fix = (f"{prompt}\n\nYour previous reply was not valid for the required JSON schema.\n"
                        f"Validation error:\n{str(e)[:1500]}\n\nPrevious reply:\n{current.text[:3000]}\n\n"
                        "Reply again with ONLY corrected JSON.")
-                current = _run_chain("extract", fix, system, schema, None)
+                current = _run_chain("extract", fix, system, schema, None, attachments)
     raise LLMError(f"JSON still invalid after {reasks} re-asks: {last_err}")
 
 

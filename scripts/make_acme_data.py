@@ -34,9 +34,11 @@ MONTHS = ["2026-04", "2026-05", "2026-06", "2026-07", "2026-08", "2026-09",
           "2026-10", "2026-11", "2026-12", "2027-01", "2027-02", "2027-03"]
 
 # Loaded annual cost per head, USD. ASSUMPTION for the demo, not survey data.
-SALARY = {"engineering": 185_000, "ml_ai": 240_000, "sales": 155_000, "marketing": 145_000}
+SALARY = {"engineering": 185_000, "ml_ai": 240_000, "sales": 155_000, "marketing": 145_000,
+          "other": 125_000}  # other = product, support, G&A (needed for share-of-headcount)
 # Headcount plan: start of FY → end of FY (linear hiring).
-HEADCOUNT = {"engineering": (118, 130), "ml_ai": (14, 22), "sales": (58, 64), "marketing": (21, 24)}
+HEADCOUNT = {"engineering": (118, 130), "ml_ai": (14, 22), "sales": (58, 64), "marketing": (21, 24),
+             "other": (84, 90)}
 INFRA_MONTHLY_BUDGET = 92_000
 TOOLS_MONTHLY_BUDGET = {"sales": 6_000, "marketing": 38_000, "ml_ai": 30_000}
 

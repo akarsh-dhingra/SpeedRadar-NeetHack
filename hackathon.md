@@ -23,6 +23,9 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - Case-study plan: deferred until the first full run measures LLM calls per run (needed with the RPD limits to size n=3 comparisons).
 - **13:43 IST — Step 3 done.** `scripts/make_acme_data.py` (seeded) generates the fictional Acme folder: budget xlsx (People + NonPeople), 13 invoices from invented vendors, policy.yaml (people-cost share-of-headcount rules + internal infra check), salary_table.csv (labelled ASSUMPTION), and `evals/ground_truth.json` with 5 planted errors (budget total mismatch, invoice total mismatch, mis-categorised invoice, scanned PDF, corrupt PDF). Contracts are cut, as agreed.
   - Tests run: pdfplumber over all invoices (11 text, 1 empty text layer, 1 PdfminerException); scanned page checked visually.
+- **13:47 IST — Step 4 done.** Tools: `list_files`, `read_spreadsheet` (keeps row numbers), `read_pdf` text (pdfplumber + deterministic parse) and llm (Gemini reads PDF bytes), `crustdata_company` / `crustdata_jobs` (cache, backoff, stale-cache fallback, per-run credit cap, fault injection), `classify_titles` (Flash-Lite, schema-validated), and deterministic `analysis.py` (signals, ranges, agreement, policy compare, gap in heads/USD). Added an "other" staff row to the Acme budget so share-of-headcount is comparable with competitors' company totals.
+  - Tests run: pytest 14 passed; live LLM PDF read of the scanned invoice (total 91,287, matching what is printed).
+  - Bug found and fixed: Gemini 400 on the corrupt PDF crashed the process; non-retryable provider errors now become `LLMError` → `ToolError`.
 
 ## Demo
 _TBD_
