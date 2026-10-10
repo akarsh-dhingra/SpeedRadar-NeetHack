@@ -5,8 +5,11 @@
 - **Root cause:** Gemini calls had **no client-side timeout**. A few minutes later, calling the same models directly took 4–10 s, but the first call to 4 of the 5 Flash models returned `503 UNAVAILABLE … high demand`. Under free-tier load, a call could hang for minutes, and our fallback chain only reacts to errors, never to slowness.
   - What I ruled out: the google-genai SDK does not retry by default (`retry_args(None)` → `stop_after_attempt(1)`).
 - **Fix:** commit `11a5108`. Each Gemini call now has a 40 s timeout (`HttpOptions(timeout=…)`), and a timeout moves the call to the next model in the role's chain.
-- **After:** {{run id / trace id of the evidence runs}}
-- **Numbers (n = 1 before, a partial run that I killed; after n = {{n}}, same provider mix):**
-  - Mean reasoning-call latency: 120.9 s → {{after}}
-  - Wall-clock time per run: unfinished at 16 tasks → {{after}}
-  - The before side is a single partial run. Re-running the old code 3 times would cost about an hour of free-tier quota per run, so I chose not to. This is stated plainly, not rounded up.
+- **After:** evidence run `1010-7bf26d` (LLM cache off), neatlogs trace `288f07d84bb84e15754a241eef40d779`, commit `22f00b0`. Scorecard: `evidence/evals/20261010T141541-22f00b0-after-fix-02.json`.
+- **Numbers (n = 1 per side, NOT the same provider mix):**
+  - Mean reasoning-call latency: **120.9 s** (5 calls, all `gemini-3.8-flash`) → **6.5 s** (16 calls: `gemini-2.5-flash` 10 calls 81.6 s + `gemini-3.6-flash` 6 calls 22.9 s).
+  - Run outcome: killed unfinished after 16 tasks → completed all phases (plan, execute, audit, report).
+- **Caveats, stated plainly:**
+  - n = 1 per side, and the before run is a partial run that I killed. Re-running the old code 3 times would cost about an hour of free-tier quota each.
+  - The provider mix differs. By the after run, `gemini-3.8-flash` had hit its free-tier daily limit (429 PerDay after 15 requests), so reasoning ran on 3.6/2.5-flash. Part of the latency drop may come from the model, not only from the timeout.
+  - The after run had 2 fallback hops. Our rule excludes fallback runs from clean comparisons, so this result is indicative. A same-mix n = 3 comparison is planned after the quota reset.
