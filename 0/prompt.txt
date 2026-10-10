@@ -1,0 +1,29 @@
+whats the current status of the build
+
+---
+
+'/var/folders/3w/_ky2_qs901lgyjl5_qs15d7m0000gn/T/TemporaryItems/NSIRD_screencaptureui_FKfU78/Screenshot 2026-10-10 at 4.27.46 PM.png' these are the availalbe models. you can use others and the openrouter models
+
+---
+
+<task-notification>
+<task-id>bzkrrexrv</task-id>
+<tool-use-id>toolu_01GZZiQ6icUtScZyUjhXst99</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-akarsh-neatHack/f356ebcd-1778-45d3-a192-663d385625b4/tasks/bzkrrexrv.output</output-file>
+<status>completed</status>
+<summary>Background command "Test Gemma 4 31B and Gemini 3.7 Flash for tools and JSON" completed (exit code 0)</summary>
+</task-notification>
+
+---
+
+run various subagents todivide the work. to reduce the costs, make sure to spin up subagents like sonnet and haiku accourding to the work alloted. only in case of very complicated work use opus.
+
+---
+
+<task-notification>
+<task-id>b6wf4iudg</task-id>
+<tool-use-id>toolu_01FMWzcKPu6dTST1LDnbdtPb</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-akarsh-neatHack/f356ebcd-1778-45d3-a192-663d385625b4/tasks/b6wf4iudg.output</output-file>
+<status>completed</status>
+<summary>Background command "Live test choose() falling through to Gemma JSON menu" completed (exit code 0)</summary>
+</task-notification>
