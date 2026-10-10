@@ -253,6 +253,9 @@ def _act_competitor(state: RunState, name: str, domain: str) -> list[Check]:
     res = crustdata.crustdata_company(domain)
     state.crustdata_credits = crustdata.BUDGET.spent
     prof = analysis.profile_from_enrich(name, domain, res["company_data"], res["fetched_at"])
+    if res.get("fixture"):
+        prof.data_mode = state.data_mode = "fixture"
+        state.notes.append(f"{name}: EVAL FIXTURE used ({res['fixture']['changed']} altered on purpose)")
     if res.get("stale_fallback"):
         state.notes.append(f"{name}: Crustdata failed ({res['errors'][-1]}); used cached response from {res['fetched_at']}")
     state.competitors[domain] = prof

@@ -16,8 +16,17 @@ def _start(run_id: str, args: argparse.Namespace) -> list[str]:
 
     if args.evidence:
         os.environ["SPENDRADAR_LLM_CACHE"] = "0"
+    if args.fixtures:
+        from pathlib import Path
+
+        from spendradar.tools import crustdata
+
+        if not Path(args.fixtures).resolve().is_relative_to(Path("evals").resolve()):
+            raise SystemExit("fixtures are only allowed from evals/")
+        crustdata.FIXTURE_DIR = Path(args.fixtures)
     faults.configure(args.inject or [])
     tags = [f"variant:{args.variant}"] + (["evidence"] if args.evidence else [])
+    tags += ["fixture"] if args.fixtures else []
     tags += [f"inject:{i}" for i in args.inject or []]
     return init_tracing(run_id, tags)
 
@@ -44,12 +53,14 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--variant", default="dev")
         p.add_argument("--evidence", action="store_true", help="LLM cache off; tagged as an evidence run")
         p.add_argument("--crash-after-step", type=int, default=None, help="simulate a crash (resume demo)")
+        p.add_argument("--fixtures", default=None, help="EVALS ONLY: folder of altered Crustdata fixtures")
     sub.add_parser("ledger")
     e = sub.add_parser("eval")
     e.add_argument("--n", type=int, default=1)
     e.add_argument("--variant", default="eval")
     e.add_argument("--evidence", action="store_true")
     e.add_argument("--score", nargs="*", help="score existing run ids instead of launching runs")
+    e.add_argument("--fixtures", default=None, help="EVALS ONLY: run against altered fixtures")
     args = ap.parse_args(argv)
 
     if args.cmd == "ledger":
@@ -61,7 +72,7 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "eval":
         from spendradar import evals
 
-        path = evals.run_eval(args.n, args.variant, args.evidence, args.score)
+        path = evals.run_eval(args.n, args.variant, args.evidence, args.score, args.fixtures)
         card = json.loads(path.read_text())
         print(f"scorecard: {path}")
         print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_without_fallback", "planted_total",

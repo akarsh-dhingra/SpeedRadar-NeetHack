@@ -57,7 +57,9 @@ def score_run(run_id: str) -> dict:
     state = RunState.model_validate_json(Path(f"runs/{run_id}/state.json").read_text())
     report_path = Path(f"runs/{run_id}/report.md")
     report = report_path.read_text() if report_path.exists() else ""
-    planted = [p for p in truth["planted_errors"] if p] + truth.get("fixtures", [])
+    planted = [p for p in truth["planted_errors"] if p]
+    if state.data_mode == "fixture":  # fixture errors only count for runs that read fixtures
+        planted += truth.get("fixtures", [])
     caught = {p["id"]: _caught(state, p, truth) for p in planted}
     errs = {}
     for cat, true_cost in truth["people_cost_fy27"].items():
@@ -95,11 +97,13 @@ def _agg(vals: list[float]) -> dict:
     return {"mean": round(statistics.mean(vals), 3), "min": min(vals), "max": max(vals), "n": len(vals)}
 
 
-def run_eval(n: int, variant: str, evidence: bool, score_only: list[str] | None = None) -> Path:
+def run_eval(n: int, variant: str, evidence: bool, score_only: list[str] | None = None,
+             fixtures: str | None = None) -> Path:
     run_ids = list(score_only or [])
     for _ in range(0 if score_only else n):
         cmd = [sys.executable, "-m", "spendradar", "run", "data/acme", "--variant", variant]
         cmd += ["--evidence"] if evidence else []
+        cmd += ["--fixtures", fixtures] if fixtures else []
         out = subprocess.run(cmd, capture_output=True, text=True)
         m = re.search(r'"run_id": "([^"]+)"', out.stdout)
         if not m:

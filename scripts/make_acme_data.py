@@ -262,7 +262,8 @@ def main() -> None:
         "invoice_totals_by_true_category": inv["invoice_totals_by_true_category"],
         "invoices": inv["invoices"],
         "planted_errors": [budget["planted"], *inv["planted"]],
-        "fixtures": [],  # fault-injected competitor fixtures are added by evals/make_fixtures.py
+        "fixtures": json.loads(Path("evals/ground_truth.json").read_text()).get("fixtures", [])
+        if Path("evals/ground_truth.json").exists() else [],  # kept; written by evals/make_fixtures.py
     }
     Path("evals").mkdir(exist_ok=True)
     Path("evals/ground_truth.json").write_text(json.dumps(truth, indent=2))

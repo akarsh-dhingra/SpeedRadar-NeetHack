@@ -36,6 +36,7 @@ class CreditBudget:
 
 
 BUDGET = CreditBudget(CFG["max_credits_per_run"])
+FIXTURE_DIR: Path | None = None  # set only by `--fixtures` (evals); never in product runs
 
 
 def _key(path: str, body: dict) -> str:
@@ -87,12 +88,18 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
 
 @neatlogs.span(kind="TOOL", name="act:crustdata_company", tool_name="crustdata_company")
 def crustdata_company(domain: str) -> dict:
-    res = _post("/company/enrich", {"domains": [domain], "fields": ENRICH_FIELDS}, ENRICH_CREDITS)
+    fx = FIXTURE_DIR / f"{domain}.json" if FIXTURE_DIR else None
+    if fx and fx.exists():
+        res = {**json.loads(fx.read_text()), "from_cache": True}
+        with neatlogs.trace("fixture:crustdata", kind="TOOL") as span:
+            span.set_attribute("spendradar.fixture", json.dumps(res.get("fixture")))
+    else:
+        res = _post("/company/enrich", {"domains": [domain], "fields": ENRICH_FIELDS}, ENRICH_CREDITS)
     body = res["body"]
     matches = body[0].get("matches") if isinstance(body, list) and body else None
     if not matches:
         raise ToolError(f"no Crustdata match for {domain}")
-    return {**res, "company_data": matches[0]["company_data"], "body": None}
+    return {**res, "company_data": matches[0]["company_data"], "body": None, "fixture": res.get("fixture")}
 
 
 @neatlogs.span(kind="TOOL", name="act:crustdata_jobs", tool_name="crustdata_jobs")

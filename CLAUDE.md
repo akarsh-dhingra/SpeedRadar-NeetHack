@@ -237,7 +237,7 @@ All times IST. If behind schedule, see §11.
 
 `ground_truth.json` lists planted errors (mismatched totals, mis-categorised invoice, corrupt file) and correct category totals, plus the fault-injected fixtures.
 
-**Fixtures rule:** Altered fixtures are allowed only in `evals/`, and every run report labels whether it used real data or a fixture. Fixtures in `evals/fixtures/` are cached real Crustdata responses with one field changed on purpose (e.g. ML job postings × 5), each logged in `ground_truth.json`. Product runs only ever read real data.
+**Fixtures rule:** Altered fixtures are allowed only in `evals/`, and every run report labels whether it used real data or a fixture. Fixtures in `evals/fixtures/` are cached real Crustdata responses with one field changed on purpose (e.g. ML job postings × 5), each logged in `ground_truth.json`. Product runs only ever read real data. `--fixtures` refuses any folder outside `evals/`, tags the run `fixture`, and sets the report's data mode to FIXTURE.
 
 The eval reports:
 - planted errors caught / total

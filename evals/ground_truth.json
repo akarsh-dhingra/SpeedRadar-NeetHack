@@ -202,5 +202,16 @@
       "expected": "both parsers fail; listed under Not analysed"
     }
   ],
-  "fixtures": []
+  "fixtures": [
+    {
+      "id": "fixture_sentry_marketing_x5",
+      "type": "fixture",
+      "domain": "sentry.io",
+      "category": "marketing",
+      "changed": "headcount.by_role_absolute.Marketing",
+      "real_value": 19,
+      "fixture_value": 95,
+      "expected": "role headcount disagrees with function timeseries; audit downgrades/overturns the marketing finding"
+    }
+  ]
 }
