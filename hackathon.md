@@ -33,6 +33,10 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **14:05 IST — Step 9 harness written** (`python -m spendradar eval`), scoring planted errors, cost error, unsupported numbers, overturns, LLM usage, provider mix.
 - **14:09 IST — Run 1010-b31657 finished** (trace af0df27e…, commit 11a5108): 5/5 planted errors caught, 0 unsupported numbers in the report, ML/AI finding overturned by the self-audit (Gemini overturn, OpenRouter second opinion: downgrade). Bug: 3 of 5 chosen peers were substituted away (Honeycomb, Arize, Chronosphere → New Relic, Datadog) because one weak ML/AI category triggered `substitute_competitor`. Fixed in 13effec. This run's LLM latency/tokens predate the cached-call accounting fix, so they are inflated.
 - **Case-study plan (from real quota):** gemini-3.8-flash hit its free-tier daily limit after 15 requests (429 PerDay). One run uses ~15 reasoning calls, so ~2–3 runs fit per day across the 3.8/3.6/2.5-flash chain. Plan: today, 1 evidence run after each fix; after the quota reset (~12:30 IST Sun) add runs toward n=3 per side for case study 02 (competitor substitution). Case study 01 (latency) stays n=1 before (killed partial run), stated as such.
+- **14:22 IST — Steps 8, 10, 12, 13 (first pass).** Evidence run 1010-7bf26d after fixes: 5/5 planted errors, 5/5 peers kept, 5.4 credits (vs 26.6). Case studies 01 (latency 120.9 s → 6.5 s per reasoning call, n=1, different model mix, stated) and 02 (substitution 3 → 0). Resume after simulated crash: 1010-bdda52. Injected Crustdata 429 recovered: 1010-a32118. Recovery table in `evidence/recovery/`. Paid-equivalent cost $0.0692 LLM + 20.8 Crustdata credits per cold run (n=1). `business/inputs.md` ready for cfo.ai (Crustdata $/credit to fill).
+  - Quota: gemini-3.8-flash exhausted at 15 req/day, 3.6-flash at 11; 2.5-flash left for reasoning today.
+  - Noted for later: an audit verdict gave a muddled reason (competitor signal vs Acme's own share). Candidate case study 03.
+  - Tests run: pytest 20 passed.
 
 ## Demo
 _TBD_

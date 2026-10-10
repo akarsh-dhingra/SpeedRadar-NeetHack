@@ -1,0 +1,43 @@
+[
+ {
+  "run_id": "1010-7bf26d",
+  "trace_ids": [
+   "288f07d84bb84e15754a241eef40d779"
+  ],
+  "llm_usd": 0.06922,
+  "per_model": {
+   "gemini-2.5-flash": {
+    "calls": 10,
+    "tokens_in": 2875,
+    "tokens_out": 14843,
+    "usd": 0.03797
+   },
+   "gemini-3.6-flash": {
+    "calls": 6,
+    "tokens_in": 1820,
+    "tokens_out": 2714,
+    "usd": 0.01154
+   },
+   "gemini-3.5-flash-lite": {
+    "calls": 13,
+    "tokens_in": 5256,
+    "tokens_out": 7171,
+    "usd": 0.0195
+   },
+   "nvidia/nemotron-3-super-120b-a12b:free": {
+    "calls": 1,
+    "tokens_in": 309,
+    "tokens_out": 398,
+    "usd": 0.0002
+   }
+  },
+  "unpriced_models": [],
+  "llm_calls": 30,
+  "tokens_in": 10260,
+  "tokens_out": 25126,
+  "crustdata_credits_this_run": 5.4,
+  "crustdata_credits_cold": 20.8,
+  "competitors": 5,
+  "job_results": 360
+ }
+]
