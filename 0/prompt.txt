@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bwkufcy44</task-id>
+<tool-use-id>toolu_01RKtv7UAP3nrNZLxeHrK2DF</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-akarsh-neatHack/f356ebcd-1778-45d3-a192-663d385625b4/tasks/bwkufcy44.output</output-file>
+<status>completed</status>
+<summary>Background command "Run 3 evidence runs on current code and score them" completed (exit code 0)</summary>
+</task-notification>
