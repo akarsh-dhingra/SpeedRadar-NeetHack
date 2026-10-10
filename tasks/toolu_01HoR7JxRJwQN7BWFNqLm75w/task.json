@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "toolu_01HoR7JxRJwQN7BWFNqLm75w",
+  "agent_id": "a18a5a5ef923cbe1e",
+  "subagent_type": "general-purpose",
+  "task_description": "Demo script and post drafts",
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 48746,
+    "cache_read_tokens": 203050,
+    "output_tokens": 85,
+    "api_call_count": 6
+  },
+  "started_at": "2026-10-10T16:33:10.822965+05:30",
+  "completed_at": "2026-10-10T16:33:52.94869+05:30"
+}

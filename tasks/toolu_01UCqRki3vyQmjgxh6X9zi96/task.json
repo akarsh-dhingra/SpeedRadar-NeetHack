@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "toolu_01UCqRki3vyQmjgxh6X9zi96",
+  "agent_id": "ad9ac0825896ea01e",
+  "subagent_type": "general-purpose",
+  "task_description": "Deterministic tests for report/audit",
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 53542,
+    "cache_read_tokens": 115641,
+    "output_tokens": 53,
+    "api_call_count": 4
+  },
+  "started_at": "2026-10-10T16:33:10.819767+05:30",
+  "completed_at": "2026-10-10T16:33:57.512226+05:30"
+}
