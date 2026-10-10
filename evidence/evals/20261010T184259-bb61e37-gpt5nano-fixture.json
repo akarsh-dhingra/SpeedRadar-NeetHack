@@ -1,0 +1,240 @@
+{
+ "created": "2026-10-10T18:42:59",
+ "variant": "gpt5nano-fixture",
+ "evidence": true,
+ "git_sha": "bb61e37",
+ "n_runs": 1,
+ "n_runs_without_fallback": 1,
+ "planted_total": 6,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 2,
+   "min": 2,
+   "max": 2,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 30,
+   "min": 30,
+   "max": 30,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 13227,
+   "min": 13227,
+   "max": 13227,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 60200,
+   "min": 60200,
+   "max": 60200,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 314.7,
+   "min": 314.7,
+   "max": 314.7,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 2,
+   "min": 2,
+   "max": 2,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 30,
+   "min": 30,
+   "max": 30,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 13227,
+   "min": 13227,
+   "max": 13227,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 60200,
+   "min": 60200,
+   "max": 60200,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 314.7,
+   "min": 314.7,
+   "max": 314.7,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1010-824ed7",
+   "trace_id": "eb46da9f5383934b351975949f9584ba",
+   "git_sha": "bb61e37",
+   "tags": [
+    "sha:bb61e37",
+    "run:1010-824ed7",
+    "variant:gpt5nano-fixture",
+    "evidence",
+    "fixture"
+   ],
+   "phase": "done",
+   "data_mode": "fixture",
+   "injected": [],
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_scanned": true,
+    "invoice_corrupt": true,
+    "fixture_sentry_marketing_x5": true
+   },
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "downgraded",
+     "confidence": 0.041
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 2,
+   "recovery_decisions": 11,
+   "recovery_non_default": 4,
+   "llm_calls": 30,
+   "llm_tokens_in": 13227,
+   "llm_tokens_out": 60200,
+   "llm_latency_s": 314.7,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 26,
+     "cached_calls": 0,
+     "tokens_in": 11342,
+     "tokens_out": 59671,
+     "latency_s": 307.87,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 4,
+     "cached_calls": 0,
+     "tokens_in": 1885,
+     "tokens_out": 529,
+     "latency_s": 6.81,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  }
+ ]
+}

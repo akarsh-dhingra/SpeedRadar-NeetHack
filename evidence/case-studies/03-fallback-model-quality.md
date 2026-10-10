@@ -33,3 +33,17 @@ Scorecard: `evidence/evals/20261010T171003-fd9a4ef-gemma-mix-n3.json` (3 evidenc
   - **The mis-categorised invoice was overturned in all 3 runs.** The audit verdicts came from fallback models (`nemotron-3-super:free` twice, `gemma-4-31b-it` once). Their reasoning, e.g. "two separate invoices, each assigned to a single appropriate cost centre", accepts GPU training hours billed to Marketing. On Gemini Flash (runs 1010-b31657, 1010-7bf26d) the same finding was confirmed with the corrected category `ml_ai`. **Audit quality depends on the model**, and the fallback models are weaker auditors here.
   - **Run 1010-ef57b1 skipped the scanned invoice.** Every reasoning model was unavailable for that decision, so the rule default `skip` was used, but for "no text layer" the right default is `reparse_alt`.
   - Both are addressed in the next commit.
+
+## Follow-up: main model + line-item audit question (commit `bb61e37`)
+- **Change:** gpt-5-nano (hackathon-provided OpenAI credits) leads every role. The audit prompt for vendor/category flags now asks whether each invoice's line items match its cost centre. For a text-mode PDF failure, the rule default is `reparse_alt`.
+- **Runs:** scorecard `20261010T183713-bb61e37-gpt5nano-n3.json`: 1010-767322 (`5c512d38b1cc95f99d0682619343c0b0`), 1010-bf52d4 (`d4a8716f6d2ed79322ca0d252764837e`), 1010-4d1835 (`0dcf22977776591d6c8e47e0dffeed33`). **0 fallback hops in all 3**, the first clean same-mix batch.
+
+| Metric | Fallback-heavy (`6edff38`, n = 3) | gpt-5-nano (`bb61e37`, n = 3) |
+|---|---|---|
+| Planted errors caught per run | 4, 4, 3 | 5, 5, 5 |
+| Mis-categorised invoice caught | 0 of 3 | 3 of 3 |
+| Runs that crashed | 0 | 0 |
+| Unsupported numbers | 0, 0, 0 | 0, 0, 0 |
+
+- **Caveat:** two things changed at once (the model and the prompt), so this does not isolate which one fixed the mis-categorisation verdict.
+- **Variance:** the ML/AI finding's verdict varied across the 3 gpt-5-nano runs (confirmed / overturned / downgraded) on identical data. The audit is not deterministic on the weakest estimate, which is listed as a limitation.
