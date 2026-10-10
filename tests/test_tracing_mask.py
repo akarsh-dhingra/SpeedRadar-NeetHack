@@ -32,3 +32,8 @@ def test_secret_named_attributes_are_blanked_but_token_counts_kept():
     out = mask_secrets(item)["attributes"]
     assert out["api_key"] == MASK and out["authorization"] == MASK
     assert out["gen_ai.usage.input_tokens"] == 120
+
+
+def test_smallest_key_format_is_scrubbed():
+    fake = "sk_" + "0" * 32
+    assert fake not in scrub_text(f"Authorization: {fake}", secrets=[])
