@@ -349,6 +349,9 @@ def _options_for(task: Task, failure: str) -> tuple[list[str], str]:
         return ["narrow_range", "mark_low_confidence", "skip"], "mark_low_confidence"
     if task.tool == "fetch_competitor" and ("has_data" in failure or failure.startswith("tool_error")):
         return ["substitute_competitor", "skip"], "skip"
+    if task.tool == "fetch_competitor" and "agreement" in failure:
+        # Disagreeing role vs function headcount: no extra source exists for it; flag it.
+        return ["mark_low_confidence"], "mark_low_confidence"
     if task.tool in ("fetch_competitor", "classify_titles"):
         # One weak category never justifies dropping a competitor's other categories.
         extra_done = task.parent is not None and task.reason.startswith("recovery: re-estimate")
@@ -361,6 +364,11 @@ def _options_for(task: Task, failure: str) -> tuple[list[str], str]:
 
 def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> str:
     options, default = _options_for(task, failure)
+    if len(options) == 1:  # nothing to decide: no LLM call, no quota
+        state.decisions.append(RecoveryDecision(task_id=task.id, failed_check=f"{failure}: {detail}"[:300],
+                                                options=options, chosen=options[0], reason="only applicable action",
+                                                model="rule", default=default))
+        return options[0]
     tools = [{"name": o, "description": RECOVERY[o], "parameters": {
         "type": "object", "properties": {"reason": {"type": "string", "description": "one line"}},
         "required": ["reason"]}} for o in options]
@@ -554,9 +562,12 @@ def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float]) -> str:
     def money(x: float) -> str:
         return f"${abs(x):,.0f} {'more' if x > 0 else 'less'}"
 
+    def span(a: str, b: str) -> str:
+        return a if a == b else f"{a} to {b}"
+
     if lo >= 0 or hi <= 0:
-        return (f"Matching the competitor median would take {people(lo)} to {people(hi)} people "
-                f"(≈ {money(ulo)} to {money(uhi)} a year at Acme's loaded cost; estimate).")
+        return (f"Matching the competitor median would take {span(people(lo), people(hi))} people "
+                f"(≈ {span(money(ulo), money(uhi))} a year at Acme's loaded cost; estimate).")
     return ("Acme is inside the competitor median range "
             f"({people(lo)} to {people(hi)} people, ≈ {money(ulo)} to {money(uhi)} a year; estimate).")
 

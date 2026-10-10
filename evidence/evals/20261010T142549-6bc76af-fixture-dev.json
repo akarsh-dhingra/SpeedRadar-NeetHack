@@ -1,0 +1,205 @@
+{
+ "created": "2026-10-10T14:25:49",
+ "variant": "fixture-dev",
+ "evidence": false,
+ "git_sha": "6bc76af",
+ "n_runs": 1,
+ "n_runs_without_fallback": 0,
+ "planted_total": 6,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 2,
+   "min": 2,
+   "max": 2,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 9,
+   "min": 9,
+   "max": 9,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 3067,
+   "min": 3067,
+   "max": 3067,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 6726,
+   "min": 6726,
+   "max": 6726,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 79.9,
+   "min": 79.9,
+   "max": 79.9,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 1.8,
+   "min": 1.7999999999999998,
+   "max": 1.7999999999999998,
+   "n": 1
+  }
+ },
+ "summary_no_fallback_runs": {},
+ "runs": [
+  {
+   "run_id": "1010-9e86fc",
+   "trace_id": "36362eb966cdbb85dcb2fb1b280e1034",
+   "git_sha": "6bc76af",
+   "tags": [
+    "sha:6bc76af",
+    "run:1010-9e86fc",
+    "variant:fixture-dev",
+    "fixture"
+   ],
+   "phase": "done",
+   "data_mode": "fixture",
+   "injected": [],
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_scanned": true,
+    "invoice_corrupt": true,
+    "fixture_sentry_marketing_x5": true
+   },
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "downgraded",
+     "confidence": 0.041
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 2,
+   "recovery_decisions": 11,
+   "recovery_non_default": 8,
+   "llm_calls": 9,
+   "llm_tokens_in": 3067,
+   "llm_tokens_out": 6726,
+   "llm_latency_s": 79.9,
+   "fallback_hops": 6,
+   "provider_mix": [
+    "gemini-2.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.8-flash",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemini-3.8-flash": {
+     "calls": 0,
+     "cached_calls": 8,
+     "tokens_in": 0,
+     "tokens_out": 0,
+     "latency_s": 0.0,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 2,
+     "cached_calls": 11,
+     "tokens_in": 781,
+     "tokens_out": 1383,
+     "latency_s": 8.69,
+     "fallback_hops": 0
+    },
+    "gemini-2.5-flash": {
+     "calls": 0,
+     "cached_calls": 3,
+     "tokens_in": 0,
+     "tokens_out": 0,
+     "latency_s": 0.0,
+     "fallback_hops": 0
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 7,
+     "cached_calls": 0,
+     "tokens_in": 2286,
+     "tokens_out": 5343,
+     "latency_s": 71.17,
+     "fallback_hops": 6
+    },
+    "gemini-3.6-flash": {
+     "calls": 0,
+     "cached_calls": 1,
+     "tokens_in": 0,
+     "tokens_out": 0,
+     "latency_s": 0.0,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 1.7999999999999998
+  }
+ ]
+}

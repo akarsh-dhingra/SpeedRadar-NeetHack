@@ -39,3 +39,15 @@ def test_injected_fault_does_not_mark_ledger_exhausted(tmp_path, monkeypatch):
     first = llm.CONFIG["roles"]["reason"]["gemini"][0]
     assert res.model != first and res.fallbacks == [res.model]
     assert ledger.remaining(first) > 0
+
+
+def test_exclude_removes_model_from_chain(tmp_path, monkeypatch):
+    ledger = llm.Ledger(tmp_path / "ledger.json")
+    monkeypatch.setattr(llm, "LEDGER", ledger)
+    monkeypatch.setattr(llm, "cache_enabled", lambda: False)
+    monkeypatch.setattr(ledger, "wait_turn", lambda m: None)
+    used = []
+    monkeypatch.setattr(llm, "_call_openrouter", lambda m, *a, **k: (used.append(m), ("ok", None, 1, 1))[1])
+    first = llm.CONFIG["roles"]["second_opinion"]["openrouter"][0]
+    res = llm._run_chain("second_opinion", "p", None, None, None, None, exclude=(first,))
+    assert res.model != first and first not in used

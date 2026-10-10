@@ -88,7 +88,8 @@ def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str
     return ev
 
 
-def _judge(role: str, f: Finding, evidence: list[str], checks: list[str]) -> tuple[Verdict, llm.LLMResult]:
+def _judge(role: str, f: Finding, evidence: list[str], checks: list[str],
+           exclude: tuple[str, ...] = ()) -> tuple[Verdict, llm.LLMResult]:
     prompt = (f"FINDING ({f.category}, confidence {f.confidence}):\n{f.statement}\n\n"
               f"DETERMINISTIC CHECKS:\n" + "\n".join(f"- {c}" for c in checks)
               + "\n\nEVIDENCE THAT MIGHT CONTRADICT IT:\n" + ("\n".join(f"- {e}" for e in evidence) or "- none found")
@@ -96,7 +97,7 @@ def _judge(role: str, f: Finding, evidence: list[str], checks: list[str]) -> tup
                 "'downgrade' = it may hold but the evidence weakens it materially; 'confirm' = it survives. "
                 "For a mis-categorised invoice, set corrected_category to the category its line items belong to. "
                 "Judge only from the evidence given; do not invent facts.")
-    res = llm.complete(role, prompt, schema=Verdict,
+    res = llm.complete(role, prompt, schema=Verdict, exclude=exclude,
                        system="You are a sceptical finance auditor checking an analyst's findings.")
     return res.parsed, res
 
@@ -132,7 +133,8 @@ def self_audit(state: RunState) -> None:
             if v.verdict != "confirm" and second_left > 0:
                 second_left -= 1
                 try:
-                    v2, res2 = _judge("second_opinion", f, evidence, checks)
+                    # Independent means a different model from the verdict being checked.
+                    v2, res2 = _judge("second_opinion", f, evidence, checks, exclude=(res.model,))
                     _usage_add(state, res2)
                     f.audit_notes.append(f"second opinion {res2.model}: {v2.verdict} — {v2.reason}")
                     span.set_attribute("spendradar.audit.second_opinion", v2.verdict)

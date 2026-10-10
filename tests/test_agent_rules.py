@@ -49,3 +49,12 @@ def test_gap_sentence_reads_plainly():
     assert "17 fewer to 14 fewer people" in below and "$-" not in below
     inside = agent._gap_sentence((-6, 6), (-1.1e6, 1.07e6))
     assert inside.startswith("Acme is inside") and "$-" not in inside
+
+
+def test_agreement_failure_needs_no_llm_and_equal_gap_collapses():
+    t = Task(id="t20", tool="fetch_competitor", args={"domain": "sentry.io"})
+    assert agent._options_for(t, "verify:agreement failed") == (["mark_low_confidence"], "mark_low_confidence")
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    assert agent.decide_recovery(s, t, "verify:agreement failed", "Sentry:marketing 19–95") == "mark_low_confidence"
+    assert s.decisions[-1].model == "rule"
+    assert "10 fewer people" in agent._gap_sentence((-10, -10), (-1.5e6, -1.5e6))

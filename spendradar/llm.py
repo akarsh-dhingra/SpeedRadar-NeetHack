@@ -259,8 +259,10 @@ def _cache_key(role: str, prompt: str, system: str | None, schema, tools, attach
 
 
 def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseModel] | None,
-               tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None) -> LLMResult:
-    key = _cache_key(role, prompt, system, schema, tools, attachments)
+               tools: list[dict] | None, attachments: list[tuple[bytes, str]] | None = None,
+               exclude: tuple[str, ...] = ()) -> LLMResult:
+    key = _cache_key(role, prompt, system, schema, tools, attachments) + ("-x" + "-".join(exclude) if exclude else "")
+    key = hashlib.sha256(key.encode()).hexdigest()[:24] if exclude else key
     path = CACHE_DIR / f"{key}.json"
     if cache_enabled() and path.exists():
         res = LLMResult(**json.loads(path.read_text()))
@@ -269,7 +271,7 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
 
     # Models the ledger already knows are out of quota are routed around up front; that is
     # planned routing, not a fallback. A fallback is a hop after a call failed in *this* request.
-    chain = [(p, m) for p, m in _chain(role) if LEDGER.remaining(m) > 0]
+    chain = [(p, m) for p, m in _chain(role) if LEDGER.remaining(m) > 0 and m not in exclude]
     fallbacks: list[str] = []
     errors: list[str] = []
     for i, (provider, model) in enumerate(chain):
@@ -315,9 +317,12 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
 
 
 def complete(role: str, prompt: str, *, system: str | None = None, schema: type[T] | None = None,
-             attachments: list[tuple[bytes, str]] | None = None) -> LLMResult:
-    """Text or validated JSON. Malformed JSON is re-asked with the validation error."""
-    res = _run_chain(role, prompt, system, schema, None, attachments)
+             attachments: list[tuple[bytes, str]] | None = None, exclude: tuple[str, ...] = ()) -> LLMResult:
+    """Text or validated JSON. Malformed JSON is re-asked with the validation error.
+
+    `exclude` removes models from the chain (e.g. the model whose verdict a second opinion checks).
+    """
+    res = _run_chain(role, prompt, system, schema, None, attachments, exclude)
     if schema is None:
         return res
     reasks, current, last_err = 0, res, None
