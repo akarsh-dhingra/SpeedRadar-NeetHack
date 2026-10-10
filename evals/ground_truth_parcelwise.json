@@ -1,0 +1,186 @@
+{
+  "_note": "HELD-OUT eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "company": "Parcelwise Commerce Inc.",
+  "industry": "e-commerce logistics",
+  "people_cost_fy27": {
+    "engineering": 10416000,
+    "ml_ai": 879999,
+    "sales": 4620000,
+    "marketing": 2508000,
+    "other": 11500000
+  },
+  "headcount_end_fy27": {
+    "engineering": 66,
+    "ml_ai": 5,
+    "sales": 36,
+    "marketing": 22,
+    "other": 140
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 504000,
+    "sales": 42000,
+    "marketing": 360000,
+    "ml_ai": 120000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 212487,
+    "ml_ai": 8524,
+    "marketing": 56763,
+    "sales": 3025
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_hullstack_2026-04.pdf",
+      "number": "PC-202604-01",
+      "vendor": "Hullstack Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 42064,
+      "stated_total": 42064
+    },
+    {
+      "file": "invoices/02_hullstack_2026-05.pdf",
+      "number": "PC-202605-02",
+      "vendor": "Hullstack Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 44912,
+      "stated_total": 44912
+    },
+    {
+      "file": "invoices/03_hullstack_2026-06.pdf",
+      "number": "PC-202606-03",
+      "vendor": "Hullstack Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 45018,
+      "stated_total": 45018
+    },
+    {
+      "file": "invoices/04_hullstack_2026-07.pdf",
+      "number": "PC-202607-04",
+      "vendor": "Hullstack Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 41767,
+      "stated_total": 41767
+    },
+    {
+      "file": "invoices/05_hullstack_2026-08.pdf",
+      "number": "PC-202608-05",
+      "vendor": "Hullstack Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 38726,
+      "stated_total": 39888
+    },
+    {
+      "file": "invoices/06_routewise_2026-06.pdf",
+      "number": "PC-202606-06",
+      "vendor": "Routewise AI",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "Sales",
+      "month": "2026-06",
+      "line_items_sum": 8524,
+      "stated_total": 8524
+    },
+    {
+      "file": "invoices/07_shelfspace_2026-05.pdf",
+      "number": "PC-202605-07",
+      "vendor": "Shelfspace Ads",
+      "kind": "scanned",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-05",
+      "line_items_sum": 31200,
+      "stated_total": 31200
+    },
+    {
+      "file": "invoices/08_shelfspace_2026-07.pdf",
+      "number": "PC-202607-08",
+      "vendor": "Shelfspace Ads",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-07",
+      "line_items_sum": 25563,
+      "stated_total": 25665
+    },
+    {
+      "file": "invoices/09_cartel_2026-06.pdf",
+      "number": "PC-202606-09",
+      "vendor": "Cartel Sales Cloud",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-06",
+      "line_items_sum": 3025,
+      "stated_total": 3025
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 6,
+      "category": "ml_ai",
+      "stated_total": 898479,
+      "correct_total": 879999,
+      "diff_pct": 2.1
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/05_hullstack_2026-08.pdf",
+      "stated_total": 39888,
+      "line_items_sum": 38726,
+      "diff_pct": 3.0
+    },
+    {
+      "id": "invoice_miscategorised_single_vendor",
+      "type": "miscategorised",
+      "file": "invoices/06_routewise_2026-06.pdf",
+      "stated_cost_centre": "Sales",
+      "correct_category": "ml_ai",
+      "amount": 8524,
+      "vendor_appears_once": true
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/07_shelfspace_2026-05.pdf",
+      "expected": "text parser finds no text; LLM route extracts total",
+      "amount": 31200
+    },
+    {
+      "id": "near_miss_within_tolerance",
+      "type": "negative_control",
+      "file": "invoices/08_shelfspace_2026-07.pdf",
+      "stated_total": 25665,
+      "line_items_sum": 25563,
+      "expected": "NOT flagged (0.4% < 1% tolerance)"
+    },
+    {
+      "id": "invoice_duplicate",
+      "type": "duplicate",
+      "file": "invoices/10_shelfspace_2026-05_resent.pdf",
+      "duplicate_of": "invoices/07_shelfspace_2026-05.pdf",
+      "number": "PC-202605-07",
+      "amount": 31200
+    }
+  ],
+  "fixtures": []
+}

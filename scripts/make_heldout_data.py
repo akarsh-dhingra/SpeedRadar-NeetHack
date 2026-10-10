@@ -40,6 +40,18 @@ VENDORS = {
     "Clinitext AI": ([("Clinical note summarisation API", .7), ("Model fine-tuning", .3)], (9_000, 13_000)),
     "Brightpath Media": ([("Patient acquisition ads", .65), ("Landing page production", .35)], (11_000, 16_000)),
     "Caseline CRM": ([("Payer sales seats", .85), ("Contract module", .15)], (2_800, 3_000)),
+    "Ironvault Hosting": ([("Dedicated servers", .5), ("SIEM log storage", .35), ("DDoS protection", .15)], (52_000, 60_000)),
+    "Signalbox Outreach": ([("Sales prospecting seats", .7), ("Email sequencing credits", .3)], (4_500, 5_500)),
+    "Threatline Intel": ([("Threat intelligence feed", .6), ("Malware classifier training", .4)], (16_000, 22_000)),
+    "Beacon Webinars": ([("Webinar platform", .55), ("Paid promotion", .45)], (9_000, 13_000)),
+    "Hullstack Cloud": ([("Kubernetes nodes", .55), ("CDN + edge cache", .3), ("Backups", .15)], (38_000, 46_000)),
+    "Routewise AI": ([("Delivery-time prediction API", .7), ("Model retraining", .3)], (8_000, 12_000)),
+    "Shelfspace Ads": ([("Marketplace sponsored listings", .75), ("Influencer program", .25)], (25_000, 35_000)),
+    "Cartel Sales Cloud": ([("Merchant-success seats", .8), ("Dialer minutes", .2)], (3_000, 3_400)),
+    "Nimbleops Cloud": ([("App servers", .6), ("Managed Redis", .25), ("Egress", .15)], (30_000, 36_000)),
+    "Peoplegraph ML": ([("Attrition-risk model hosting", .65), ("Labelling services", .35)], (7_000, 10_000)),
+    "Brandloom Studio": ([("Video ad production", .6), ("Paid social", .4)], (12_000, 18_000)),
+    "Closepath CRM": ([("Account executive seats", .85), ("Revenue intelligence", .15)], (4_000, 4_400)),
 }
 
 PROFILES = {
@@ -93,6 +105,61 @@ PROFILES = {
             ("Brightpath Media", "marketing", "Marketing", "2026-08", "totals_mismatch"),
             ("Caseline CRM", "sales", "Sales", "2026-07", "scanned")],
         "near_miss": 2, "duplicate_of": None, "zero_byte": "helix_2026-10",
+    },
+    # Added AFTER the fixes from the first three companies, and never used to tune them.
+    "bastion": {
+        "name": "Bastion Security Inc.", "industry": "cybersecurity", "seed": 79,
+        "peers": {"competitors": [{"name": "Snyk", "domain": "snyk.io"}, {"name": "Huntress", "domain": "huntress.com"},
+                                  {"name": "Abnormal Security", "domain": "abnormalsecurity.com"},
+                                  {"name": "Tines", "domain": "tines.com"}, {"name": "Vanta", "domain": "vanta.com"}],
+                  "substitutes": [{"name": "Drata", "domain": "drata.com"}, {"name": "Semgrep", "domain": "semgrep.dev"}]},
+        "salary": {"engineering": 195_000, "ml_ai": 250_000, "sales": 170_000, "marketing": 148_000, "other": 122_000},
+        "headcount": {"engineering": (110, 128), "ml_ai": (12, 18), "sales": (70, 82), "marketing": (18, 21), "other": (60, 66)},
+        "infra_budget": 56_000, "tools": {"sales": 5_000, "marketing": 12_000, "ml_ai": 20_000},
+        "budget_error_row": "marketing",
+        "invoices": [("Ironvault Hosting", "infra_cloud", "Infrastructure", m, None) for m in MONTHS[:6]] + [
+            ("Signalbox Outreach", "sales", "Engineering", "2026-06", "miscategorised_single"),  # sales tool billed to eng
+            ("Threatline Intel", "ml_ai", "ML Platform", "2026-05", "totals_mismatch"),
+            ("Threatline Intel", "ml_ai", "ML Platform", "2026-08", None),
+            ("Beacon Webinars", "marketing", "Marketing", "2026-07", "scanned")],
+        "near_miss": 9, "duplicate_of": 5, "zero_byte": "beacon_2026-10",
+    },
+    "parcelwise": {  # added after the fixes; never used to tune them
+        "name": "Parcelwise Commerce Inc.", "industry": "e-commerce logistics", "seed": 83,
+        "peers": {"competitors": [{"name": "Shippo", "domain": "goshippo.com"}, {"name": "ShipBob", "domain": "shipbob.com"},
+                                  {"name": "Recharge", "domain": "rechargepayments.com"},
+                                  {"name": "Gorgias", "domain": "gorgias.com"}, {"name": "Yotpo", "domain": "yotpo.com"}],
+                  "substitutes": [{"name": "Loop Returns", "domain": "loopreturns.com"},
+                                  {"name": "Route", "domain": "route.com"}]},
+        "salary": {"engineering": 168_000, "ml_ai": 220_000, "sales": 140_000, "marketing": 132_000, "other": 92_000},
+        "headcount": {"engineering": (58, 66), "ml_ai": (3, 5), "sales": (30, 36), "marketing": (16, 22), "other": (110, 140)},
+        "infra_budget": 42_000, "tools": {"sales": 3_500, "marketing": 30_000, "ml_ai": 10_000},
+        "budget_error_row": "ml_ai",
+        "invoices": [("Hullstack Cloud", "infra_cloud", "Infrastructure", m, None) for m in MONTHS[:4]] + [
+            ("Hullstack Cloud", "infra_cloud", "Infrastructure", "2026-08", "totals_mismatch"),
+            ("Routewise AI", "ml_ai", "Sales", "2026-06", "miscategorised_single"),   # ML API billed to sales
+            ("Shelfspace Ads", "marketing", "Marketing", "2026-05", "scanned"),
+            ("Shelfspace Ads", "marketing", "Marketing", "2026-07", None),
+            ("Cartel Sales Cloud", "sales", "Sales", "2026-06", None)],
+        "near_miss": 8, "duplicate_of": 7, "zero_byte": None,
+    },
+    "peoplegraph": {  # added after the fixes; never used to tune them
+        "name": "Peoplegraph HR Inc.", "industry": "HR tech", "seed": 97,
+        "peers": {"competitors": [{"name": "Lattice", "domain": "lattice.com"},
+                                  {"name": "Culture Amp", "domain": "cultureamp.com"},
+                                  {"name": "15Five", "domain": "15five.com"}, {"name": "Leapsome", "domain": "leapsome.com"},
+                                  {"name": "HiBob", "domain": "hibob.com"}],
+                  "substitutes": [{"name": "Personio", "domain": "personio.com"}, {"name": "Deel", "domain": "deel.com"}]},
+        "salary": {"engineering": 176_000, "ml_ai": 226_000, "sales": 158_000, "marketing": 141_000, "other": 112_000},
+        "headcount": {"engineering": (40, 47), "ml_ai": (5, 8), "sales": (34, 41), "marketing": (12, 14), "other": (30, 34)},
+        "infra_budget": 33_000, "tools": {"sales": 4_400, "marketing": 16_000, "ml_ai": 9_000},
+        "budget_error_row": "engineering",
+        "invoices": [("Nimbleops Cloud", "infra_cloud", "Infrastructure", m, None) for m in MONTHS[:5]] + [
+            ("Peoplegraph ML", "ml_ai", "ML Platform", "2026-05", "scanned"),
+            ("Brandloom Studio", "marketing", "Marketing", "2026-06", None),
+            ("Brandloom Studio", "marketing", "Engineering", "2026-09", "miscategorised"),  # repeat vendor
+            ("Closepath CRM", "sales", "Sales", "2026-07", "totals_mismatch")],
+        "near_miss": 4, "duplicate_of": None, "zero_byte": "nimbleops_2026-10",
     },
 }
 

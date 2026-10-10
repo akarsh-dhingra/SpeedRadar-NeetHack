@@ -1,0 +1,17 @@
+_note: Real companies; data from Crustdata. Parcelwise Commerce Inc. itself is FICTIONAL.
+competitors:
+- name: Shippo
+  domain: goshippo.com
+- name: ShipBob
+  domain: shipbob.com
+- name: Recharge
+  domain: rechargepayments.com
+- name: Gorgias
+  domain: gorgias.com
+- name: Yotpo
+  domain: yotpo.com
+substitutes:
+- name: Loop Returns
+  domain: loopreturns.com
+- name: Route
+  domain: route.com

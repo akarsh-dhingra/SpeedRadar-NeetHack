@@ -1,0 +1,184 @@
+{
+  "_note": "HELD-OUT eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "company": "Peoplegraph HR Inc.",
+  "industry": "HR tech",
+  "people_cost_fy27": {
+    "engineering": 7656000,
+    "ml_ai": 1469000,
+    "sales": 5925000,
+    "marketing": 1833000,
+    "other": 3583999
+  },
+  "headcount_end_fy27": {
+    "engineering": 47,
+    "ml_ai": 8,
+    "sales": 41,
+    "marketing": 14,
+    "other": 34
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 396000,
+    "sales": 52800,
+    "marketing": 192000,
+    "ml_ai": 108000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 163276,
+    "ml_ai": 7090,
+    "marketing": 28910,
+    "sales": 4008
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_nimbleops_2026-04.pdf",
+      "number": "PH-202604-01",
+      "vendor": "Nimbleops Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 31593,
+      "stated_total": 31593
+    },
+    {
+      "file": "invoices/02_nimbleops_2026-05.pdf",
+      "number": "PH-202605-02",
+      "vendor": "Nimbleops Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 33514,
+      "stated_total": 33514
+    },
+    {
+      "file": "invoices/03_nimbleops_2026-06.pdf",
+      "number": "PH-202606-03",
+      "vendor": "Nimbleops Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 33047,
+      "stated_total": 33047
+    },
+    {
+      "file": "invoices/04_nimbleops_2026-07.pdf",
+      "number": "PH-202607-04",
+      "vendor": "Nimbleops Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 30417,
+      "stated_total": 30539
+    },
+    {
+      "file": "invoices/05_nimbleops_2026-08.pdf",
+      "number": "PH-202608-05",
+      "vendor": "Nimbleops Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 34705,
+      "stated_total": 34705
+    },
+    {
+      "file": "invoices/06_peoplegraph_2026-05.pdf",
+      "number": "PH-202605-06",
+      "vendor": "Peoplegraph ML",
+      "kind": "scanned",
+      "true_category": "ml_ai",
+      "cost_centre": "ML Platform",
+      "month": "2026-05",
+      "line_items_sum": 7090,
+      "stated_total": 7090
+    },
+    {
+      "file": "invoices/07_brandloom_2026-06.pdf",
+      "number": "PH-202606-07",
+      "vendor": "Brandloom Studio",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-06",
+      "line_items_sum": 16570,
+      "stated_total": 16570
+    },
+    {
+      "file": "invoices/08_brandloom_2026-09.pdf",
+      "number": "PH-202609-08",
+      "vendor": "Brandloom Studio",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Engineering",
+      "month": "2026-09",
+      "line_items_sum": 12340,
+      "stated_total": 12340
+    },
+    {
+      "file": "invoices/09_closepath_2026-07.pdf",
+      "number": "PH-202607-09",
+      "vendor": "Closepath CRM",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-07",
+      "line_items_sum": 4008,
+      "stated_total": 4128
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 4,
+      "category": "engineering",
+      "stated_total": 7816776,
+      "correct_total": 7656000,
+      "diff_pct": 2.1
+    },
+    {
+      "id": "near_miss_within_tolerance",
+      "type": "negative_control",
+      "file": "invoices/04_nimbleops_2026-07.pdf",
+      "stated_total": 30539,
+      "line_items_sum": 30417,
+      "expected": "NOT flagged (0.4% < 1% tolerance)"
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/06_peoplegraph_2026-05.pdf",
+      "expected": "text parser finds no text; LLM route extracts total",
+      "amount": 7090
+    },
+    {
+      "id": "invoice_miscategorised",
+      "type": "miscategorised",
+      "file": "invoices/08_brandloom_2026-09.pdf",
+      "stated_cost_centre": "Engineering",
+      "correct_category": "marketing",
+      "amount": 12340,
+      "vendor_appears_once": false
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/09_closepath_2026-07.pdf",
+      "stated_total": 4128,
+      "line_items_sum": 4008,
+      "diff_pct": 2.99
+    },
+    {
+      "id": "invoice_corrupt",
+      "type": "corrupt_file",
+      "file": "invoices/10_nimbleops_2026-10.pdf",
+      "expected": "zero bytes; listed under Not analysed"
+    }
+  ],
+  "fixtures": []
+}

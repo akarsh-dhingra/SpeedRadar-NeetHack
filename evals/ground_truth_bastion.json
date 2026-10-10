@@ -1,0 +1,203 @@
+{
+  "_note": "HELD-OUT eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "company": "Bastion Security Inc.",
+  "industry": "cybersecurity",
+  "people_cost_fy27": {
+    "engineering": 23205000,
+    "ml_ai": 3750000,
+    "sales": 12920000,
+    "marketing": 2886000,
+    "other": 7686000
+  },
+  "headcount_end_fy27": {
+    "engineering": 128,
+    "ml_ai": 18,
+    "sales": 82,
+    "marketing": 21,
+    "other": 66
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 672000,
+    "sales": 60000,
+    "marketing": 144000,
+    "ml_ai": 240000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 327825,
+    "sales": 4751,
+    "ml_ai": 43599,
+    "marketing": 11025
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_ironvault_2026-04.pdf",
+      "number": "BS-202604-01",
+      "vendor": "Ironvault Hosting",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 53190,
+      "stated_total": 53190
+    },
+    {
+      "file": "invoices/02_ironvault_2026-05.pdf",
+      "number": "BS-202605-02",
+      "vendor": "Ironvault Hosting",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 55584,
+      "stated_total": 55584
+    },
+    {
+      "file": "invoices/03_ironvault_2026-06.pdf",
+      "number": "BS-202606-03",
+      "vendor": "Ironvault Hosting",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 54863,
+      "stated_total": 54863
+    },
+    {
+      "file": "invoices/04_ironvault_2026-07.pdf",
+      "number": "BS-202607-04",
+      "vendor": "Ironvault Hosting",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 56881,
+      "stated_total": 56881
+    },
+    {
+      "file": "invoices/05_ironvault_2026-08.pdf",
+      "number": "BS-202608-05",
+      "vendor": "Ironvault Hosting",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 53334,
+      "stated_total": 53334
+    },
+    {
+      "file": "invoices/06_ironvault_2026-09.pdf",
+      "number": "BS-202609-06",
+      "vendor": "Ironvault Hosting",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-09",
+      "line_items_sum": 53973,
+      "stated_total": 53973
+    },
+    {
+      "file": "invoices/07_signalbox_2026-06.pdf",
+      "number": "BS-202606-07",
+      "vendor": "Signalbox Outreach",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Engineering",
+      "month": "2026-06",
+      "line_items_sum": 4751,
+      "stated_total": 4751
+    },
+    {
+      "file": "invoices/08_threatline_2026-05.pdf",
+      "number": "BS-202605-08",
+      "vendor": "Threatline Intel",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "ML Platform",
+      "month": "2026-05",
+      "line_items_sum": 21928,
+      "stated_total": 22586
+    },
+    {
+      "file": "invoices/09_threatline_2026-08.pdf",
+      "number": "BS-202608-09",
+      "vendor": "Threatline Intel",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "ML Platform",
+      "month": "2026-08",
+      "line_items_sum": 21671,
+      "stated_total": 21758
+    },
+    {
+      "file": "invoices/10_beacon_2026-07.pdf",
+      "number": "BS-202607-10",
+      "vendor": "Beacon Webinars",
+      "kind": "scanned",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-07",
+      "line_items_sum": 11025,
+      "stated_total": 11025
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 10,
+      "category": "marketing",
+      "stated_total": 2946606,
+      "correct_total": 2886000,
+      "diff_pct": 2.1
+    },
+    {
+      "id": "invoice_miscategorised_single_vendor",
+      "type": "miscategorised",
+      "file": "invoices/07_signalbox_2026-06.pdf",
+      "stated_cost_centre": "Engineering",
+      "correct_category": "sales",
+      "amount": 4751,
+      "vendor_appears_once": true
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/08_threatline_2026-05.pdf",
+      "stated_total": 22586,
+      "line_items_sum": 21928,
+      "diff_pct": 3.0
+    },
+    {
+      "id": "near_miss_within_tolerance",
+      "type": "negative_control",
+      "file": "invoices/09_threatline_2026-08.pdf",
+      "stated_total": 21758,
+      "line_items_sum": 21671,
+      "expected": "NOT flagged (0.4% < 1% tolerance)"
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/10_beacon_2026-07.pdf",
+      "expected": "text parser finds no text; LLM route extracts total",
+      "amount": 11025
+    },
+    {
+      "id": "invoice_duplicate",
+      "type": "duplicate",
+      "file": "invoices/11_ironvault_2026-08_resent.pdf",
+      "duplicate_of": "invoices/05_ironvault_2026-08.pdf",
+      "number": "BS-202608-05",
+      "amount": 53334
+    },
+    {
+      "id": "invoice_corrupt",
+      "type": "corrupt_file",
+      "file": "invoices/12_beacon_2026-10.pdf",
+      "expected": "zero bytes; listed under Not analysed"
+    }
+  ],
+  "fixtures": []
+}
