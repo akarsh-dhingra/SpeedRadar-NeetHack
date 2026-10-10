@@ -106,7 +106,8 @@ class RunState(BaseModel):
     started_at: str = Field(default_factory=now)
     git_sha: str = ""
     tags: list[str] = Field(default_factory=list)
-    trace_id: str = ""
+    trace_id: str = ""  # first trace of the run
+    trace_ids: list[str] = Field(default_factory=list)  # one per process (resume adds one); session_id = run_id
     phase: Literal["plan", "execute", "audit", "report", "done"] = "plan"
     plan_rationale: str = ""
     queue: list[Task] = Field(default_factory=list)

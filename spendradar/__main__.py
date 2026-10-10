@@ -36,6 +36,7 @@ def _finish(state) -> None:
 
     shutdown_tracing()
     print(json.dumps({"run_id": state.run_id, "phase": state.phase, "trace_id": state.trace_id,
+                      "trace_ids": state.trace_ids,
                       "report": f"runs/{state.run_id}/report.md", "findings": [
                           {"id": f.id, "status": f.status, "confidence": f.confidence} for f in state.findings],
                       "decisions": [(d.task_id, d.chosen, d.default) for d in state.decisions],

@@ -576,7 +576,9 @@ def _internal_findings(state: RunState) -> None:
 
 def run_phases(state: RunState) -> RunState:
     with neatlogs.trace("spendradar_run", kind="WORKFLOW", session_id=state.run_id) as root:
-        state.trace_id = state.trace_id or format(root.get_span_context().trace_id, "032x")
+        tid = format(root.get_span_context().trace_id, "032x")
+        state.trace_id = state.trace_id or tid
+        state.trace_ids.append(tid)
         root.set_attribute("spendradar.run_id", state.run_id)
         root.set_attribute("spendradar.resumed_at_phase", state.phase)
         if state.phase == "plan":
