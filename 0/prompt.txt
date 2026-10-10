@@ -1,0 +1,104 @@
+<pasted_content id="2c2b">
+# Task
+
+Address the following high-severity issue in this codebase. Read the Context to understand what is failing and why, then apply the changes described in the Fix section. When you need production evidence (real span payloads, errors, timings), use the Neatlogs MCP tools on the trace IDs in References — `get_trace_context` for span detail, `triage_get_investigation` when a thread_id is listed, `triage_get` to reload the fix — do not assume the prompt alone is the full picture.
+
+# Context
+
+## Handle corrupt PDF files in `read_pdf` tool to prevent downstream LLM API errors
+
+**Severity:** High · **Category:** Tool · **Pattern:** Tool contract misuse · **Workflow:** `spendradar` · **Confidence:** 70%
+**Status:** Open · **Source:** Auto · **Created:** 2026-10-10 09:47 UTC
+
+## Root cause
+
+The `read_pdf` tool attempts to read PDF files in `mode: "text"` first. When encountering a corrupt PDF file (such as `data/acme/invoices/13_brightloop_2026-10.pdf` which throws `PdfminerException: No /Root object!`), the tool falls back to `mode: "llm"`. However, because the file is fundamentally corrupt and not a valid PDF, passing it to the Gemini LLM (`gemini-3.5-flash-lite` or `gemini-3.1-flash-lite`) results in a non-retryable `400 INVALID_ARGUMENT` error from the Google Generative AI API. This error is not caught gracefully, causing the entire workflow execution to fail.
+
+## Evidence
+
+In trace [View trace](https://app.neatlogs.com/traces/36362eb966cdbb85dcb2fb1b280e1034), the `read_pdf` tool fails with `PdfminerException: No /Root object!` on `13_brightloop_2026-10.pdf`. It then attempts to fall back to `mode: "llm"`, which triggers a `400 INVALID_ARGUMENT` error from `gemini-3.5-flash-lite`. Similarly, in trace [View trace](https://app.neatlogs.com/traces/6fcb0c5ef827b202df85e61406ca16d8), the same fallback triggers a `400 INVALID_ARGUMENT` error from `gemini-3.1-flash-lite`. This pattern is also confirmed in similar traces such as [View trace](https://app.neatlogs.com/traces/af0df27e2d3433e0c608fb28a018a22d) (started Oct 10 08:33 UTC) and [View trace](https://app.neatlogs.com/traces/288f07d84bb84e15754a241eef40d779) (started Oct 10 08:39 UTC).
+
+## Confidence breakdown
+
+| Signal | Score |
+| --- | --- |
+| Evidence strength | 95% |
+| Pattern consistency | 95% |
+| Detection alignment | 90% |
+| Expected impact | 90% |
+
+# Fix
+
+## Recommended action
+
+## Pre-validate PDF files and handle LLM API errors gracefully in `read_pdf` tool
+
+**Steps**
+
+1. Modify the `read_pdf` tool implementation to check if the PDF file is valid before attempting fallback modes.
+2. If `pdfplumber` throws a `PdfminerException: No /Root object!` or similar corruption error, do not attempt to fall back to `mode: "llm"`. Instead, immediately return a clear, structured error indicating that the PDF file is corrupt.
+3. Add a `try-except` block around the LLM PDF reader call to catch `400 INVALID_ARGUMENT` or other API errors, and return a friendly error message instead of letting the exception bubble up and crash the workflow.
+
+**Verificatio a test script passing a corrupt PDF (e.g., missing `/Root` object) to `read_pdf` and verify it returns a structured error instead of throwing a `400 INVALID_ARGUMENT` exception.
+- Run the `spendradar_run` workflow with the test data and verify it completes successfully or handles the corrupt file gracefully.
+
+**Risk assessment**
+
+Low risk. This only changes error handling and validation inside the `read_pdf` tool, preventing unhandled exceptions.
+
+**Rollback plan**
+
+Revert the changes to the `read_pdf` tool implementation in the codebase.
+
+# References
+
+This fix is linked to 8 production traces.
+
+## MCP identifiers
+
+Use these with the Neatlogs MCP server (if connected in the IDE):
+
+- **triage_id:** `2cd5e9df-86d1-4a85-977d-94ebb059615e` → `triage_get`, `triage_list_steps`, `triage_update_status`, `triage_update`, `triage_dismiss`
+- **thread_id:** `6a3ca4c5-247c-4d7e-814a-ef9ffebe4008` → `triage_get_investigation` (orchestrator steps + enriched linked traces)
+
+## MCP tools for evidence
+
+Pull ground truth on demand — do not assume this prompt alone has full span payloads:
+
+- `triage_get(triage_id)` — reload this fix's root cause, recommended action, and linked trace IDs from Neatlogs
+- `get_trace_context(trace_id)` — full span tree with inputs/outputs and code locations
+- `triage_get_investigation(thread_id)` — investigation timeline + linked trace summaries (when thread_id is set above)
+- `triage_list_steps(triage_id)` — step-by-step investigation trail for this fix
+- `search_traces(query, mode=keyword|semantic)` — find sibling or regression traces (keyword = text match, semantic = meaning-based)
+- `triage_list(status, severity, category, pattern)` — other open fixes; `category` is fix layer (config|prompt|model|tool|cost), `pattern` is failure pattern (e.g. guardrail_bypass)
+- `list_detections()` then `get_detection_trend(detection_name, period=24h|7d|30d)` — what detectors are firing and whether rates shifted (`detection_name` matches display name from list_detections)
+
+If the Neatlogs MCP server is not connected, ask the user to add it in their IDE's MCP settings (project API key as Bearer token).
+
+## Linked trace IDs
+
+- [`ee35eddc718ea8c4946a256b3070f954`](https://app.neatlogs.com/traces/ee35eddc718ea8c4946a256b3070f954)
+- [`af0df27e2d3433e0c608fb28a018a22d`](https://app.neatlogs.com/traces/af0df27e2d3433e0c608fb28a018a22d)
+- [`bc7d07c02a0fa0079ee3ba63640cd898`](https://app.neatlogs.com/traces/bc7d07c02a0fa0079ee3ba63640cd898)
+- [`6fcb0c5ef827b202df85e61406ca16d8`](https://app.neatlogs.com/traces/6fcb0c5ef827b202df85e61406ca16d8)
+- [`d78495dd4a13c121166d3c034456717d`](https://app.neatlogs.com/traces/d78495dd4a13c121166d3c034456717d)
+- [`288f07d84bb84e15754a241eef40d779`](https://app.neatlogs.com/traces/288f07d84bb84e15754a241eef40d779)
+- … and 2 more — call `triage_get(triage_id)` for the full list
+
+# After the fix
+
+Once work on this fix is done, update its status on Neatlogs so the team's board stays accurate. Fix ID: `2cd5e9df-86d1-4a85-977d-94ebb059615e`.
+
+Recommended status transitions:
+
+- `in_progress` — you have pushed changes / opened a PR but the fix isn't verified in production yet.
+- `resolved` — the fix is shipped and the failure pattern has been confirmed gone (via traces, evals, or user signal).
+- `archived` — the user decided not to act on this fix at all.
+
+If the Neatlogs MCP server is connected, call `triage_update_status` (`triage_id=2cd5e9df-86d1-4a85-977d-94ebb059615e`, `status=...`, `user_email=<team member email>`) to perform the transition without leaving the IDE. Use `triage_update` to edit title, severity, or resolution note; `triage_dismiss` to archive a false positive. Otherwise, ask the user to update the fix on the Neatlogs board.
+
+---
+*Generated by [Neatlogs](https://neatlogs.com) · Fix `2cd5e9df-86d1-4a85-977d-94ebb059615e` · [Open in Neatlogs](https://app.neatlogs.com/incidents?id=2cd5e9df-86d1-4a85-977d-94ebb059615e)*
+</pasted_content id="2c2b">
+
+ Fix this
