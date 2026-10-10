@@ -1,0 +1,17 @@
+_note: Real companies; data from Crustdata. Ledgerly Payments Inc. itself is FICTIONAL.
+competitors:
+- name: Ramp
+  domain: ramp.com
+- name: Brex
+  domain: brex.com
+- name: Mercury
+  domain: mercury.com
+- name: Airwallex
+  domain: airwallex.com
+- name: Spendesk
+  domain: spendesk.com
+substitutes:
+- name: Pleo
+  domain: pleo.io
+- name: Payhawk
+  domain: payhawk.com

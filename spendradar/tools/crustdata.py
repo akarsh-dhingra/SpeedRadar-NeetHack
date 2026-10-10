@@ -19,7 +19,7 @@ from spendradar.tools.files import ToolError
 
 BASE = "https://api.crustdata.com"
 CACHE = Path("cache/crustdata")
-CFG = yaml.safe_load(Path("config.yaml").read_text())["crustdata"]
+CFG = yaml.safe_load(Path("config.yaml").read_text(encoding="utf-8"))["crustdata"]
 ENRICH_FIELDS = ["basic_info", "headcount", "funding", "hiring", "news"]
 ENRICH_CREDITS = 2.0
 JOB_RESULT_CREDITS = 0.03
@@ -47,7 +47,7 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
     """POST with cache → retries/backoff → stale-cache fallback. Returns {body, fetched_at, from_cache, ...}."""
     CACHE.mkdir(parents=True, exist_ok=True)
     cpath = CACHE / f"{_key(path, body)}.json"
-    cached = json.loads(cpath.read_text()) if cpath.exists() else None
+    cached = json.loads(cpath.read_text(encoding="utf-8")) if cpath.exists() else None
     crustdata_fault_pending = any(f.startswith("crustdata:") for f in faults._active)
     if cached and not crustdata_fault_pending:
         return {**cached, "from_cache": True}
@@ -69,7 +69,7 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
                 r.raise_for_status()
                 out = {"body": r.json(), "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                        "endpoint": path, "request_id": r.headers.get("x-request-id", ""), "credits": est_credits}
-                cpath.write_text(json.dumps(out))
+                cpath.write_text(json.dumps(out), encoding="utf-8")
                 span.set_attribute("spendradar.outcome", "ok")
                 return {**out, "from_cache": False}
             except ToolError:
@@ -90,7 +90,7 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
 def crustdata_company(domain: str) -> dict:
     fx = FIXTURE_DIR / f"{domain}.json" if FIXTURE_DIR else None
     if fx and fx.exists():
-        res = {**json.loads(fx.read_text()), "from_cache": True}
+        res = {**json.loads(fx.read_text(encoding="utf-8")), "from_cache": True}
         with neatlogs.trace("fixture:crustdata", kind="TOOL") as span:
             span.set_attribute("spendradar.fixture", json.dumps(res.get("fixture")))
     else:

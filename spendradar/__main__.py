@@ -62,6 +62,7 @@ def main(argv: list[str] | None = None) -> None:
     e.add_argument("--evidence", action="store_true")
     e.add_argument("--score", nargs="*", help="score existing run ids instead of launching runs")
     e.add_argument("--fixtures", default=None, help="EVALS ONLY: run against altered fixtures")
+    e.add_argument("--data", default="data/acme", help="input folder, e.g. data/kestrel (held-out)")
     args = ap.parse_args(argv)
 
     if args.cmd == "ledger":
@@ -73,8 +74,8 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "eval":
         from spendradar import evals
 
-        path = evals.run_eval(args.n, args.variant, args.evidence, args.score, args.fixtures)
-        card = json.loads(path.read_text())
+        path = evals.run_eval(args.n, args.variant, args.evidence, args.score, args.fixtures, args.data)
+        card = json.loads(path.read_text(encoding="utf-8"))
         print(f"scorecard: {path}")
         print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_without_fallback", "planted_total",
                                                 "summary_all_runs")}, indent=1))

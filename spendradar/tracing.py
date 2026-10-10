@@ -74,8 +74,11 @@ def mask_secrets(item: dict, *, context: Any = None) -> dict:
 
 
 def git_sha() -> str:
+    """Short HEAD sha, with '-dirty' when tracked files differ from it (so a run never claims a commit it didn't run)."""
     try:
-        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
+        sha = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
+        dirty = subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], text=True).strip()
+        return f"{sha}-dirty" if dirty else sha
     except Exception:
         return "nogit"
 

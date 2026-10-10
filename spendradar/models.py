@@ -103,6 +103,8 @@ class RunState(BaseModel):
     run_id: str
     goal: str
     input_dir: str
+    company: str = "Our company"  # read from the budget sheet title; never hard-coded
+    company_fictional: bool = False
     started_at: str = Field(default_factory=now)
     git_sha: str = ""
     tags: list[str] = Field(default_factory=list)

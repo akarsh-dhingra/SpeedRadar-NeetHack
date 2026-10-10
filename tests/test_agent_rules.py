@@ -49,8 +49,8 @@ def test_cached_llm_calls_add_no_tokens_or_latency():
 def test_gap_sentence_reads_plainly():
     below = agent._gap_sentence((-17, -14), (-2.4e6, -2.0e6))
     assert "17 fewer to 14 fewer people" in below and "$-" not in below
-    inside = agent._gap_sentence((-6, 6), (-1.1e6, 1.07e6))
-    assert inside.startswith("Acme is inside") and "$-" not in inside
+    inside = agent._gap_sentence((-6, 6), (-1.1e6, 1.07e6), "Kestrel Metrics Inc.")
+    assert inside.startswith("Kestrel Metrics Inc. is inside") and "$-" not in inside and "Acme" not in inside
 
 
 def test_agreement_failure_needs_no_llm_and_equal_gap_collapses():
@@ -96,3 +96,27 @@ def test_scanned_pdf_still_goes_to_the_llm_reader(monkeypatch):
     with pytest.raises(files.ToolError, match="LLM PDF reader failed"):
         files.read_pdf("data/acme/invoices/12_nimbus_2026-10.pdf", mode="llm")
     assert called == [1]
+
+
+def _inv(path, vendor, number, total, date="2026-05-28"):
+    return {"path": path, "vendor": vendor, "number": number, "date": date, "cost_centre": "Infrastructure",
+            "category": "infra_cloud", "lines": [], "line_sum": total, "stated_total": total}
+
+
+def test_duplicate_invoice_is_flagged_once_and_not_counted_twice():
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    s.invoices = [_inv("invoices/02_a.pdf", "Stratus", "KM-1", 100.0),
+                  _inv("invoices/10_a_resent.pdf", "Stratus", "KM-1", 100.0),
+                  _inv("invoices/03_b.pdf", "Other Co", "KM-1", 50.0)]  # same number, different vendor: not a dup
+    agent._duplicate_check(s)
+    dups = [c for c in s.checks if c.name == "verify:duplicate_invoice"]
+    assert [c.target for c in dups] == ["invoices/10_a_resent.pdf"]
+    assert s.invoices[1]["duplicate_of"] == "invoices/02_a.pdf" and "duplicate_of" not in s.invoices[2]
+    assert any(f["issue"].startswith("duplicate invoice KM-1") for f in s.flags)
+
+
+def test_same_vendor_date_and_amount_with_new_number_is_a_duplicate():
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    s.invoices = [_inv("invoices/a.pdf", "Stratus", "KM-1", 100.0), _inv("invoices/b.pdf", "Stratus", "KM-9", 100.0)]
+    agent._duplicate_check(s)
+    assert s.invoices[1]["duplicate_of"] == "invoices/a.pdf"

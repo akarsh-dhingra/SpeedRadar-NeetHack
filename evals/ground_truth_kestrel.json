@@ -1,0 +1,192 @@
+{
+  "_note": "HELD-OUT eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "company": "Kestrel Metrics Inc.",
+  "industry": "observability SaaS",
+  "people_cost_fy27": {
+    "engineering": 11954000,
+    "ml_ai": 1938000,
+    "sales": 6481500,
+    "marketing": 1311000,
+    "other": 6313000
+  },
+  "headcount_end_fy27": {
+    "engineering": 75,
+    "ml_ai": 11,
+    "sales": 47,
+    "marketing": 10,
+    "other": 55
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 732000,
+    "sales": 48000,
+    "marketing": 264000,
+    "ml_ai": 180000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 299503,
+    "marketing": 38387,
+    "sales": 3736,
+    "ml_ai": 14265
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_stratus_2026-04.pdf",
+      "number": "KM-202604-01",
+      "vendor": "Stratus Hosting Co",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 61242,
+      "stated_total": 61242
+    },
+    {
+      "file": "invoices/02_stratus_2026-05.pdf",
+      "number": "KM-202605-02",
+      "vendor": "Stratus Hosting Co",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 60443,
+      "stated_total": 60443
+    },
+    {
+      "file": "invoices/03_stratus_2026-06.pdf",
+      "number": "KM-202606-03",
+      "vendor": "Stratus Hosting Co",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 58780,
+      "stated_total": 59015
+    },
+    {
+      "file": "invoices/04_stratus_2026-07.pdf",
+      "number": "KM-202607-04",
+      "vendor": "Stratus Hosting Co",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 57720,
+      "stated_total": 57720
+    },
+    {
+      "file": "invoices/05_stratus_2026-08.pdf",
+      "number": "KM-202608-05",
+      "vendor": "Stratus Hosting Co",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 61318,
+      "stated_total": 61318
+    },
+    {
+      "file": "invoices/06_quillfire_2026-05.pdf",
+      "number": "KM-202605-06",
+      "vendor": "Quillfire Ads",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-05",
+      "line_items_sum": 18734,
+      "stated_total": 18734
+    },
+    {
+      "file": "invoices/07_quillfire_2026-08.pdf",
+      "number": "KM-202608-07",
+      "vendor": "Quillfire Ads",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Sales",
+      "month": "2026-08",
+      "line_items_sum": 19653,
+      "stated_total": 19653
+    },
+    {
+      "file": "invoices/08_ledgerline_2026-06.pdf",
+      "number": "KM-202606-08",
+      "vendor": "Ledgerline CRM",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-06",
+      "line_items_sum": 3736,
+      "stated_total": 3848
+    },
+    {
+      "file": "invoices/09_vectorbay_2026-07.pdf",
+      "number": "KM-202607-09",
+      "vendor": "Vectorbay Compute",
+      "kind": "scanned",
+      "true_category": "ml_ai",
+      "cost_centre": "ML Platform",
+      "month": "2026-07",
+      "line_items_sum": 14265,
+      "stated_total": 14265
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 8,
+      "category": "sales",
+      "stated_total": 6617611,
+      "correct_total": 6481500,
+      "diff_pct": 2.1
+    },
+    {
+      "id": "near_miss_within_tolerance",
+      "type": "negative_control",
+      "file": "invoices/03_stratus_2026-06.pdf",
+      "stated_total": 59015,
+      "line_items_sum": 58780,
+      "expected": "NOT flagged (0.4% < 1% tolerance)"
+    },
+    {
+      "id": "invoice_miscategorised",
+      "type": "miscategorised",
+      "file": "invoices/07_quillfire_2026-08.pdf",
+      "stated_cost_centre": "Sales",
+      "correct_category": "marketing",
+      "amount": 19653,
+      "vendor_appears_once": false
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/08_ledgerline_2026-06.pdf",
+      "stated_total": 3848,
+      "line_items_sum": 3736,
+      "diff_pct": 3.0
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/09_vectorbay_2026-07.pdf",
+      "expected": "text parser finds no text; LLM route extracts total",
+      "amount": 14265
+    },
+    {
+      "id": "invoice_duplicate",
+      "type": "duplicate",
+      "file": "invoices/10_stratus_2026-05_resent.pdf",
+      "duplicate_of": "invoices/02_stratus_2026-05.pdf",
+      "number": "KM-202605-02",
+      "amount": 60443
+    },
+    {
+      "id": "invoice_corrupt",
+      "type": "corrupt_file",
+      "file": "invoices/11_ledgerline_2026-09.pdf",
+      "expected": "zero bytes; listed under Not analysed"
+    }
+  ],
+  "fixtures": []
+}

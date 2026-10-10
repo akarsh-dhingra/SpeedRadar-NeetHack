@@ -1,0 +1,17 @@
+_note: Real companies; data from Crustdata. Carebridge Health Inc. itself is FICTIONAL.
+competitors:
+- name: Spring Health
+  domain: springhealth.com
+- name: Headway
+  domain: headway.co
+- name: Sword Health
+  domain: swordhealth.com
+- name: Cityblock Health
+  domain: cityblock.com
+- name: Komodo Health
+  domain: komodohealth.com
+substitutes:
+- name: Zocdoc
+  domain: zocdoc.com
+- name: Oscar Health
+  domain: hioscar.com

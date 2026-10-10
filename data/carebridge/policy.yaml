@@ -1,0 +1,34 @@
+_note: "FICTIONAL SAMPLE DATA \u2014 Carebridge Health Inc. does not exist."
+basis: people cost (headcount x loaded cost), FY27, compared with the competitor median
+  per head of company
+rules:
+- id: ml_ai_parity
+  category: ml_ai
+  metric: share_of_headcount
+  rule: within_pct_of_median
+  pct: 20
+  text: ML/AI share of headcount within 20% of competitor median
+- id: eng_floor
+  category: engineering
+  metric: share_of_headcount
+  rule: at_least_pct_of_median
+  pct: 90
+  text: Engineering share of headcount at least 90% of competitor median
+- id: sales_band
+  category: sales
+  metric: share_of_headcount
+  rule: within_pct_of_median
+  pct: 25
+  text: Sales share of headcount within 25% of competitor median
+- id: marketing_floor
+  category: marketing
+  metric: share_of_headcount
+  rule: at_least_pct_of_median
+  pct: 80
+  text: Marketing share of headcount at least 80% of competitor median
+- id: infra_budget
+  category: infra_cloud
+  metric: invoice_vs_budget
+  rule: max_over_budget_pct
+  pct: 5
+  text: Infra/cloud invoices no more than 5% over monthly budget (internal check only)

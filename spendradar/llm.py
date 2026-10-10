@@ -30,7 +30,7 @@ from spendradar import faults
 
 T = TypeVar("T", bound=BaseModel)
 
-CONFIG = yaml.safe_load(Path("config.yaml").read_text())["llm"]
+CONFIG = yaml.safe_load(Path("config.yaml").read_text(encoding="utf-8"))["llm"]
 LEDGER_PATH = Path("cache/ledger.json")
 CACHE_DIR = Path("cache/llm")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -81,7 +81,7 @@ class Ledger:
     def __init__(self, path: Path = LEDGER_PATH):
         self.path = path
         self.lock = threading.Lock()
-        self.data: dict = json.loads(path.read_text()) if path.exists() else {}
+        self.data: dict = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
         self.last_call: dict[str, float] = {}
 
     def _day(self, model: str) -> dict:
@@ -131,7 +131,7 @@ class Ledger:
 
     def _save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.data, indent=2, sort_keys=True))
+        self.path.write_text(json.dumps(self.data, indent=2, sort_keys=True), encoding="utf-8")
 
     def summary(self) -> dict:
         return self.data.get(date.today().isoformat(), {})
@@ -351,7 +351,7 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
     key = hashlib.sha256(key.encode()).hexdigest()[:24] if exclude else key
     path = CACHE_DIR / f"{key}.json"
     if cache_enabled() and path.exists():
-        res = LLMResult(**json.loads(path.read_text()))
+        res = LLMResult(**json.loads(path.read_text(encoding="utf-8")))
         res.cached = True
         return res
 
@@ -397,7 +397,7 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
                             tokens_out=tout, latency_s=round(time.monotonic() - t0, 2), fallbacks=fallbacks)
             if cache_enabled():
                 CACHE_DIR.mkdir(parents=True, exist_ok=True)
-                path.write_text(json.dumps(res.__dict__ | {"cached": False}, default=str))
+                path.write_text(json.dumps(res.__dict__ | {"cached": False}, default=str), encoding="utf-8")
             return res
     raise LLMError(f"all models failed for role {role!r}: " + " | ".join(errors[-6:]))
 

@@ -44,6 +44,16 @@ def read_spreadsheet(path: str, sheet: str, first_row: int = 1, last_row: int | 
     return out
 
 
+def sheet_title(path: str, sheet: str) -> list[str]:
+    """Non-empty cells of the sheet's first row (the title line above the header)."""
+    try:
+        wb = load_workbook(path, data_only=True, read_only=True)
+        first = next(wb[sheet].iter_rows(values_only=True, max_row=1), ())
+    except Exception as e:
+        raise ToolError(f"cannot open {path}!{sheet}: {e}") from e
+    return [str(v) for v in first if v not in (None, "")]
+
+
 class InvoiceLine(BaseModel):
     description: str
     amount: float

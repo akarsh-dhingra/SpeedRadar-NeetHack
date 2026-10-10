@@ -73,7 +73,7 @@ def save(state: RunState) -> None:
     p = state_path(state.run_id)
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(".tmp")
-    tmp.write_text(state.model_dump_json(indent=1))
+    tmp.write_text(state.model_dump_json(indent=1), encoding="utf-8")
     tmp.replace(p)  # atomic: a crash never leaves a half-written state
     if CRASH_AFTER_STEP and state.step == CRASH_AFTER_STEP:
         import neatlogs as _nl
@@ -83,7 +83,7 @@ def save(state: RunState) -> None:
 
 
 def load(run_id: str) -> RunState:
-    return RunState.model_validate_json(state_path(run_id).read_text())
+    return RunState.model_validate_json(state_path(run_id).read_text(encoding="utf-8"))
 
 
 def new_run_id() -> str:
@@ -112,7 +112,7 @@ def _usage(state: RunState, res: llm.LLMResult | dict | None) -> None:
 
 def plan(state: RunState) -> None:
     listing = files.list_files(state.input_dir)
-    comps = yaml.safe_load((Path(state.input_dir) / "competitors.yaml").read_text())
+    comps = yaml.safe_load((Path(state.input_dir) / "competitors.yaml").read_text(encoding="utf-8"))
     prompt = (
         f"GOAL: {state.goal}\n\nINPUT FOLDER ({state.input_dir}):\n"
         + "\n".join(f"- {f['path']} ({f['bytes']} bytes)" for f in listing)
@@ -128,10 +128,15 @@ def plan(state: RunState) -> None:
         _usage(state, res)
         p: Plan = res.parsed
         state.plan_rationale = p.rationale
+        # Competitor names come from competitors.yaml, keyed by domain. The planner once wrote its task text
+        # ("fetch Ramp data") into the name field, and that string reached the report (held-out run 1010-dd2fc1).
+        known = {c["domain"]: c["name"] for c in comps["competitors"] + comps.get("substitutes", [])}
         for i, t in enumerate(p.tasks):
             args = {k: v for k, v in t.model_dump().items() if k not in ("tool", "reason") and v is not None}
             if "path" in args:
                 args["path"] = _normalise_path(state.input_dir, args["path"])
+            if args.get("domain") in known:
+                args["name"] = known[args["domain"]]
             state.queue.append(Task(id=f"t{i + 1:02d}", tool=t.tool, args=args, reason=t.reason))
         span.set_attribute("spendradar.plan.tasks", len(state.queue))
         span.set_attribute("spendradar.plan.model", res.model)
@@ -195,10 +200,10 @@ def act(state: RunState, task: Task) -> list[Check]:
     if task.tool == "read_invoice":
         return _act_invoice(state, a["path"], a.get("mode") or "text")
     if task.tool == "read_policy":
-        state.policy = yaml.safe_load((Path(state.input_dir) / a["path"]).read_text())
+        state.policy = yaml.safe_load((Path(state.input_dir) / a["path"]).read_text(encoding="utf-8"))
         return []
     if task.tool == "read_salary_table":
-        with open(Path(state.input_dir) / a["path"]) as f:
+        with open(Path(state.input_dir) / a["path"], encoding="utf-8", newline="") as f:
             state.salary = {r["category"]: float(r["loaded_annual_cost_usd"]) for r in csv.DictReader(f)}
         return []
     if task.tool == "fetch_competitor":
@@ -213,6 +218,12 @@ def act(state: RunState, task: Task) -> list[Check]:
 def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list[Check]:
     full = str(Path(state.input_dir) / path)
     rows = files.read_spreadsheet(full, "People", first_row=only_row or 1, last_row=only_row)
+    if only_row is None:
+        title = files.sheet_title(full, "People")
+        if title:
+            state.company = title[0].split(" — ")[0].strip() or state.company
+        state.company_fictional = any("FICTIONAL" in t for t in title)
+    co = state.company
     months = [k for k in (rows[0].keys() if rows else []) if k[:2] == "20"]
     checks = []
     b = state.budget.setdefault("people_cost", {}), state.budget.setdefault("headcount_end", {})
@@ -220,7 +231,7 @@ def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list
         cat, loc = r["category"], f"People!row {r['_row']}"
         if r["metric"] == "headcount":
             b[1][cat] = r[months[-1]]
-            state.figures[f"hc_{cat}"] = Figure(id=f"hc_{cat}", label=f"Acme {cat} headcount (end FY27)",
+            state.figures[f"hc_{cat}"] = Figure(id=f"hc_{cat}", label=f"{co} {cat} headcount (end FY27)",
                                                 value=r[months[-1]], unit="people", category=cat,
                                                 sources=[_src_file(state, path, f"{loc}, {months[-1]}")])
         elif r["metric"] == "people_cost":
@@ -230,7 +241,7 @@ def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list
             checks.append(chk)
             # The line items are primary; a mismatching stated total is never used.
             b[0][cat] = sum(parts)
-            state.figures[f"cost_{cat}"] = Figure(id=f"cost_{cat}", label=f"Acme {cat} people cost FY27",
+            state.figures[f"cost_{cat}"] = Figure(id=f"cost_{cat}", label=f"{co} {cat} people cost FY27",
                                                   value=sum(parts), category=cat,
                                                   sources=[_src_file(state, path, f"{loc}, sum of {len(months)} months")])
     nonpeople = files.read_spreadsheet(full, "NonPeople") if only_row is None else []
@@ -442,7 +453,7 @@ def apply_recovery(state: RunState, task: Task, chosen: str, detail: str) -> Non
 
 
 def _substitute(state: RunState, task: Task) -> None:
-    comps = yaml.safe_load((Path(state.input_dir) / "competitors.yaml").read_text())
+    comps = yaml.safe_load((Path(state.input_dir) / "competitors.yaml").read_text(encoding="utf-8"))
     used = set(state.competitors) | {n["input"] for n in state.not_analysed}
     sub = next((s for s in comps.get("substitutes", []) if s["domain"] not in used), None)
     dropped = task.args.get("domain")
@@ -509,7 +520,47 @@ def execute(state: RunState) -> None:
     save(state)
 
 
+class LineItemJudgement(BaseModel):
+    invoice_number: str
+    category_of_line_items: Literal["engineering", "ml_ai", "sales", "marketing", "infra_cloud", "unclear"]
+    reason: str
+
+
+class LineItemReview(BaseModel):
+    invoices: list[LineItemJudgement]
+
+
 def _cross_document_checks(state: RunState) -> None:
+    _duplicate_check(state)
+    _vendor_category_check(state)
+    _line_item_check(state)
+
+
+def _duplicate_check(state: RunState) -> None:
+    """Same vendor + same invoice number, or same vendor + date + amount, in two files → billed twice.
+    Added after the held-out eval: Kestrel and Ledgerly each had a re-sent invoice that no check caught."""
+    with neatlogs.trace("verify:duplicate_invoices", kind="GUARDRAIL") as span:
+        seen: dict[tuple, dict] = {}
+        dups = 0
+        for inv in sorted(state.invoices, key=lambda i: i["path"]):
+            v = inv["vendor"].strip().lower()
+            keys = [("number", v, inv["number"].strip())] if inv["number"].strip() else []
+            keys.append(("date+amount", v, inv["date"].strip(), round(inv["stated_total"], 2)))
+            first = next((seen[k] for k in keys if k in seen), None)
+            if first:
+                dups += 1
+                inv["duplicate_of"] = first["path"]
+                state.checks.append(Check(name="verify:duplicate_invoice", target=inv["path"], passed=False,
+                                          detail=f"same vendor and {'number' if first['number'] == inv['number'] else 'date and amount'} as {first['path']}"))
+                state.flags.append({"task": "cross-document", "target": inv["vendor"],
+                                    "issue": f"duplicate invoice {inv['number']}: {inv['path']} repeats {first['path']} "
+                                             f"(${inv['stated_total']:,.0f}); likely billed twice, counted once"})
+            for k in keys:
+                seen.setdefault(k, inv)
+        span.set_attribute("spendradar.verify.duplicates", dups)
+
+
+def _vendor_category_check(state: RunState) -> None:
     """Same vendor billed to different categories → flag (catches mis-categorised invoices)."""
     with neatlogs.trace("verify:vendor_category_consistency", kind="GUARDRAIL"):
         by_vendor: dict[str, set[str]] = {}
@@ -522,6 +573,44 @@ def _cross_document_checks(state: RunState) -> None:
             if not ok:
                 state.flags.append({"task": "cross-document", "target": vendor,
                                     "issue": f"vendor billed to {sorted(cats)}; likely mis-categorised invoice"})
+
+
+def _line_item_check(state: RunState) -> None:
+    """One LLM call: which category does each invoice's WORK belong to? A mismatch with its cost centre is
+    flagged for the audit. Catches a mis-categorised invoice from a vendor that appears only once, which the
+    vendor-consistency rule cannot see (held-out company Carebridge). Python decides what counts as a mismatch."""
+    invs = [i for i in state.invoices if not i.get("duplicate_of") and i["category"] != "unmapped"]
+    if not invs:
+        return
+    flagged_vendors = {fl["target"] for fl in state.flags if "mis-categorised" in fl["issue"]}
+    prompt = ("For each invoice, say which budget category the WORK in its line items belongs to: "
+              "engineering, ml_ai, sales, marketing or infra_cloud ('unclear' if you cannot tell). Judge only from "
+              "the line items, not from the cost centre or vendor name.\n\n"
+              + "\n".join(f"- {i['number']} | vendor {i['vendor']} | lines: "
+                          + "; ".join(line["description"] for line in i["lines"]) for i in invs))
+    with neatlogs.trace("verify:line_items_vs_cost_centre", kind="GUARDRAIL") as span:
+        try:
+            res = llm.complete("extract", prompt, schema=LineItemReview,
+                               system="You classify invoice line items into budget categories.")
+        except llm.LLMError as e:
+            state.checks.append(Check(name="verify:line_items", target="invoices", passed=True,
+                                      detail=f"not run: {str(e)[:80]}"))
+            return
+        _usage(state, res)
+        by_number = {j.invoice_number.strip(): j for j in res.parsed.invoices}
+        for inv in invs:
+            j = by_number.get(inv["number"].strip())
+            if not j or j.category_of_line_items in ("unclear", inv["category"]):
+                continue
+            state.checks.append(Check(name="verify:line_items", target=inv["path"], passed=False,
+                                      detail=f"cost centre → {inv['category']}, line items → {j.category_of_line_items}"))
+            if inv["vendor"] not in flagged_vendors:
+                flagged_vendors.add(inv["vendor"])
+                state.flags.append({"task": "cross-document", "target": inv["vendor"],
+                                    "issue": f"{inv['number']} billed to {inv['category']} but its line items look like "
+                                             f"{j.category_of_line_items} ({j.reason[:120]}); likely mis-categorised invoice"})
+        span.set_attribute("spendradar.verify.line_item_mismatches",
+                           sum(c.name == "verify:line_items" and not c.passed for c in state.checks))
 
 
 # ----------------------------------------------------------------------------- FINDINGS
@@ -555,9 +644,10 @@ def build_findings(state: RunState) -> None:
         verdict = "violates" if res["violated"] else "meets"
         state.findings.append(Finding(
             id=fid, category=cat, kind="policy",
-            statement=(f"Acme {cat} is {res['our_share']:.1%} of headcount vs competitor median "
+            statement=(f"{state.company} {cat} is {res['our_share']:.1%} of headcount vs competitor median "
                        f"{res['median_low']:.1%}–{res['median_high']:.1%} ({res['n_competitors']} companies); "
-                       f"{verdict} policy '{rule['text']}'. {_gap_sentence(res['gap_heads'], (g0, g1))}"),
+                       f"{verdict} policy '{rule['text']}'. "
+                       f"{_gap_sentence(res['gap_heads'], (g0, g1), state.company)}"),
             ours=ours_all[cat]["share"], theirs_low=res["median_low"], theirs_high=res["median_high"],
             policy_violated=res["violated"], figure_ids=[f"hc_{cat}", f"cost_{cat}", f"{fid}_median"],
             confidence=conf, confidence_inputs=inputs))
@@ -565,8 +655,8 @@ def build_findings(state: RunState) -> None:
     save(state)
 
 
-def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float]) -> str:
-    """Plain-language gap: positive heads = Acme would need more people to match the median."""
+def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float], company: str = "Our company") -> str:
+    """Plain-language gap: positive heads = the company would need more people to match the median."""
     lo, hi = sorted(heads)
     ulo, uhi = sorted(usd)
 
@@ -581,8 +671,8 @@ def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float]) -> str:
 
     if lo >= 0 or hi <= 0:
         return (f"Matching the competitor median would take {span(people(lo), people(hi))} people "
-                f"(≈ {span(money(ulo), money(uhi))} a year at Acme's loaded cost; estimate).")
-    return ("Acme is inside the competitor median range "
+                f"(≈ {span(money(ulo), money(uhi))} a year at {company}'s loaded cost; estimate).")
+    return (f"{company} is inside the competitor median range "
             f"({people(lo)} to {people(hi)} people, ≈ {money(ulo)} to {money(uhi)} a year; estimate).")
 
 
@@ -599,7 +689,11 @@ def _internal_findings(state: RunState) -> None:
             state.findings.append(Finding(id=f"f_cat_{len(state.findings)}", category="internal", kind="internal",
                                           statement=f"{fl['target']}: {fl['issue']}.", confidence=0.0,
                                           confidence_inputs={"checks": "needs audit"}))
-    infra = [i for i in state.invoices if i["category"] == "infra_cloud"]
+        elif fl["issue"].startswith("duplicate invoice"):
+            state.findings.append(Finding(id=f"f_dup_{len(state.findings)}", category="internal", kind="internal",
+                                          statement=f"{fl['target']}: {fl['issue']}.", confidence=1.0,
+                                          confidence_inputs={"checks": "deterministic (vendor + number/date/amount)"}))
+    infra = [i for i in state.invoices if i["category"] == "infra_cloud" and not i.get("duplicate_of")]
     monthly = state.budget.get("monthly", {}).get("infra_cloud")
     rule = next((r for r in state.policy.get("rules", []) if r["category"] == "infra_cloud"), None)
     if infra and monthly and rule:
