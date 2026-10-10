@@ -50,3 +50,9 @@ _TBD_
 
 ## Submission
 _TBD_
+
+### 2026-10-10 20:22 IST — corrupt PDF no longer reaches the LLM (neatlogs auto-triage fix 2cd5e9df)
+- Planned: act on the neatlogs triage "Handle corrupt PDF files in read_pdf" (8 linked traces, e.g. 36362eb966cdbb85dcb2fb1b280e1034, the Gemini 400 INVALID_ARGUMENT on invoice 13).
+- Already done earlier (6edff38): the 400 is wrapped as a ToolError and a task error never kills the run.
+- Done now: `read_pdf(mode="llm")` checks the PDF opens with pdfplumber first; a file with no /Root fails fast as "corrupt PDF, not sent to the LLM reader". Scanned PDFs still go to the LLM.
+- Tests run: pytest 55 passed (2 new: corrupt PDF makes no LLM call; scanned PDF still does). Run 1010-4f8453 (trace a8d7a3e9cef5f60e6fc5ee9e22ba70ad, LLM cache on, not an evidence run): invoice 13 → reparse_alt fails without an LLM call → skip, listed under Not analysed; 5/5 planted errors, 0 unsupported numbers.

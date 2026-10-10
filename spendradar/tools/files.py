@@ -84,6 +84,17 @@ def _parse_invoice_text(text: str) -> InvoiceExtract:
                           lines=lines, stated_total=total)
 
 
+def _open_error(p: Path) -> str | None:
+    """Why the PDF structure is unreadable (no /Root, bad xref, not a PDF), or None if it opens."""
+    import pdfplumber
+
+    try:
+        with pdfplumber.open(p):
+            return None
+    except Exception as e:
+        return f"{type(e).__name__}: {str(e)[:120]}"
+
+
 @neatlogs.span(kind="TOOL", name="act:read_pdf", tool_name="read_pdf")
 def read_pdf(path: str, mode: str = "text") -> dict:
     """mode='text': pdfplumber + deterministic parse. mode='llm': Gemini reads the PDF bytes."""
@@ -105,6 +116,10 @@ def read_pdf(path: str, mode: str = "text") -> dict:
             data = p.read_bytes()
         except OSError as e:
             raise ToolError(f"cannot read file: {type(e).__name__}: {e}") from e
+        # A file the PDF parser cannot open is corrupt, not scanned: the LLM API rejects it with
+        # 400 INVALID_ARGUMENT, so fail here without spending a call. Scanned PDFs open fine.
+        if err := _open_error(p):
+            raise ToolError(f"corrupt PDF, not sent to the LLM reader: {err}")
         try:
             res = llm.complete(
                 "extract",

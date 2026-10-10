@@ -73,3 +73,26 @@ def test_missing_file_in_llm_mode_is_a_tool_error():
 
     with pytest.raises(files.ToolError, match="cannot read file"):
         files.read_pdf("data/acme/does_not_exist.pdf", mode="llm")
+
+
+def test_corrupt_pdf_in_llm_mode_fails_without_an_llm_call(monkeypatch):
+    from spendradar import llm
+    from spendradar.tools import files
+
+    def boom(*a, **k):
+        raise AssertionError("corrupt PDF must not reach the LLM")
+
+    monkeypatch.setattr(llm, "complete", boom)
+    with pytest.raises(files.ToolError, match="corrupt PDF"):
+        files.read_pdf("data/acme/invoices/13_brightloop_2026-10.pdf", mode="llm")
+
+
+def test_scanned_pdf_still_goes_to_the_llm_reader(monkeypatch):
+    from spendradar import llm
+    from spendradar.tools import files
+
+    called = []
+    monkeypatch.setattr(llm, "complete", lambda *a, **k: called.append(1) or (_ for _ in ()).throw(llm.LLMError("stub")))
+    with pytest.raises(files.ToolError, match="LLM PDF reader failed"):
+        files.read_pdf("data/acme/invoices/12_nimbus_2026-10.pdf", mode="llm")
+    assert called == [1]
