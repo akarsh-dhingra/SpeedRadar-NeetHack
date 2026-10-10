@@ -89,7 +89,9 @@ class Ledger:
 
     def limits(self, model: str) -> dict:
         lim = CONFIG["limits"]
-        return lim["openrouter_free"] if model.endswith(":free") else lim["default_gemini"]
+        if model.endswith(":free"):
+            return lim["openrouter_free"]
+        return lim.get(model, lim["default_gemini"])
 
     def remaining(self, model: str) -> int:
         d = self._day(model)
@@ -173,9 +175,15 @@ def _call_gemini(model: str, prompt: str, system: str | None, schema: type[BaseM
     if faults.fire(f"llm:{model}:429") or faults.fire("llm:429"):
         raise _Retryable("injected", f"[injected] 429 RESOURCE_EXHAUSTED for {model}")
     cfg: dict[str, Any] = {"system_instruction": system} if system else {}
-    if schema is not None:
+    slow = CONFIG.get("timeouts_s", {}).get(model)
+    if slow:  # per-model override of the client-wide bound
+        cfg["http_options"] = types.HttpOptions(timeout=slow * 1000)
+    as_json = bool(tools) and model in CONFIG.get("no_tool_calling", [])
+    if as_json:  # model lacks function calling: same menu, enforced by a JSON schema instead
+        cfg.update(response_mime_type="application/json", response_json_schema=_menu_schema(tools))
+    elif schema is not None:
         cfg.update(response_mime_type="application/json", response_json_schema=schema.model_json_schema())
-    if tools:
+    if tools and not as_json:
         cfg["tools"] = [types.Tool(function_declarations=[
             types.FunctionDeclaration(name=t["name"], description=t["description"],
                                       parameters_json_schema=t["parameters"]) for t in tools])]
@@ -196,10 +204,23 @@ def _call_gemini(model: str, prompt: str, system: str | None, schema: type[BaseM
     tin = (u.prompt_token_count or 0) if u else 0
     tout = ((u.candidates_token_count or 0) + (u.thoughts_token_count or 0)) if u else 0
     call = None
-    if tools and r.function_calls:
+    if as_json:
+        try:
+            j = json.loads(_strip_fences(r.text or ""))
+            call = {"name": j.get("action"), "args": {"reason": j.get("reason", "")}}
+        except json.JSONDecodeError:
+            call = None
+    elif tools and r.function_calls:
         fc = r.function_calls[0]
         call = {"name": fc.name, "args": dict(fc.args or {})}
     return r.text or "", call, tin, tout
+
+
+def _menu_schema(tools: list[dict]) -> dict:
+    return {"type": "object", "properties": {
+        "action": {"type": "string", "enum": [t["name"] for t in tools],
+                   "description": "; ".join(f"{t['name']}: {t['description']}" for t in tools)},
+        "reason": {"type": "string"}}, "required": ["action", "reason"]}
 
 
 def _call_openrouter(model: str, prompt: str, system: str | None, schema: type[BaseModel] | None,

@@ -5,29 +5,37 @@ llm:
   # Ordered fallback chains per role. Gemini free tier first, then OpenRouter :free.
   roles:
     reason:   # plan, decide:recovery, self-audit verdicts
-      gemini: [gemini-3.8-flash, gemini-3.6-flash, gemini-2.5-flash]
+      gemini: [gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-2.5-flash, gemma-4-31b-it]
       openrouter: [google/gemma-4-31b-it:free, nvidia/nemotron-3-super-120b-a12b:free]
     prose:    # report writing
       gemini: [gemini-3.5-flash, gemini-3.6-flash]
       openrouter: [google/gemma-4-31b-it:free]
     extract:  # PDF extraction, title classification, JSON re-asks
-      gemini: [gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-flash-lite-latest]
+      gemini: [gemini-3.5-flash-lite, gemini-3.1-flash-lite, gemini-flash-lite-latest, gemma-4-31b-it]
       openrouter: [google/gemma-4-26b-a4b-it:free, nvidia/nemotron-3-super-120b-a12b:free]
     second_opinion:  # independent audit check, different provider on purpose
       gemini: []
       openrouter: [nvidia/nemotron-3-super-120b-a12b:free, google/gemma-4-31b-it:free]
 
-  # Client-side limits. Gemini free-tier numbers are NOT published in docs (only in
-  # AI Studio); these are conservative defaults until read from AI Studio. Daily
-  # exhaustion is also learned live from 429 quotaId=*PerDay* responses.
+  # Free-tier limits read from Google AI Studio → Rate Limit, 2026-10-10 16:27 IST (screenshot).
+  # Daily exhaustion is also learned live from 429 quotaId=*PerDay* responses.
   limits:
-    default_gemini: {rpm: 5, rpd: 100}  # observed 2026-10-10: gemini-3.8-flash returned PerDay 429 after 15 requests
-    openrouter_free: {rpm: 20, rpd: 50}   # OpenRouter free tier without credits
+    gemini-2.5-flash: {rpm: 5, rpd: 20}
+    gemini-3.6-flash: {rpm: 5, rpd: 20}
+    gemini-3.7-flash: {rpm: 5, rpd: 20}
+    gemini-3.8-flash: {rpm: 5, rpd: 20}
+    gemini-3.5-flash-lite: {rpm: 15, rpd: 500}
+    gemini-3.1-flash-lite: {rpm: 15, rpd: 500}
+    gemma-4-31b-it: {rpm: 30, rpd: 14400}   # TPM only 16K
+    default_gemini: {rpm: 5, rpd: 20}        # anything not listed: assume the strictest Flash tier
+    openrouter_free: {rpm: 20, rpd: 50}      # OpenRouter free tier without credits
 
   retries_per_model: 2          # 429-per-minute / 5xx retries before moving on
   json_reasks: 2                # malformed JSON → re-ask with the validation error
   second_opinion_max_per_run: 5
   timeout_s: 120               # OpenRouter HTTP timeout
+  timeouts_s: {gemma-4-31b-it: 90}   # measured 38 s for a one-line JSON reply on 2026-10-10
+  no_tool_calling: [gemma-4-31b-it]  # returned 500 with function calling; choose() uses a JSON menu instead
   gemini_timeout_s: 40         # per-call bound; added after run 1010-6f37e8 averaged 143 s/call
 
 crustdata:

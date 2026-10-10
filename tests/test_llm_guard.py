@@ -51,3 +51,8 @@ def test_exclude_removes_model_from_chain(tmp_path, monkeypatch):
     first = llm.CONFIG["roles"]["second_opinion"]["openrouter"][0]
     res = llm._run_chain("second_opinion", "p", None, None, None, None, exclude=(first,))
     assert res.model != first and first not in used
+
+
+def test_menu_schema_enumerates_options():
+    sch = llm._menu_schema([{"name": "skip", "description": "d1"}, {"name": "reparse_alt", "description": "d2"}])
+    assert sch["properties"]["action"]["enum"] == ["skip", "reparse_alt"] and sch["required"] == ["action", "reason"]
