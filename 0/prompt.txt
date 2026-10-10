@@ -1,0 +1,1 @@
+Connect to the neatlogs mcp server and continue
