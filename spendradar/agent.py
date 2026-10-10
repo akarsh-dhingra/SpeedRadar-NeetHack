@@ -98,8 +98,10 @@ def _usage(state: RunState, res: llm.LLMResult | dict | None) -> None:
                                            "cached": res.cached, "fallbacks": res.fallbacks}
     u = state.llm_usage.setdefault(d["model"], {"calls": 0, "cached_calls": 0, "tokens_in": 0, "tokens_out": 0,
                                                 "latency_s": 0.0, "fallback_hops": 0})
+    if d.get("cached"):  # served from the local cache: no tokens spent, no time waited
+        u["cached_calls"] += 1
+        return
     u["calls"] += 1
-    u["cached_calls"] += int(bool(d.get("cached")))
     u["tokens_in"] += d.get("tokens_in", 0)
     u["tokens_out"] += d.get("tokens_out", 0)
     u["latency_s"] = round(u["latency_s"] + d.get("latency_s", 0.0), 2)
