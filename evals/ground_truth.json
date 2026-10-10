@@ -1,0 +1,204 @@
+{
+  "_note": "Eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "people_cost_fy27": {
+    "engineering": 22940000,
+    "ml_ai": 4320000,
+    "sales": 9455000,
+    "marketing": 3262500
+  },
+  "headcount_end_fy27": {
+    "engineering": 130,
+    "ml_ai": 22,
+    "sales": 64,
+    "marketing": 24
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 1104000,
+    "sales": 72000,
+    "marketing": 456000,
+    "ml_ai": 360000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 634464,
+    "ml_ai": 60836,
+    "marketing": 74296,
+    "sales": 5400
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_nimbus_2026-04.pdf",
+      "number": "INV-202604-001",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 98724,
+      "stated_total": 98724
+    },
+    {
+      "file": "invoices/02_nimbus_2026-05.pdf",
+      "number": "INV-202605-002",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 92083,
+      "stated_total": 92083
+    },
+    {
+      "file": "invoices/03_nimbus_2026-06.pdf",
+      "number": "INV-202606-003",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 92370,
+      "stated_total": 92370
+    },
+    {
+      "file": "invoices/04_nimbus_2026-07.pdf",
+      "number": "INV-202607-004",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 89435,
+      "stated_total": 96935
+    },
+    {
+      "file": "invoices/05_nimbus_2026-08.pdf",
+      "number": "INV-202608-005",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 85423,
+      "stated_total": 85423
+    },
+    {
+      "file": "invoices/06_nimbus_2026-09.pdf",
+      "number": "INV-202609-006",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-09",
+      "line_items_sum": 85142,
+      "stated_total": 85142
+    },
+    {
+      "file": "invoices/07_tensorforge_2026-05.pdf",
+      "number": "INV-202605-007",
+      "vendor": "Tensorforge GPU",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "ML Platform",
+      "month": "2026-05",
+      "line_items_sum": 28084,
+      "stated_total": 28084
+    },
+    {
+      "file": "invoices/08_tensorforge_2026-08.pdf",
+      "number": "INV-202608-008",
+      "vendor": "Tensorforge GPU",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "Marketing",
+      "month": "2026-08",
+      "line_items_sum": 32752,
+      "stated_total": 32752
+    },
+    {
+      "file": "invoices/09_brightloop_2026-06.pdf",
+      "number": "INV-202606-009",
+      "vendor": "Brightloop Media",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-06",
+      "line_items_sum": 38840,
+      "stated_total": 38840
+    },
+    {
+      "file": "invoices/10_brightloop_2026-09.pdf",
+      "number": "INV-202609-010",
+      "vendor": "Brightloop Media",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-09",
+      "line_items_sum": 35456,
+      "stated_total": 35456
+    },
+    {
+      "file": "invoices/11_pipewise_2026-07.pdf",
+      "number": "INV-202607-011",
+      "vendor": "Pipewise CRM",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-07",
+      "line_items_sum": 5400,
+      "stated_total": 5400
+    },
+    {
+      "file": "invoices/12_nimbus_2026-10.pdf",
+      "number": "INV-202610-012",
+      "vendor": "Nimbus Cloud Ltd",
+      "kind": "scanned",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-10",
+      "line_items_sum": 91287,
+      "stated_total": 91287
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 10,
+      "category": "marketing",
+      "stated_total": 3310500,
+      "correct_total": 3262500,
+      "diff_pct": 1.47
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/04_nimbus_2026-07.pdf",
+      "stated_total": 96935,
+      "line_items_sum": 89435,
+      "diff_pct": 8.39
+    },
+    {
+      "id": "invoice_miscategorised",
+      "type": "miscategorised",
+      "file": "invoices/08_tensorforge_2026-08.pdf",
+      "stated_cost_centre": "Marketing",
+      "correct_category": "ml_ai",
+      "amount": 32752
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/12_nimbus_2026-10.pdf",
+      "expected": "text parser finds no text; LLM/vision route extracts total",
+      "amount": 91287
+    },
+    {
+      "id": "invoice_corrupt",
+      "type": "corrupt_file",
+      "file": "invoices/13_brightloop_2026-10.pdf",
+      "expected": "both parsers fail; listed under Not analysed"
+    }
+  ],
+  "fixtures": []
+}

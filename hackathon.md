@@ -21,6 +21,8 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - Tests run: `pytest` 7 passed (mask, guard, ledger-not-polluted-by-injection); live probes `spikes/neatlogs_probe.py`, `spikes/llm_probe.py`.
   - Bug found and fixed: injected 429s were marking real models exhausted in the ledger.
   - Case-study plan: deferred until the first full run measures LLM calls per run (needed with the RPD limits to size n=3 comparisons).
+- **13:43 IST — Step 3 done.** `scripts/make_acme_data.py` (seeded) generates the fictional Acme folder: budget xlsx (People + NonPeople), 13 invoices from invented vendors, policy.yaml (people-cost share-of-headcount rules + internal infra check), salary_table.csv (labelled ASSUMPTION), and `evals/ground_truth.json` with 5 planted errors (budget total mismatch, invoice total mismatch, mis-categorised invoice, scanned PDF, corrupt PDF). Contracts are cut, as agreed.
+  - Tests run: pdfplumber over all invoices (11 text, 1 empty text layer, 1 PdfminerException); scanned page checked visually.
 
 ## Demo
 _TBD_
