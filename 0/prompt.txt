@@ -1,0 +1,3 @@
+In the new session, ask: "run entire session list and entire status --detailed". It should show an active session. If it doesn't, ask it to run entire doctor.
+Then commit from that session. Entire will ask "Link this commit to session context?" Answer Y, and every commit gets an Entire-Checkpoint trailer.
+After git push, check that the count went up from 35: git ls-remote origin 'refs/entire/checkpoints/*' | wc -l.
