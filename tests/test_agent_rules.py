@@ -42,3 +42,10 @@ def test_cached_llm_calls_add_no_tokens_or_latency():
     agent._usage(s, {"model": "m", "tokens_in": 1, "tokens_out": 2, "latency_s": 3.0, "cached": False})
     assert s.llm_usage["m"] == {"calls": 1, "cached_calls": 1, "tokens_in": 1, "tokens_out": 2, "latency_s": 3.0,
                                 "fallback_hops": 0}
+
+
+def test_gap_sentence_reads_plainly():
+    below = agent._gap_sentence((-17, -14), (-2.4e6, -2.0e6))
+    assert "17 fewer to 14 fewer people" in below and "$-" not in below
+    inside = agent._gap_sentence((-6, 6), (-1.1e6, 1.07e6))
+    assert inside.startswith("Acme is inside") and "$-" not in inside

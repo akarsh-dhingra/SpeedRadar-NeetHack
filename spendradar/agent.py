@@ -535,14 +535,30 @@ def build_findings(state: RunState) -> None:
             id=fid, category=cat, kind="policy",
             statement=(f"Acme {cat} is {res['our_share']:.1%} of headcount vs competitor median "
                        f"{res['median_low']:.1%}–{res['median_high']:.1%} ({res['n_competitors']} companies); "
-                       f"{verdict} policy '{rule['text']}'. Matching the median would mean "
-                       f"{res['gap_heads'][0]:+.0f} to {res['gap_heads'][1]:+.0f} people, "
-                       f"≈ ${g0:,.0f} to ${g1:,.0f} a year at Acme's loaded cost (estimate)."),
+                       f"{verdict} policy '{rule['text']}'. {_gap_sentence(res['gap_heads'], (g0, g1))}"),
             ours=ours_all[cat]["share"], theirs_low=res["median_low"], theirs_high=res["median_high"],
             policy_violated=res["violated"], figure_ids=[f"hc_{cat}", f"cost_{cat}", f"{fid}_median"],
             confidence=conf, confidence_inputs=inputs))
     _internal_findings(state)
     save(state)
+
+
+def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float]) -> str:
+    """Plain-language gap: positive heads = Acme would need more people to match the median."""
+    lo, hi = sorted(heads)
+    ulo, uhi = sorted(usd)
+
+    def people(n: float) -> str:
+        return f"{abs(n):.0f} {'more' if n > 0 else 'fewer'}"
+
+    def money(x: float) -> str:
+        return f"${abs(x):,.0f} {'more' if x > 0 else 'less'}"
+
+    if lo >= 0 or hi <= 0:
+        return (f"Matching the competitor median would take {people(lo)} to {people(hi)} people "
+                f"(≈ {money(ulo)} to {money(uhi)} a year at Acme's loaded cost; estimate).")
+    return ("Acme is inside the competitor median range "
+            f"({people(lo)} to {people(hi)} people, ≈ {money(ulo)} to {money(uhi)} a year; estimate).")
 
 
 def _internal_findings(state: RunState) -> None:
