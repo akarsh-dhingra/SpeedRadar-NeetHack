@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4JGEEG8DRCJSXDYCBE1PY5D",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "evidence/evals/20261010T142549-6bc76af-fixture-dev.json",
+    "evidence/traces.md",
+    "spendradar/agent.py",
+    "spendradar/audit.py",
+    "spendradar/llm.py",
+    "tests/test_agent_rules.py",
+    "tests/test_llm_guard.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 7515,
+    "cache_read_tokens": 1312019,
+    "output_tokens": 5168,
+    "api_call_count": 4
+  }
+}
