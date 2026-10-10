@@ -25,6 +25,8 @@ Finance teams budget against their own ledger, not the market. They find out a c
 
 ## How it works
 
+![Spend Radar loop](evidence/architecture.png)
+
 ```mermaid
 flowchart LR
   P[PLAN<br/>LLM writes typed task list] --> C{coverage check}
