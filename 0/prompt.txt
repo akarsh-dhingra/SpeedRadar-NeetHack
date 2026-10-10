@@ -1,0 +1,1 @@
+I'm working on a neat log hackathon. Right now, and this is my project. So I have to integrate CFO.ai in this. Give me detailed steps on how to integrate it. And let me know what to do and complete the project.
