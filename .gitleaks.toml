@@ -1,0 +1,18 @@
+# gitleaks config: default rules plus our providers' key formats.
+[extend]
+useDefault = true
+
+[[rules]]
+id = "openrouter-api-key"
+description = "OpenRouter API key"
+regex = '''sk-or-(v1-)?[0-9a-zA-Z]{32,}'''
+
+[[rules]]
+id = "crustdata-api-key-assignment"
+description = "Crustdata API key assigned in code or config"
+regex = '''(?i)crustdata[_-]?(api)?[_-]?key\s*[:=]\s*["']?[0-9a-zA-Z_\-]{16,}'''
+
+[[rules]]
+id = "neatlogs-api-key-assignment"
+description = "neatlogs API key assigned in code or config"
+regex = '''(?i)neatlogs[_-]?(api)?[_-]?key\s*[:=]\s*["']?[0-9a-zA-Z_\-]{16,}'''

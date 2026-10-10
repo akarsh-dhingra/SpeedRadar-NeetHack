@@ -1,0 +1,19 @@
+#!/bin/sh
+# Pre-commit secret scan. Installed by: ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
+# 1) gitleaks over staged changes; 2) exact-match check for every value in .env.
+set -e
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --staged --no-banner --redact --config .gitleaks.toml || {
+    echo "pre-commit: gitleaks found a possible secret; commit blocked." >&2; exit 1; }
+else
+  echo "pre-commit: gitleaks not installed (brew install gitleaks); skipping pattern scan." >&2
+fi
+if [ -f .env ]; then
+  diff=$(git diff --cached -U0 --no-color)
+  grep -E '^[A-Z_]+=.{8,}' .env | cut -d= -f2- | while IFS= read -r v; do
+    if printf '%s' "$diff" | grep -qF -- "$v"; then
+      echo "pre-commit: a value from .env appears in the staged diff; commit blocked." >&2
+      exit 1
+    fi
+  done
+fi
