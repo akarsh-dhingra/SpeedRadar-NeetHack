@@ -37,6 +37,9 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - Quota: gemini-3.8-flash exhausted at 15 req/day, 3.6-flash at 11; 2.5-flash left for reasoning today.
   - Noted for later: an audit verdict gave a muddled reason (competitor signal vs Acme's own share). Candidate case study 03.
   - Tests run: pytest 20 passed.
+- **14:27 IST — Fixture eval + audit fix.** Fixture run 1010-9e86fc: Sentry marketing ×5 caught (6/6), marketing finding downgraded. Found and fixed: the second opinion reused the primary verdict's model once Gemini quota ran out (now excludes it); single-option recoveries skip the LLM. HTML report + sample reports committed. README draft done.
+  - All Gemini reasoning models exhausted for the day (3.8-flash 15, 3.6-flash 11, 2.5-flash 18 requests). Next evidence runs after the ~12:30 IST reset.
+  - Tests run: pytest 22 passed.
 
 ## Demo
 _TBD_

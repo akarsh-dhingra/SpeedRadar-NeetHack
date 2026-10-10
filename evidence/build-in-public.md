@@ -56,3 +56,28 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 **Image:** the report's "Overturned claims" section next to the neatlogs trace for `audit:f_ml_ai` (trace `af0df27e2d3433e0c608fb28a018a22d`).
 
 **Source for every number:** run `1010-b31657`, scorecard `evidence/evals/20261010T141541-11a5108-before-fix.json`. The 9–32× range is Acme’s 330 people (end FY27, budget sheet) vs New Relic (3,095 → 9.4×) and Datadog (10,482 → 31.8×), headcount from Crustdata.
+
+---
+
+## Post 3 — a bug the traces caught (Sun morning)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> #neatHack day 2: the @neatlogs traces caught my agent quietly wrecking its own analysis.
+>
+> When one competitor's ML/AI estimate was weak, the agent's recovery step *replaced the whole competitor*, dropping its good engineering, sales and marketing data. It did that 3 times. 3 of 5 peers became companies 9–32× our size.
+>
+> The `decide:recovery` spans showed it plainly: fetch_more_signal (which re-ran the identical cached query, so no new info) → substitute_competitor.
+>
+> Fix: substitution only when a competitor has *no* data, and "more signal" now fetches a genuinely different sample.
+>
+> Before → after (1 run each):
+> peers kept 2/5 → 5/5
+> Crustdata credits 26.6 → 5.4
+> planted errors caught 5/5 → 5/5
+
+**Image:** the before trace's `decide:recovery` span list (trace `af0df27e2d3433e0c608fb28a018a22d`) next to the case-study table.
+
+**Sources:** `evidence/case-studies/02-competitor-substitution.md`, scorecards `20261010T141541-11a5108-before-fix.json` and `20261010T141541-22f00b0-after-fix-02.json`.
