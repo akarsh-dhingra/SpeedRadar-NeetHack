@@ -15,9 +15,9 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **13:23 IST — Step 1 started.** Planned: new public repo, `.gitignore`, `.env.example`, Entire re-enabled, Crustdata probe for 7 candidate competitors.
   - Done: repo initialised, Entire enabled for Claude Code (`entire enable --agent claude-code`), first commit.
   - Tests run: none yet (no code).
-- **13:45 IST — Step 1 done.** Crustdata probe: 28 credits (14 wasted on a duplicate enrich; fixed). All 7 candidates have role-level headcount, timeseries, funding, news; Chronosphere lacks hiring data; no ML/AI role exists, so ML/AI uses title classification. Competitors: Honeycomb, Sentry, Arize, Chronosphere, Grafana Labs (see `spikes/FINDINGS.md`).
+- **13:35 IST — Step 1 done.** Crustdata probe: 28 credits (14 wasted on a duplicate enrich; fixed). All 7 candidates have role-level headcount, timeseries, funding, news; Chronosphere lacks hiring data; no ML/AI role exists, so ML/AI uses title classification. Competitors: Honeycomb, Sentry, Arize, Chronosphere, Grafana Labs (see `spikes/FINDINGS.md`).
   - Tests run: probe script against live API (7 enrich, 7 job aggregations).
-- **14:00 IST — Step 2 done.** neatlogs tracing with a client-side secret mask (doctor --probe PASS); gitleaks + .env-value pre-commit scan (verified it blocks a fake key and a real .env value); `llm.py` with `:free` guard, quota ledger, rate limiter, cache, Gemini→Gemini→OpenRouter fallback, JSON re-ask, native function calling. Finding: Gemini Pro has zero free-tier quota → Flash plans.
+- **13:41 IST — Step 2 done.** neatlogs tracing with a client-side secret mask (doctor --probe PASS); gitleaks + .env-value pre-commit scan (verified it blocks a fake key and a real .env value); `llm.py` with `:free` guard, quota ledger, rate limiter, cache, Gemini→Gemini→OpenRouter fallback, JSON re-ask, native function calling. Finding: Gemini Pro has zero free-tier quota → Flash plans.
   - Tests run: `pytest` 7 passed (mask, guard, ledger-not-polluted-by-injection); live probes `spikes/neatlogs_probe.py`, `spikes/llm_probe.py`.
   - Bug found and fixed: injected 429s were marking real models exhausted in the ledger.
   - Case-study plan: deferred until the first full run measures LLM calls per run (needed with the RPD limits to size n=3 comparisons).

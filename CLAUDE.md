@@ -338,6 +338,7 @@ Captions on. Every number on screen must come from a saved scorecard or trace.
 ## 14. Working agreements for Claude Code
 
 - Before using any external SDK/API (neatlogs, Entire, Crustdata, cfo.ai, Gemini, OpenRouter, AWS), read its current docs; never guess function names or model IDs. If docs are unclear, write a tiny probe and inspect real output.
+- Timestamps in `hackathon.md`, `evidence/` and posts come from `date` or commit times, never estimated.
 - Keep `hackathon.md` at the repo root per the neatHack skill: sections Project, Team, Stack, Build log, Demo, Limitations, Submission. Append a dated entry per work session separating planned vs done and listing tests actually run; never delete old entries; no secrets, private traces, or made-up results.
 - Commit messages: imperative, specific, with step number (e.g. `step 8: add backoff+cache fallback for crustdata 429`).
 - Ask Akarsh before: switching ideas, spending > 100 Crustdata credits in one go, anything that could cost money, starting/leaving an AWS instance running, or anything irreversible.

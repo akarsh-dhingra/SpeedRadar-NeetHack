@@ -1,4 +1,4 @@
-# Step 1 — Crustdata probe findings (10 Oct 2026, ~13:40 IST)
+# Step 1 — Crustdata probe findings (10 Oct 2026, 13:35 IST)
 
 Raw responses: `cache/crustdata/probe/` (git-ignored). Script: `spikes/crustdata_probe.py`.
 
@@ -33,7 +33,7 @@ Acme is fictional at ~300 people, so we compare against peers of similar scale, 
 - Substitute pool: New Relic (3,095), Datadog (10,482). These are too large to be in the median by default.
 - Chronosphere has no `hiring` data. That gives us a real case for the "competitor with partial data" recovery path.
 
-# Step 2 — providers and tracing (10 Oct 2026, ~14:00 IST)
+# Step 2 — providers and tracing (10 Oct 2026, 13:41 IST)
 
 ## Gemini (free tier key, live calls)
 | Model | Result |
