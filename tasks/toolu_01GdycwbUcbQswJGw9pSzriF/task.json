@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "toolu_01GdycwbUcbQswJGw9pSzriF",
+  "agent_id": "a05c6e068082d548f",
+  "subagent_type": "general-purpose",
+  "task_description": "Architecture diagram PNG",
+  "token_usage": {
+    "input_tokens": 10,
+    "cache_creation_tokens": 33997,
+    "cache_read_tokens": 130196,
+    "output_tokens": 77,
+    "api_call_count": 5
+  },
+  "started_at": "2026-10-10T16:33:10.821311+05:30",
+  "completed_at": "2026-10-10T16:34:54.160075+05:30"
+}
