@@ -149,21 +149,23 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 > What does one Spend Radar run cost? I didn't guess. I read it off the @neatlogs traces. #neatHack
 >
-> Evidence run 1010-7bf26d (LLM cache off):
-> 30 LLM calls
-> 10,260 tokens in / 25,126 out
-> paid-equivalent LLM cost: $0.0692
-> Crustdata: 20.8 credits on a cold run (5 competitors x 2 credits + job results x 0.03)
+> 5 evidence runs on gpt-5-nano (LLM cache off), mean per run:
+> 29–30 LLM calls
+> 13,188 tokens in / 66,327 out
+> paid-equivalent LLM cost: $0.0285 (range $0.0270–$0.0296)
+> Competitor data (Crustdata): $6.24–$9.24 per uncached run
 >
-> I built on free tiers, so actual spend was $0. These are what a paying deployment would face: measured tokens x the published paid price of the same model.
+> I built on free tiers, so actual spend was $0. These are what a paying deployment would face: measured usage x published paid prices.
 >
-> Those numbers went into cfo.ai: monthly cost {{monthly_cost}}, price {{price}}, runway {{runway_months}} months.
+> Those numbers went into cfo.ai. The surprise: the LLM is under 1% of the cost; competitor data is ~99%.
+> Starter ($99) keeps 62% gross margin if half the runs are cached. With no cache, Team ($399) keeps 7%.
+> So caching is the business model, and the Team tier needs repricing.
 >
-> Caveats: n = 1 run (target 5), and Crustdata doesn't publish a USD price per credit ({{usd_per_credit}} needed).
+> Caveat: the 50% cache rate is an assumption I still have to measure.
 
-**Image:** the per-model table from `business/unit_costs.md` beside the cfo.ai plan screen.
+**Image:** the cfo.ai Unit Economics cache-sensitivity view beside the `business/unit_costs.md` table.
 
-**Sources:** `business/unit_costs.md`, trace `288f07d84bb84e15754a241eef40d779`.
+**Sources:** `business/cfoai_plan.md`, `business/cfoai/Unit Economics.xlsx`, `business/unit_costs.md`, `business/unit_costs.json` (traces `5c512d38…`, `d4a8716f…`, `0dcf2297…`, `96bb7958…`, `c4c0b55a…`).
 
 **Posted:** —  
 **Link:** —

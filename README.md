@@ -78,7 +78,10 @@ flowchart LR
 
 ### cfo.ai: a business plan from measured costs
 - Unit costs are **measured**: tokens per run from evidence runs × the published paid price of the same model. We developed on free tiers, so actual spend was $0.
-- Inputs: [`business/inputs.md`](business/inputs.md), [`business/unit_costs.md`](business/unit_costs.md). The cfo.ai plan export goes in `business/`.
+- Inputs: [`business/inputs.md`](business/inputs.md), [`business/unit_costs.md`](business/unit_costs.md). Prompt given to cfo.ai's Ari: [`business/cfoai_prompt.md`](business/cfoai_prompt.md).
+- Plan: [`business/cfoai_plan.md`](business/cfoai_plan.md), with the cfo.ai exports in [`business/cfoai/`](business/cfoai/). It covers 24 months in two scenarios. Base turns cash-flow positive in month 15, with a cash low of $7,149 and a 57.7% gross margin. Growth turns positive in month 8, with a 71.4% margin.
+- What it showed: Crustdata competitor data is about 99% of the cost of serving a customer, so caching it decides the margin. With no caching, the Team tier keeps 7.1% of its revenue (Base). Founder salary, tools and starting cash in the plan are placeholders.
+- Cross-checked: [`business/make_cfoai_sheet.py`](business/make_cfoai_sheet.py) rebuilds the model in Python and matches the cfo.ai export on every month to within $0.01.
 
 ## Results so far
 
