@@ -57,3 +57,9 @@ _TBD_
 - Done now: `read_pdf(mode="llm")` checks the PDF opens with pdfplumber first; a file with no /Root fails fast as "corrupt PDF, not sent to the LLM reader". Scanned PDFs still go to the LLM.
 - Tests run: pytest 55 passed (2 new: corrupt PDF makes no LLM call; scanned PDF still does). Run 1010-4f8453 (trace a8d7a3e9cef5f60e6fc5ee9e22ba70ad, LLM cache on, not an evidence run): invoice 13 → reparse_alt fails without an LLM call → skip, listed under Not analysed; 5/5 planted errors, 0 unsupported numbers.
 - 2026-10-10 20:55 IST follow-up: connected the Neatlogs MCP server (local scope, key not in repo) and read the triage and the original trace 36362eb966cdbb85dcb2fb1b280e1034 (invoice 13: read_pdf text-mode ERROR, then the LLM fallback). Evidence run 1010-7309e6 (LLM cache off, trace 953bb991e2547b1591bb2bb6adb555b8): invoice 13 skipped with 0 LLM calls, 5/5 planted, 0 unsupported numbers, 0 fallback hops. Neatlogs ingestion was stalled server-side at the time (`neatlogs doctor --probe`: TRACE_READBACK_TIMEOUT, "processing at raw_durable"), so the new traces showed 0 spans.
+
+### 2026-10-10 21:45 IST — step 15 prep: cfo.ai drivers and steps
+- Planned: get everything ready so the cfo.ai plan can be built in one sitting.
+- Done: `business/cfo-ai-drivers.csv` (every driver with type and source; blanks left for Crustdata $/credit, founder salary, starting cash, tools) and `business/cfo-ai-steps.md` (fill blanks → build model → sanity checks → export to `business/`, cancel subscription). README cfo.ai section links both.
+- Not done: the cfo.ai model itself (Akarsh, in cfo.ai). The coding agent's cloud environment cannot reach cfo.ai (network policy, proxy 403), so the UI steps are generic.
+- Tests run: pytest 55 passed.

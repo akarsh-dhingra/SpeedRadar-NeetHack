@@ -1,0 +1,23 @@
+driver,value,unit,type,source
+llm_cost_per_run,0.0285,USD/run,MEASURED,business/unit_costs.md (n=5 evidence runs on gpt-5-nano; range 0.0270-0.0296)
+crustdata_credits_per_cold_run,20.8,credits/run,MEASURED,business/unit_costs.md (5 competitors x 2 credits + 360 job results x 0.03)
+crustdata_usd_per_credit,,USD/credit,PUBLISHED (to fill),https://app.crustdata.com/billing/credits
+hosting_per_month,15.2,USD/month,PUBLISHED (third-party),instances.vantage.sh/aws/ec2/t3.small checked 2026-10-10; 0.0208 USD/h x 730 h
+runs_per_customer_starter,8,runs/month,ASSUMPTION,business/inputs.md section 2
+runs_per_customer_team,40,runs/month,PROPOSAL,business/inputs.md section 3 (Team tier cap)
+support_hours_per_new_customer,2,hours,ASSUMPTION,business/inputs.md section 2
+price_starter,99,USD/month,PROPOSAL,business/inputs.md section 3
+price_team,399,USD/month,PROPOSAL,business/inputs.md section 3
+price_enterprise_from,1500,USD/month,PROPOSAL,business/inputs.md section 3 (not in scenarios)
+base_customers_m6,5 starter / 1 team,customers,ASSUMPTION,business/inputs.md section 4
+base_customers_m12,15 starter / 3 team,customers,ASSUMPTION,business/inputs.md section 4
+base_customers_m24,40 starter / 10 team,customers,ASSUMPTION,business/inputs.md section 4
+growth_customers_m6,10 starter / 2 team,customers,ASSUMPTION,business/inputs.md section 4
+growth_customers_m12,35 starter / 8 team,customers,ASSUMPTION,business/inputs.md section 4
+growth_customers_m24,100 starter / 25 team,customers,ASSUMPTION,business/inputs.md section 4
+paying_customers_m1_to_m3,0,customers,ASSUMPTION,design partners only (business/inputs.md section 4)
+churn_base,3,%/month,ASSUMPTION,business/inputs.md section 4
+churn_growth,2,%/month,ASSUMPTION,business/inputs.md section 4
+founder_salary,,USD/month,ASSUMPTION (to fill),Akarsh
+starting_cash,,USD,ASSUMPTION (to fill),Akarsh
+tools_saas_per_month,,USD/month,ASSUMPTION (to fill),Akarsh (neatlogs plan, Crustdata plan, domain)

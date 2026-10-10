@@ -79,6 +79,7 @@ flowchart LR
 ### cfo.ai: a business plan from measured costs
 - Unit costs are **measured**: tokens per run from evidence runs × the published paid price of the same model. We developed on free tiers, so actual spend was $0.
 - Inputs: [`business/inputs.md`](business/inputs.md), [`business/unit_costs.md`](business/unit_costs.md). The cfo.ai plan export goes in `business/`.
+- Drivers for cfo.ai, each labelled MEASURED / PUBLISHED / PROPOSAL / ASSUMPTION with its source: [`business/cfo-ai-drivers.csv`](business/cfo-ai-drivers.csv). How the plan is built and exported: [`business/cfo-ai-steps.md`](business/cfo-ai-steps.md).
 
 ## Results so far
 
