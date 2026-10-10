@@ -35,7 +35,8 @@ def write(state: RunState) -> Path:
     out += [f"# Spend Radar report — Acme Observability Inc. (fictional)", "",
             f"- Run `{state.run_id}` · commit `{state.git_sha}` · neatlogs trace `{state.trace_id}`",
             f"- **Data mode: {mode}** · LLM models used: {', '.join(providers) or 'none'}"
-            + (f" · **injected faults: {', '.join(state.injected)}**" if state.injected else ""),
+            + (f" · **injected faults: {', '.join(state.injected)} (fired: {', '.join(state.faults_fired) or 'none'})**"
+               if state.injected else ""),
             "- Competitor comparison is **people cost only** (headcount × Acme's loaded cost, an estimate). "
             "Infra/cloud is checked against Acme's own budget only.", ""]
 

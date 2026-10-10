@@ -596,6 +596,7 @@ def run_phases(state: RunState) -> RunState:
             state.phase = "done"
             save(state)
         state.injected = faults.active()
+        state.faults_fired = list(faults.fired)
     return state
 
 

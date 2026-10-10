@@ -127,6 +127,7 @@ class RunState(BaseModel):
     title_classes: dict[str, dict] = Field(default_factory=dict)
     llm_usage: dict[str, dict] = Field(default_factory=dict)  # model -> {calls, tokens_in, tokens_out, latency_s}
     crustdata_credits: float = 0.0
-    injected: list[str] = Field(default_factory=list)
+    injected: list[str] = Field(default_factory=list)  # configured
+    faults_fired: list[str] = Field(default_factory=list)  # actually triggered
     data_mode: Literal["real", "fixture"] = "real"
     step: int = 0
