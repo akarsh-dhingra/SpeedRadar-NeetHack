@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "toolu_01XufUu2NW16JdNGLoj9mDBU",
+  "agent_id": "af6d698feaf581497",
+  "subagent_type": "general-purpose",
+  "task_description": "Inventory neatlogs feature coverage",
+  "token_usage": {
+    "input_tokens": 14,
+    "cache_creation_tokens": 71067,
+    "cache_read_tokens": 334707,
+    "output_tokens": 158,
+    "api_call_count": 7
+  },
+  "started_at": "2026-10-11T13:39:29.565189+05:30",
+  "completed_at": "2026-10-11T13:41:09.52169+05:30"
+}

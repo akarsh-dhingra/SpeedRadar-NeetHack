@@ -1,0 +1,97 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N0D9ND5DK34RE73ZX81J52",
+  "session_id": "f356ebcd-1778-45d3-a192-663d385625b4",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T08:14:05.079743Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "spendradar/__main__.py",
+    "spendradar/agent.py",
+    "spendradar/analysis.py",
+    "spendradar/llm.py",
+    "spendradar/tools/crustdata.py",
+    "spendradar/tracing.py",
+    "spendradar/verify.py",
+    "tests/test_llm_guard.py"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-5-5",
+  "turn_id": "4ffff90ce139",
+  "checkpoint_transcript_start": 2921,
+  "transcript_lines_at_start": 2921,
+  "compact_transcript_start": 432,
+  "token_usage": {
+    "input_tokens": 42,
+    "cache_creation_tokens": 34852,
+    "cache_read_tokens": 4425776,
+    "output_tokens": 12671,
+    "api_call_count": 19,
+    "subagent_tokens": {
+      "input_tokens": 32,
+      "cache_creation_tokens": 183850,
+      "cache_read_tokens": 932420,
+      "output_tokens": 379,
+      "api_call_count": 16
+    }
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01PFdF2FgUKwAk6V68GB5VBd",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "grilling"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "98d18df7b085",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 32,
+        "end": 33,
+        "entry_ids": [
+          "cdda053b-dc09-48c5-b0bc-3bdd411131f2"
+        ],
+        "tool_use_id": "toolu_01PFdF2FgUKwAk6V68GB5VBd"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01PFdF2FgUKwAk6V68GB5VBd"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: grilling",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 31
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T08:14:04.772051Z",
+    "agent_lines": 200,
+    "agent_removed": 51,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 200,
+    "total_lines_changed": 251,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

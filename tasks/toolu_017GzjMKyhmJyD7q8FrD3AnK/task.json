@@ -1,0 +1,15 @@
+{
+  "tool_use_id": "toolu_017GzjMKyhmJyD7q8FrD3AnK",
+  "agent_id": "a024f2ecd58446048",
+  "subagent_type": "general-purpose",
+  "task_description": "Audit agent failure modes",
+  "token_usage": {
+    "input_tokens": 18,
+    "cache_creation_tokens": 112783,
+    "cache_read_tokens": 597713,
+    "output_tokens": 221,
+    "api_call_count": 9
+  },
+  "started_at": "2026-10-11T13:39:29.564321+05:30",
+  "completed_at": "2026-10-11T13:41:39.289424+05:30"
+}
