@@ -1,0 +1,563 @@
+{
+ "created": "2026-10-11T10:47:34",
+ "variant": "before-fix-misses",
+ "evidence": false,
+ "git_sha": "d1ff728",
+ "n_runs": 4,
+ "n_runs_without_fallback": 0,
+ "planted_total": 5,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 3.75,
+   "min": 3,
+   "max": 4,
+   "n": 4
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 4
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 4
+  },
+  "overturned": {
+   "mean": 1.25,
+   "min": 1,
+   "max": 2,
+   "n": 4
+  },
+  "downgraded": {
+   "mean": 0.75,
+   "min": 0,
+   "max": 1,
+   "n": 4
+  },
+  "recovery_decisions": {
+   "mean": 9.75,
+   "min": 9,
+   "max": 10,
+   "n": 4
+  },
+  "llm_calls": {
+   "mean": 27.5,
+   "min": 22,
+   "max": 30,
+   "n": 4
+  },
+  "llm_tokens_in": {
+   "mean": 9630,
+   "min": 8312,
+   "max": 10785,
+   "n": 4
+  },
+  "llm_tokens_out": {
+   "mean": 12745.5,
+   "min": 12417,
+   "max": 13340,
+   "n": 4
+  },
+  "llm_latency_s": {
+   "mean": 380.325,
+   "min": 237.9,
+   "max": 448.8,
+   "n": 4
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 4
+  }
+ },
+ "summary_no_fallback_runs": {},
+ "runs": [
+  {
+   "run_id": "1010-4c9a03",
+   "trace_id": "b16cc16a4424fc85ad5478646523ad6e",
+   "git_sha": "d1ff728",
+   "tags": [
+    "sha:d1ff728",
+    "run:1010-4c9a03",
+    "variant:gemma-mix-n3",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "acme",
+   "ground_truth": "evals/ground_truth.json",
+   "planted_caught": 4,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": false,
+    "invoice_scanned": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.424
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 1,
+   "downgraded": 1,
+   "recovery_decisions": 10,
+   "recovery_non_default": 7,
+   "llm_calls": 29,
+   "llm_tokens_in": 10785,
+   "llm_tokens_out": 12570,
+   "llm_latency_s": 387.7,
+   "fallback_hops": 11,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gemma-4-31b-it",
+    "google/gemma-4-31b-it:free",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemma-4-31b-it": {
+     "calls": 7,
+     "cached_calls": 0,
+     "tokens_in": 1879,
+     "tokens_out": 2313,
+     "latency_s": 286.73,
+     "fallback_hops": 0
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 6,
+     "cached_calls": 0,
+     "tokens_in": 2541,
+     "tokens_out": 3059,
+     "latency_s": 39.58,
+     "fallback_hops": 10
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 15,
+     "cached_calls": 0,
+     "tokens_in": 6143,
+     "tokens_out": 7148,
+     "latency_s": 58.29,
+     "fallback_hops": 0
+    },
+    "google/gemma-4-31b-it:free": {
+     "calls": 1,
+     "cached_calls": 0,
+     "tokens_in": 222,
+     "tokens_out": 50,
+     "latency_s": 3.12,
+     "fallback_hops": 1
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1010-5a3921",
+   "trace_id": "20f905ed5d9cb2614953d04a7b1e5ef8",
+   "git_sha": "6edff38",
+   "tags": [
+    "sha:6edff38",
+    "run:1010-5a3921",
+    "variant:after-cs03-n3",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "acme",
+   "ground_truth": "evals/ground_truth.json",
+   "planted_caught": 4,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": false,
+    "invoice_scanned": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.424
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 1,
+   "downgraded": 1,
+   "recovery_decisions": 10,
+   "recovery_non_default": 7,
+   "llm_calls": 30,
+   "llm_tokens_in": 9908,
+   "llm_tokens_out": 13340,
+   "llm_latency_s": 446.9,
+   "fallback_hops": 10,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gemma-4-31b-it",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemma-4-31b-it": {
+     "calls": 11,
+     "cached_calls": 0,
+     "tokens_in": 2597,
+     "tokens_out": 2576,
+     "latency_s": 371.41,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 13,
+     "cached_calls": 0,
+     "tokens_in": 5254,
+     "tokens_out": 7053,
+     "latency_s": 29.66,
+     "fallback_hops": 0
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 6,
+     "cached_calls": 0,
+     "tokens_in": 2057,
+     "tokens_out": 3711,
+     "latency_s": 45.87,
+     "fallback_hops": 10
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1010-bbc370",
+   "trace_id": "f2c2d7221ee763829581aec9aaeffd1b",
+   "git_sha": "6edff38",
+   "tags": [
+    "sha:6edff38",
+    "run:1010-bbc370",
+    "variant:after-cs03-n3",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "acme",
+   "ground_truth": "evals/ground_truth.json",
+   "planted_caught": 4,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": false,
+    "invoice_scanned": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.424
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 2,
+   "downgraded": 0,
+   "recovery_decisions": 10,
+   "recovery_non_default": 7,
+   "llm_calls": 29,
+   "llm_tokens_in": 9515,
+   "llm_tokens_out": 12417,
+   "llm_latency_s": 448.8,
+   "fallback_hops": 6,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gemma-4-31b-it",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemma-4-31b-it": {
+     "calls": 12,
+     "cached_calls": 0,
+     "tokens_in": 2851,
+     "tokens_out": 2713,
+     "latency_s": 355.39,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 13,
+     "cached_calls": 0,
+     "tokens_in": 5254,
+     "tokens_out": 7220,
+     "latency_s": 64.7,
+     "fallback_hops": 0
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 4,
+     "cached_calls": 0,
+     "tokens_in": 1410,
+     "tokens_out": 2484,
+     "latency_s": 28.67,
+     "fallback_hops": 6
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1010-ef57b1",
+   "trace_id": "c39723ed4937eaccf37b3562de567024",
+   "git_sha": "6edff38",
+   "tags": [
+    "sha:6edff38",
+    "run:1010-ef57b1",
+    "variant:after-cs03-n3",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "acme",
+   "ground_truth": "evals/ground_truth.json",
+   "planted_caught": 3,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": false,
+    "invoice_scanned": false,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 14.39,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.5
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.424
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 1,
+   "downgraded": 1,
+   "recovery_decisions": 9,
+   "recovery_non_default": 4,
+   "llm_calls": 22,
+   "llm_tokens_in": 8312,
+   "llm_tokens_out": 12655,
+   "llm_latency_s": 237.9,
+   "fallback_hops": 17,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gemma-4-31b-it",
+    "google/gemma-4-31b-it:free",
+    "nvidia/nemotron-3-super-120b-a12b:free"
+   ],
+   "llm_usage": {
+    "gemma-4-31b-it": {
+     "calls": 3,
+     "cached_calls": 0,
+     "tokens_in": 1183,
+     "tokens_out": 1947,
+     "latency_s": 158.13,
+     "fallback_hops": 0
+    },
+    "google/gemma-4-31b-it:free": {
+     "calls": 1,
+     "cached_calls": 0,
+     "tokens_in": 323,
+     "tokens_out": 43,
+     "latency_s": 2.74,
+     "fallback_hops": 1
+    },
+    "nvidia/nemotron-3-super-120b-a12b:free": {
+     "calls": 8,
+     "cached_calls": 0,
+     "tokens_in": 3009,
+     "tokens_out": 4326,
+     "latency_s": 51.37,
+     "fallback_hops": 16
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 10,
+     "cached_calls": 0,
+     "tokens_in": 3797,
+     "tokens_out": 6339,
+     "latency_s": 25.67,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  }
+ ],
+ "neatlogs_eval_trace_id": "7bd86a1de6d857afcecbdd24daa9325c"
+}
