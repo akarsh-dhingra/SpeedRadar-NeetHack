@@ -3,10 +3,11 @@
 Covers all three tools (neatlogs, Entire, cfo.ai) as CLAUDE.md §13 requires. Captions on. Every number below is copied from the file in [brackets]; the brackets are for us, not for the voice-over. Record at 1440×900 or larger, dark theme, browser zoom 100%.
 
 **Before recording**
-- Open the site: `site/index.html` (or the shared artifact link). Leave Motion on.
+- Open the live site: https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ . Leave Motion on.
 - Second tab: the neatlogs dashboard, trace `af0df27e2d3433e0c608fb28a018a22d` open on its `decide:recovery` spans.
 - Third tab: cfo.ai, the Spend Radar plan's Summary page.
-- Terminal in the repo, font large, with `git log -3` and `entire checkpoint list` ready to paste.
+- Fourth tab: Entire trail #2, https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/trails/2 , scrolled to the runner finding.
+- Terminal in the repo, font large, with `python -m spendradar explain f8b07091ded7e21b530712e83b174931` ready to paste (output: `evidence/explain/f8b07091ded7-errors.md`).
 - Reload the site right before you hit record so the radar intro plays.
 
 ---
@@ -32,26 +33,26 @@ Covers all three tools (neatlogs, Entire, cfo.ai) as CLAUDE.md §13 requires. Ca
 
 ## 1:30–1:50 · Recovery, live
 **On screen:** **Recovery log**: the three injected-fault cards. Click the Bastion card; Run detail opens and the replay plays: a failed check shakes, the recovery menu appears, the chosen option stamps in.
-**VO:** "We also broke it on purpose: forced rate limits from Crustdata and the LLM. Three runs, every planted error still caught. When a check fails, the model picks a recovery from a fixed menu. In a hundred and eighty-three of three hundred and seventy-two decisions it chose something other than the default rule."
-[summary: injected_runs 3, all planted caught; recovery_overrides 183, recovery_decisions 372]
+**VO:** "We also broke it on purpose: forced rate limits from Crustdata and the LLM. Three runs, every planted error still caught. When a check fails, the model picks a recovery from a fixed menu. In a hundred and sixty-one of two hundred and eighty-nine decisions it chose something other than the default rule."
+[summary: injected_runs 3, all planted caught; recovery_overrides 161, recovery_decisions 289]
 
 ## 1:50–2:10 · Entire
-**On screen:** terminal: `git log -3` showing `Entire-Checkpoint:` trailers, then `entire checkpoint list`, then `evidence/entire/graph-impact-decide_recovery.txt`.
-**VO:** "Entire kept the coding agent's context. Commits carry a checkpoint that links the change to the prompt and transcript behind it; more than forty are on GitHub. Before changing the recovery menu, we used Entire's code graph to find every caller of decide recovery."
-[`git ls-remote origin 'refs/entire/checkpoints/*' | wc -l` = 47 at 12:04 IST on 11 Oct, and it grows with every commit; evidence/entire/README.md]
+**On screen:** site **Entire** page (stats, the closed-loop callout, the three trails). Cut to trail #2 on entire.io, scrolled to the runner finding. Then the terminal: run `spendradar explain` on the corrupt-PDF trace and scroll the dossier to "Prompt".
+**VO:** "Entire ties every run to the code behind it. Each run records its commit and Entire checkpoint. Every change since Sunday went through a trail, reviewed by six runners tailored to this repo, and they caught two real issues before merge: here, a fix that silently skipped news evidence. And this command follows a neatlogs error back through the code line to the checkpoint and the prompt that wrote it. For the corrupt-PDF bug, that prompt is neatlogs' own triage report."
+[evidence/frontend_data.json `entire`: checkpoints 69, trails 3, 2 findings resolved; evidence/explain/f8b07091ded7-errors.md: files.py:139 → checkpoint 01M4K4TJNC7JY16812XTZKSBKA]
 
 ## 2:10–2:35 · cfo.ai
-**On screen:** site **Business** page (callout, then the tiers table). Cut to the cfo.ai Summary page.
+**On screen:** site **cfo.ai business plan** page (callout, then the tiers table). Cut to the cfo.ai Summary page.
 **VO:** "Cfo dot A I built the business plan from measured costs. The model costs under three cents a run. Competitor data costs six to nine dollars, about ninety-nine percent of the cost. So caching decides the margin: capping fresh data at ten runs a month lifts the Team tier to seventy-six point six percent. Base case: cash-flow positive in month fifteen."
 [business/cfoai_plan.md: $0.0285 per run, $6.24–$9.24, ~99%, 76.6%, Jan 2028 (month 15)]
 
 ## 2:35–2:50 · Close
-**On screen:** **neatlogs traces** page scrolling, then the repo on GitHub.
-**VO:** "Fifty-two scored runs, each with its trace and commit. Spend Radar, by team qwep. Hashtag neatHack."
-[summary: runs_scored 52]
+**On screen:** **neatlogs** page (detections, evals, the auto-triage fix) scrolling, then the repo on GitHub.
+**VO:** "Sixty-one scored runs, each with its trace, its commit and its checkpoint. Spend Radar, by team qwep. Hashtag neatHack."
+[summary: runs_scored 61]
 
 ---
 
-Spoken word count: 370, roughly 2:30 at a steady pace. If it runs long, cut the latency sentence in 0:55–1:30 first, then the code-graph sentence in Entire.
+Spoken word count: 410, roughly 2.7 min at 150 words a minute. If it runs long, cut the latency sentence in 0:55–1:30 first, then the code-graph sentence in Entire.
 
 **Do not say:** "AI-powered", "magic", any number not in brackets above. If a number changes after a new export, update it here from `evidence/frontend_data.json` before recording.

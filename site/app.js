@@ -454,7 +454,7 @@
         (x.f.audit_notes || []).map(function (raw) { var p = parseNote(raw); return '<div class="ac-note"><div class="ac-note-who"><span>' + esc(p.who || "deterministic") + (p.second ? " · second opinion" : "") + "</span>" + (p.verdict ? '<span class="' + VERDICT_CLASS[p.verdict] + '">' + esc(p.verdict) + "</span>" : "") + "</div>" + esc(p.text) + "</div>"; }).join("") + "</div></section>";
     }).join('<div style="height:var(--space-5)"></div>');
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">The agent disproved itself</h1><p class="ac-subtitle">Every finding the self-audit overturned or downgraded, newest first, with the auditors\' own words.</p></div><div class="ac-seg" role="group" aria-label="Filter">' + seg + "</div></div>" +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">The agent disproved itself</h1><p class="ac-subtitle">Every finding the self-audit overturned or downgraded, newest first, with the auditors\' own words. The ML/AI verdicts here once varied between runs on identical data; since <a href="' + BLOB + 'evidence/case-studies/05-audit-verdict-variance.md" target="_blank" rel="noopener">case study 05</a> that finding is downgraded the same way every time, because its competitor signals disagree.</p></div><div class="ac-seg" role="group" aria-label="Filter">' + seg + "</div></div>" +
       '<div class="ac-stats" data-enter>' +
         stat("Findings overturned", n(D.summary.findings_overturned), "kept out of the report") +
         stat("Findings downgraded", n(D.summary.findings_downgraded), "kept, with confidence cut") +

@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-11T15:38:44",
+ "generated_at": "2026-10-11T15:43:25",
  "summary": {
   "runs_scored": 61,
   "runs_unfinished": 3,
@@ -22910,7 +22910,7 @@
    "review",
    "summary"
   ],
-  "checkpoints": 67,
+  "checkpoints": 69,
   "explain": [
    {
     "file": "evidence/explain/f8b07091ded7-errors.md",
