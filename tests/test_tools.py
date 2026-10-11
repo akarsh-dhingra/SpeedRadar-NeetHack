@@ -78,3 +78,27 @@ def test_classify_keeps_titles_with_stray_whitespace(monkeypatch):
     monkeypatch.setattr(llm, "complete", fake_complete)
     out, _ = classify.classify_titles(["Senior SWE - LLM Observability "])
     assert out == {"Senior SWE - LLM Observability ": {"category": "engineering", "model": "m"}}
+
+
+def test_title_batch_unwraps_a_schema_echo():
+    # runs 1011-2c53f4 t31 / 1011-6d3ba6 t28: the model wrapped the labels in {"items": [...], "type": "array"}
+    from spendradar.tools.classify import TitleBatch
+
+    echoed = {"labels": {"items": [{"title": "ML Engineer", "category": "ml_ai"}], "type": "array"}}
+    assert TitleBatch.model_validate(echoed).labels[0].category == "ml_ai"
+    assert TitleBatch.model_validate({"labels": [{"title": "AE", "category": "sales"}]}).labels[0].category == "sales"
+
+
+def test_invoice_totals_accept_net_line_items_only_when_printed_figures_agree():
+    from spendradar.verify import invoice_totals_check
+
+    # held-out FCC invoice 08e2649c (verified values): lines sum to the printed net 15,563.32; gross 22,466.00,
+    # commission 3,369.90 (other deductions too, so gross - commission != net)
+    assert invoice_totals_check("x", [15563.32], 22466.0, 3369.9, 15563.32).passed
+    # lines match neither printed total: still flagged
+    assert not invoice_totals_check("x", [14000.0], 22466.0, 3369.9, 15563.32).passed
+    # a "net" larger than the gross is not a net: still flagged
+    assert not invoice_totals_check("x", [30000.0], 22466.0, None, 30000.0).passed
+    # no commission printed (all fictional companies): unchanged behaviour, a planted mismatch stays caught
+    assert not invoice_totals_check("x", [89435.0], 96935.0).passed
+    assert invoice_totals_check("x", [50.0, 50.0], 100.0).passed
