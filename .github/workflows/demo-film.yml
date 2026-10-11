@@ -103,6 +103,7 @@ jobs:
   # ── the papery film (comp/comp.js), 8 shards, lossless frames -> x264 crf 15 at 2560x1440 ──
   render:
     needs: prep
+    if: always() && needs.prep.result == 'success'  # prep may follow skipped voice jobs (cache hit)
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
@@ -124,6 +125,7 @@ jobs:
 
   assemble:
     needs: render
+    if: always() && needs.render.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
