@@ -1,0 +1,54 @@
+{
+  "_about": "Narration for the Spend Radar demo video. `say` is what the voice reads (spelled for pronunciation); `cap` is the on-screen caption. Every number is from the evidence named in `src`. Scenes are rendered by comp/comp.js; their length follows the narration.",
+  "voice": "af_heart",
+  "speed": 1.12,
+  "bpm": 120,
+  "scenes": [
+    {"id": "hook", "pad_before": 0.4, "pad_after": 0.5, "lines": [
+      {"id": "hook1", "say": "Your competitor just doubled their M L team.", "cap": "Your competitor just doubled their ML team.", "big": true},
+      {"id": "hook2", "say": "And you'll find out... next quarter.", "cap": "And you'll find out… next quarter.", "big": true},
+      {"id": "hook3", "say": "Unless Spend Radar finds out first!", "cap": "Unless Spend Radar finds out first!", "big": true}
+    ]},
+    {"id": "title", "pad_before": 0.3, "pad_after": 0.6, "lines": [
+      {"id": "title1", "say": "Meet Spend Radar. An AI agent that reads your books, scans the market, and argues with itself before it tells you anything.", "cap": "Meet Spend Radar: an AI agent that reads your books, scans the market, and argues with itself before it tells you anything."}
+    ]},
+    {"id": "how", "pad_before": 0.3, "pad_after": 0.5, "lines": [
+      {"id": "how1", "say": "It plans the job, then reads your budget and invoices.", "cap": "It plans the job, then reads your budget and invoices."},
+      {"id": "how2", "say": "It pings Crust data for real competitor headcount.", "cap": "It pings Crustdata for real competitor headcount."},
+      {"id": "how3", "say": "And Python does all the maths. The model never touches a number in the report.", "cap": "Python does all the maths. The model never touches a number in the report.", "src": "CLAUDE.md §4.2"}
+    ]},
+    {"id": "recover", "pad_before": 0.3, "pad_after": 0.6, "lines": [
+      {"id": "rec1", "say": "When something breaks, like a corrupt PDF or a rate limit, it picks a recovery from a fixed menu.", "cap": "When something breaks — a corrupt PDF, a rate limit — it picks a recovery from a fixed menu."},
+      {"id": "rec2", "say": "In one hundred eighty three of three hundred seventy two decisions, it overrode the default rule.", "cap": "183 of 372 decisions overrode the default rule.", "big": true, "src": "evidence/frontend_data.json summary.recovery_overrides / recovery_decisions"}
+    ]},
+    {"id": "audit", "pad_before": 0.3, "pad_after": 0.7, "lines": [
+      {"id": "aud1", "say": "Now the best part.", "cap": "Now the best part.", "big": true},
+      {"id": "aud2", "say": "It claimed Acme's M L team broke policy, a gap of up to five point two eight million dollars a year.", "cap": "It claimed Acme's ML team broke policy: a gap of up to $5,280,000 a year.", "src": "run 1011-777bb7 finding f_ml_ai"},
+      {"id": "aud3", "say": "Then it tried to prove itself wrong. And it did!", "cap": "Then it tried to prove itself wrong. And it did!"},
+      {"id": "aud4", "say": "Overturned. That claim never reached the report.", "cap": "Overturned. That claim never reached the report.", "big": true}
+    ]},
+    {"id": "general", "pad_before": 0.3, "pad_after": 0.6, "lines": [
+      {"id": "gen1", "say": "We tested it on six companies it was never tuned on.", "cap": "We tested it on six companies it was never tuned on.", "src": "summary.held_out_companies"},
+      {"id": "gen2", "say": "Every planted error, caught. Zero false alarms.", "cap": "Every planted error caught. Zero false alarms.", "big": true, "src": "summary.latest_runs_all_caught = 7, latest_runs_false_alarms = 0"},
+      {"id": "gen3", "say": "Even when we broke Crust data and the L L M on purpose.", "cap": "Even when we broke Crustdata and the LLM on purpose.", "src": "summary.injected_runs: 3 runs, all planted caught"}
+    ]},
+    {"id": "neatlogs", "pad_before": 0.3, "pad_after": 0.6, "lines": [
+      {"id": "nl1", "say": "How did we find our bugs? Neat logs. Every call, traced.", "cap": "How did we find our bugs? neatlogs. Every call, traced."},
+      {"id": "nl2", "say": "One trace showed the agent throwing away three of its five competitors.", "cap": "One trace showed the agent throwing away 3 of its 5 competitors.", "src": "evidence/case-studies/02-competitor-substitution.md"},
+      {"id": "nl3", "say": "After the fix, it kept all five, and credits dropped from twenty six point six to five point four.", "cap": "After the fix: all 5 kept, credits 26.6 → 5.4.", "big": true, "src": "evidence/case-studies/02-competitor-substitution.md"}
+    ]},
+    {"id": "entire", "pad_before": 0.3, "pad_after": 0.6, "lines": [
+      {"id": "ent1", "say": "Entire kept our coding agent's memory. Every commit, linked to the prompt behind it.", "cap": "Entire kept our coding agent's memory. Every commit linked to the prompt behind it."},
+      {"id": "ent2", "say": "More than forty checkpoints, all on GitHub.", "cap": "40+ checkpoints, all on GitHub.", "big": true, "src": "git ls-remote: 47 checkpoint refs at 12:04 IST 11 Oct"}
+    ]},
+    {"id": "cfo", "pad_before": 0.3, "pad_after": 0.6, "lines": [
+      {"id": "cfo1", "say": "And C F O dot A I turned our real token costs into a business plan.", "cap": "And cfo.ai turned our real token costs into a business plan."},
+      {"id": "cfo2", "say": "Under three cents of model per run. But competitor data is about ninety nine percent of the cost.", "cap": "Under 3¢ of model per run. Competitor data: ~99% of the cost.", "src": "business/cfoai_plan.md, business/unit_costs.md ($0.0285)"},
+      {"id": "cfo3", "say": "So we cap fresh data, and the Team tier keeps seventy six point six percent.", "cap": "Cap fresh data → Team tier margin 76.6%.", "big": true, "src": "business/cfoai_plan.md (Team uncached cap)"}
+    ]},
+    {"id": "outro", "pad_before": 0.3, "pad_after": 2.2, "lines": [
+      {"id": "out1", "say": "Spend Radar. Every number has a source.", "cap": "Spend Radar. Every number has a source.", "big": true},
+      {"id": "out2", "say": "Team Q wep. Hashtag neat hack!", "cap": "team qwep · #neatHack", "big": true}
+    ]}
+  ]
+}

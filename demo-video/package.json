@@ -1,0 +1,9 @@
+{
+  "name": "spend-radar-demo-video",
+  "private": true,
+  "type": "module",
+  "description": "Renders the Spend Radar demo film. See README.md.",
+  "dependencies": {
+    "puppeteer": "23.11.1"
+  }
+}
