@@ -18,6 +18,7 @@
     { id: "disproved", label: "Disproved itself", icon: "shield", group: "Evidence" },
     { id: "recovery", label: "Recovery log", icon: "swap", group: "Evidence" },
     { id: "compare", label: "Before / after", icon: "split", group: "Evidence" },
+    { id: "real", label: "Real invoices", icon: "file", group: "Evidence" },
     { id: "business", label: "cfo.ai business plan", icon: "briefcase", group: "Tools" },
     { id: "traces", label: "neatlogs", icon: "trace", group: "Tools" },
     { id: "entire", label: "Entire", icon: "branch", group: "Tools" }
@@ -286,6 +287,7 @@
       ["Used Entire", "Checkpoints, trails with runner findings, explain dossiers", "#entire", "Entire"],
       ["Used cfo.ai", "Pricing, costs, revenue and runway from measured costs", "#business", "cfo.ai plan"],
       ["Recovers from failure", "Every recovery decision with the menu, the choice and the rule default", "#recovery", "Recovery log"],
+      ["Works on real documents", "Agent's invoice reader on 12 real public invoices, scored against verified totals", "#real", "Real invoices"],
       ["Checks its own work", "Findings the self-audit overturned or downgraded, with reasons", "#disproved", "Disproved itself"],
       ["Code written during the hackathon", "Dated commits from 10 Oct 12:30 IST, each with an Entire checkpoint", REPO + "/commits/main", "Commits"]
     ];
@@ -827,6 +829,9 @@
     business: ["The business plan, built in cfo.ai from what a run actually costs.",
       "It shows whether Spend Radar could be a real business: pricing, costs, revenue and how long the cash lasts.",
       "Costs are measured from real runs at the published paid prices of the same models. During the hackathon the actual spend was $0."],
+    real: ["The agent's invoice reader run on real invoices that someone else published, not on files we made.",
+      "Our test companies are fictional, so a fair question is whether the agent copes with real paperwork. These are real TV-advertising invoices from public FCC political-ad files, with totals checked by Amazon's researchers.",
+      "Each row is one real invoice. \"Total correct\" compares what the agent read with the checked total. \"Line items add up\" is the agent's own check; when it fails, the agent would flag the invoice for a human."],
     traces: ["neatlogs records every step of every run: each AI call, each tool call, each retry and each decision.",
       "It is how we debugged the agent. Every fix on the Before / after page started from one of these traces.",
       "Each row is one run. The trace ID opens the full step-by-step record in neatlogs."],
@@ -839,7 +844,48 @@
     return '<section class="sr-help" aria-label="About this page"><div><b>What you are looking at</b>' + h[0] + "</div><div><b>Why it matters</b>" + h[1] + "</div><div><b>How to read it</b>" + h[2] + "</div></section>";
   }
 
-  var RENDER = { story: viewStory, overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
+  function viewReal() {
+    var R = D.real_invoices;
+    var head = '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Real invoices</h1><p class="ac-subtitle">The same invoice reader an agent run uses (text parser first, then the LLM reader as its recovery), on real public invoices with verified totals.</p></div></div>';
+    if (!R) return enter(head + '<p class="sr-empty">No real-invoice scorecard yet. Run <span class="sr-mono">python -m evals.real_invoices</span>.</p>');
+    var silent = R.invoices.filter(function (x) { return !x.total_correct && x.agent_totals_check && x.agent_totals_check.passed; }).length;
+    var passes = (R.passes || []).map(function (x) {
+      return "<tr><td>" + esc(x.variant) + "</td><td>" + esc(x.invoice_set || "") + '</td><td class="ac-code">' + esc(x.created) + '</td><td class="ac-code">' + esc(x.git_sha) + "</td><td>" + n(x.total_correct) + " / " + n(x.n_invoices) + "</td><td>" + n(x.silent_misses) + '</td><td class="ac-code">' + esc(String(x.neatlogs_trace_id || "").slice(0, 12)) + "…</td></tr>";
+    }).join("");
+    var VLABEL = { "real-before-prompt-v2": "Old prompt", "real-after-prompt-v2": "New prompt (gross total)",
+      "heldout-prompt-v1": "Old prompt", "heldout-prompt-v2": "New prompt (gross total)" };
+    var summary = (R.summary || []).map(function (g) {
+      var bad = g.silent_misses.some(function (v) { return v > 0; });
+      return "<tr><td><b>" + esc(VLABEL[g.variant] || g.variant) + '</b><div class="sr-muted" style="font-size:12px">' + esc(g.variant) + "</div></td><td>" + esc(g.invoice_set) + "</td><td>" + n(g.passes) + "</td>" +
+        '<td class="ac-code">' + g.total_correct.join(", ") + " of " + n(g.n_invoices) + '</td><td class="ac-code ' + (bad ? "ac-down" : "ac-up") + '">' + g.silent_misses.join(", ") + "</td></tr>";
+    }).join("");
+    var money = function (v) { return v == null ? "—" : "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+    var rows = R.invoices.map(function (x) {
+      var chk = x.agent_totals_check;
+      return "<tr><td>" + esc(x.advertiser || "—") + '<div class="sr-muted" style="font-size:12px">' + esc(x.agency || "") + "</div></td>" +
+        '<td class="ac-code">' + money(x.verified_gross_total) + '</td><td class="ac-code">' + money(x.extracted_total) + "</td>" +
+        "<td>" + (x.total_correct ? '<span class="ac-badge ac-badge--up">✓ correct</span>' : '<span class="ac-badge ac-badge--down">✗ wrong</span>') + "</td>" +
+        "<td>" + (chk ? (chk.passed ? '<span class="ac-badge ac-badge--up">✓ adds up</span>' : '<span class="ac-badge ac-badge--warn">would flag</span><div class="sr-muted" style="font-size:12px">' + esc(chk.detail) + "</div>") : '<span class="sr-muted">' + esc(x.error || "not read") + "</span>") + "</td>" +
+        '<td class="sr-wrap" style="font-size:12px">' + (x.route === "text" ? "Text parser" : "Text parser failed → LLM reader") + (x.parser && x.parser.indexOf("llm:") === 0 ? '<div class="sr-muted">' + esc(x.parser.slice(4)) + "</div>" : "") + "</td></tr>";
+    }).join("");
+    return enter(head +
+      '<div class="ac-stats" data-enter>' +
+        stat("Real invoices", n(R.n_invoices), "from public FCC political-ad files", 0) +
+        stat("Total read correctly", '<span class="' + (R.total_correct === R.n_invoices ? "ac-up" : "") + '">' + n(R.total_correct) + " / " + n(R.n_invoices) + "</span>", "within 1% of the verified total", 1) +
+        stat("Line items add up", n(R.agent_totals_check_passed) + " / " + n(R.read_ok), "the rest the agent would flag for a human", 2) +
+        stat("Wrong and not flagged", '<span class="' + (silent ? "ac-down" : "ac-up") + '">' + n(silent) + "</span>", "a wrong total whose line items still add up: the only kind a human would not be warned about", 3) +
+      "</div>" +
+      (summary ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">A bug these real invoices exposed, and the fix</h3><span class="ac-card-meta">each number is one full pass over the set</span></div>' +
+        '<p style="margin:0 0 var(--space-4);color:var(--text-secondary);max-width:80ch">Real TV-ad invoices print a <b>Gross Total</b>, then subtract an agency commission to give a <b>Net Amount Due</b>. The old extraction prompt said only "copy the stated total", and the model often copied the net figure. The new prompt asks for the gross total. "Held out" is a second set of 12 real invoices picked after the fix was written, so the fix could not have been tuned to them.</p>' +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Prompt</th><th>Invoice set</th><th>Passes</th><th>Totals correct, per pass</th><th>Wrong and not flagged, per pass</th></tr></thead><tbody>' + summary + "</tbody></table></div></section>" : "") +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Invoice by invoice (latest pass, new prompt)</h3><span class="ac-card-meta">neatlogs trace <span class="sr-mono">' + esc(String(R.neatlogs_trace_id || "").slice(0, 12)) + "…</span>" + (R.neatlogs_trace_id ? copyBtn(R.neatlogs_trace_id, "trace ID") : "") + "</span></div>" +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Advertiser / agency</th><th>Verified total</th><th>Agent read</th><th>Total</th><th>Line items add up?</th><th>How it was read</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+        '<p class="sr-chart-note">Source: <a class="ac-link" href="' + esc(R.source) + '" target="_blank" rel="noopener">amazon/ConfBench</a> · ' + esc(R.license) + ' Scorecard: <a class="ac-link" href="' + BLOB + esc(R.scorecard) + '" target="_blank" rel="noopener">' + esc(R.scorecard) + "</a> · commit " + esc(R.git_sha) + "</p>" + (R.what_changed ? '<p class="sr-chart-note"><b>' + esc(R.what_changed) + "</b></p>" : "") + "</section>" +
+      (passes ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Every pass over the 12 invoices</h3><span class="ac-card-meta">each pass is a fresh set of real model calls</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Variant</th><th>Invoice set</th><th>When</th><th>Commit</th><th>Total correct</th><th>Wrong and not flagged</th><th>neatlogs trace</th></tr></thead><tbody>' + passes + "</tbody></table></div></section>" : "")
+    );
+  }
+
+  var RENDER = { story: viewStory, real: viewReal, overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
 
   // ── render + routing ─────────────────────────────────────────────
   function render(opts) {
