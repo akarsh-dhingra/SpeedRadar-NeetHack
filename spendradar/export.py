@@ -270,10 +270,35 @@ def _real_invoices() -> dict | None:
     cards = sorted(Path("evidence/real-invoices").glob("2026*.json"))
     if not cards:
         return None
-    card = json.loads(cards[-1].read_text(encoding="utf-8"))
-    return {"scorecard": cards[-1].as_posix(), **{k: card.get(k) for k in (
-        "created", "git_sha", "neatlogs_trace_id", "source", "license", "n_invoices", "read_ok", "total_correct",
-        "agent_totals_check_passed", "invoices")}}
+    loaded = [(p, json.loads(p.read_text(encoding="utf-8"))) for p in cards]
+
+    def silent(card: dict) -> int:  # wrong total, yet its line items add up: nothing warns a human
+        return sum(1 for x in card["invoices"] if not x["total_correct"]
+                   and (x.get("agent_totals_check") or {}).get("passed"))
+
+    passes = [{"variant": c.get("variant", "real-invoices"), "created": c["created"], "git_sha": c["git_sha"],
+               "invoice_set": "held out" if "heldout" in c.get("gt_file", "") else "tuned on",
+               "n_invoices": c["n_invoices"], "total_correct": c["total_correct"], "silent_misses": silent(c),
+               "neatlogs_trace_id": c.get("neatlogs_trace_id"), "scorecard": q.as_posix()} for q, c in loaded]
+    groups: dict[str, list[dict]] = {}
+    for x in passes:
+        groups.setdefault(x["variant"], []).append(x)
+    summary = [{"variant": v, "invoice_set": xs[0]["invoice_set"], "passes": len(xs), "n_invoices": xs[0]["n_invoices"],
+                "total_correct": [x["total_correct"] for x in xs], "silent_misses": [x["silent_misses"] for x in xs]}
+               for v, xs in groups.items() if v in REAL_INVOICES_VARIANTS]
+    summary.sort(key=lambda g: REAL_INVOICES_VARIANTS.index(g["variant"]))
+    main = [pc for pc in loaded if pc[1].get("variant") == REAL_INVOICES_MAIN] or loaded
+    p, card = main[-1]
+    return {"scorecard": p.as_posix(), "passes": passes, "summary": summary, "what_changed": REAL_INVOICES_NOTE,
+            **{k: card.get(k) for k in ("created", "git_sha", "neatlogs_trace_id", "source", "license", "n_invoices",
+                                         "read_ok", "total_correct", "agent_totals_check_passed", "invoices")}}
+
+
+# Real-invoice comparison: the variants in before/after order (same script, only the extraction prompt differs),
+# the variant whose latest pass fills the invoice-by-invoice table, and one line on what changed.
+REAL_INVOICES_VARIANTS = ["real-before-prompt-v2", "real-after-prompt-v2", "heldout-prompt-v1", "heldout-prompt-v2"]
+REAL_INVOICES_MAIN = "real-after-prompt-v2"
+REAL_INVOICES_NOTE = None
 
 
 def build() -> Path:
