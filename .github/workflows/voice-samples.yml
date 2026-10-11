@@ -19,9 +19,12 @@ jobs:
         with: { python-version: "3.11" }
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: Install Chatterbox (CPU torch)
-        run: pip install -q --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts edge-tts
-      - name: Female reference clips (Edge neural voices)
-        run: python refs.py
+        run: pip install -q --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts librosa soundfile
+      - name: Real female readers (LibriSpeech dev-clean, CC BY 4.0)
+        run: |
+          curl -sSfL https://openslr.elda.org/resources/12/dev-clean.tar.gz -o dev-clean.tar.gz || curl -sSfL https://openslr.trmal.net/resources/12/dev-clean.tar.gz -o dev-clean.tar.gz
+          tar xzf dev-clean.tar.gz
+          python refs.py 6
       - name: Render samples
         run: python samples.py
       - name: Also as mp3
@@ -32,4 +35,5 @@ jobs:
           path: |
             demo-video/voice/samples
             demo-video/voice/refs/*.mp3
+            demo-video/voice/refs/chosen.json
           retention-days: 7
