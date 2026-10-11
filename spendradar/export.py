@@ -9,6 +9,7 @@ except counts. Bump SCHEMA_VERSION when a field changes meaning.
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -22,6 +23,13 @@ SITE_DATA = Path("site/data.js")  # the same object for the static site, loadabl
 # Before/after pairs as the case studies name them. Curated, not inferred: run ids and titles are copied
 # from evidence/case-studies/*.md, so the site never guesses which run "fixed" which.
 COMPARISONS = [
+    {"title": "Same data, three different audit verdicts", "company": "acme",
+     "before": ["1010-767322", "1010-bf52d4", "1010-4d1835", "1010-bd4980", "1010-a67b26"],
+     "after": ["1011-41090d", "1011-656492", "1011-8ae79e", "1011-e1f008", "1011-d1cade"],
+     "case_study": "evidence/case-studies/05-audit-verdict-variance.md",
+     "finding": "f_ml_ai",  # the site shows this finding's audit status on each run
+     "note": "ML/AI verdict: 3 different verdicts in 5 identical runs before, the same verdict 5/5 after. "
+             "n = 5 per side, same models, 0 fallback hops."},
     {"title": "The audit ignored its own line-item check", "company": "acme",
      "before": ["1011-4f1f02", "1010-c2cd0c"], "after": ["1011-777bb7", "1011-5eb1a9", "1011-ac4bf5"],
      "case_study": "evidence/case-studies/04-held-out-companies.md",
@@ -63,6 +71,90 @@ BUSINESS_HEADLINES = {
     "finding": "Competitor data is about 99% of the cost of a run, so caching it decides the margin. "
                "Capping fresh competitor-data runs at 10 a month lifts Team to 76.6% without a price change.",
 }
+
+# Scorecards that only re-score runs already scored elsewhere (to publish them to neatlogs or collect
+# history). They must not replace a run's original scorecard, or the run would show their variant label.
+RESCORE_VARIANTS = {"history-all-acme-runs", "before-fix-misses", "gpt5nano-evidence-rescore", "fixture-rescore"}
+
+# Entire trails on the GitHub repo (the submission repo). Runner results copied from `entire trail show`
+# and `entire trail finding list` on 2026-10-11; the trail pages are the source.
+ENTIRE_REPO = "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack"
+TRAILS = [
+    {"number": 1, "title": "Code provenance: every run links to the Entire checkpoint that wrote its code",
+     "branch": "feat/code-provenance", "runner_result": "no blocking issues", "findings": []},
+    {"number": 2, "title": "Case study 05: deterministic audit verdicts for disagreeing competitor signals",
+     "branch": "feat/deterministic-audit", "runner_result": "no blocking issues",
+     "findings": [{"severity": "medium", "status": "resolved", "fix": "a16758f",
+                   "summary": "Disagreeing signals skipped the judge, so news evidence (layoffs, acquisitions) was "
+                              "never weighed. Now the shortcut applies only without news."}]},
+    {"number": 3, "title": "spendradar explain: neatlogs span -> code -> Entire checkpoint, session and prompt",
+     "branch": "feat/explain", "runner_result": "no blocking issues",
+     "findings": [{"severity": "low", "status": "resolved", "fix": "62c6b69",
+                   "summary": "Trace pagination could loop forever if the cursor did not advance."}]},
+]
+RUNNERS = ["risk", "confidence", "drift", "security", "review", "summary"]
+
+# neatlogs detections created over the MCP (group "Spend Radar"); see evidence/neatlogs/evals-and-detections.md.
+DETECTIONS = [
+    {"name": "Eval: run FAILED", "on": "eval:run spans", "why": "regression alarm for the ground-truth eval"},
+    {"name": "Eval: planted error missed", "on": "eval:planted_error spans", "why": "which planted error regressed"},
+    {"name": "LLM rejected input (400 INVALID_ARGUMENT)", "on": "LLM spans",
+     "why": "the corrupt-PDF bug from neatlogs auto-triage; matched 16 historical spans"},
+    {"name": "Recovery substituted a competitor", "on": "decide:recovery", "why": "case study 02 regression guard"},
+    {"name": "Recovery chose a non-default action", "on": "decide:recovery", "why": "the LLM's own recovery choices"},
+    {"name": "Model fallback hop", "on": "CHAIN spans", "why": "runs excluded from clean comparisons"},
+    {"name": "Self-audit overturned a claim", "on": "AGENT spans", "why": "the agent disproving its own finding"},
+]
+TRIAGE = {"id": "2cd5e9df-86d1-4a85-977d-94ebb059615e", "title": "Handle corrupt PDF files in read_pdf",
+          "found_by": "neatlogs auto-triage (8 linked traces)", "fix_commit": "8d11308", "status": "resolved",
+          "before_trace": "36362eb966cdbb85dcb2fb1b280e1034", "after_trace": "953bb991e2547b1591bb2bb6adb555b8",
+          "result": "invoice 13 now fails in 0.8 ms with no LLM call; 5/5 planted errors"}
+
+
+def _explain_dossiers() -> list[dict]:
+    """Headline lines of each `spendradar explain` dossier (evidence/explain/*.md)."""
+    out = []
+    for p in sorted(Path("evidence/explain").glob("*.md")):
+        text = p.read_text(encoding="utf-8")
+        items, cur = [], None
+        for line in text.splitlines():
+            if line.startswith("## "):
+                cur = {"span": line[3:].split(" — ")[0].strip("` "), "status": line.split(" — ")[-1]}
+                items.append(cur)
+            elif cur is not None and line.startswith("- Code:"):
+                cur["code"] = line[len("- Code:"):].strip()
+            elif cur is not None and line.startswith("- Written by:"):
+                cur["written_by"] = line[len("- Written by:"):].strip().replace("**", "")
+            elif cur is not None and line.startswith("- Commit"):
+                cur["commit_checkpoint"] = line[2:].strip()
+            elif cur is not None and line.strip().startswith(">") and "prompt" not in cur:
+                quote = line.strip().lstrip(">").strip()
+                # skip wrapper tags and bare headings ("<pasted_content …>", "# Task") for the first real sentence
+                if quote and not quote.startswith("<") and not re.fullmatch(r"#+\s*\w+", quote):
+                    cur["prompt"] = quote
+            elif cur is not None and "(an auto-instrumented call inside" in line:
+                cur["via"] = line.split("inside `")[-1].split("`")[0]
+        out.append({"file": p.as_posix(), "trace_id": text.split("`")[1] if "`" in text else "", "spans": items,
+                    "closes_triage_loop": "files.py:139" in text})
+    return sorted(out, key=lambda d: not d["closes_triage_loop"])  # the triage closed loop first
+
+
+def _prompt_versions() -> list[dict]:
+    from spendradar import prompts
+
+    return [{"key": p.key, "version": p.version} for p in vars(prompts).values() if isinstance(p, prompts.Prompt)]
+
+
+def _checkpoint_count() -> int:
+    import subprocess
+
+    try:
+        out = subprocess.check_output(["git", "log", "--all", "--format=%(trailers:key=Entire-Checkpoint,valueonly)"],
+                                      text=True)
+        return len({x.strip() for x in out.split() if x.strip()})
+    except Exception:
+        return 0
+
 
 FEATURED = {"company": "acme", "run_id": "1011-777bb7", "finding_id": "f_ml_ai"}
 
@@ -112,6 +204,7 @@ def _run(r: dict, card: dict, path: Path) -> dict:
         "phase": r.get("phase", "done"),  # anything but "done" = the run stopped early
         "exit_code": r.get("exit_code"),
         "git_sha": r["git_sha"], "neatlogs_trace_id": r["trace_id"], "scorecard": path.as_posix(),
+        "code": r.get("code") or (st or {}).get("code") or {},  # commit + Entire checkpoint (runs since 11 Oct)
         "data_mode": r.get("data_mode", "real"), "injected_faults": r.get("injected", []),
         "metrics": {
             "planted_caught": r["planted_caught"], "planted_total": r["planted_total"],
@@ -152,8 +245,16 @@ def build() -> Path:
     companies: dict[str, dict] = {}
     latest: dict[str, tuple[dict, dict, Path]] = {}
     first_scored: dict[str, str] = {}
-    for p in sorted(EVALS.glob("2026*.json")):
-        card = json.loads(p.read_text(encoding="utf-8"))
+    eval_traces = []
+    cards = [(p, json.loads(p.read_text(encoding="utf-8"))) for p in sorted(EVALS.glob("2026*.json"))]
+    cards.sort(key=lambda pc: pc[1].get("variant") not in RESCORE_VARIANTS)  # re-scores first; originals win
+    for p, card in cards:
+        if card.get("neatlogs_eval_trace_id"):
+            eval_traces.append({"trace_id": card["neatlogs_eval_trace_id"], "variant": card.get("variant", ""),
+                                "scorecard": p.as_posix(), "runs": card.get("n_runs", 0),
+                                "passed": sum(r.get("planted_caught") == r.get("planted_total")
+                                              and not r.get("unsupported_numbers_in_report")
+                                              and r.get("phase", "done") == "done" for r in card.get("runs", []))})
         for r in card.get("runs", []):
             if "planted_detail" in r:
                 latest[r["run_id"]] = (r, card, p)  # a run scored twice keeps its latest scorecard
@@ -192,7 +293,16 @@ def build() -> Path:
             "featured": FEATURED, "comparisons": COMPARISONS,
             "companies": comps,
             "business": {"plan": "business/cfoai_plan.md", "unit_costs": "business/unit_costs.md",
-                         "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES}}
+                         "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES},
+            "neatlogs": {"detections": DETECTIONS, "triage": TRIAGE, "prompts": _prompt_versions(),
+                         "eval_traces": sorted(eval_traces, key=lambda e: e["scorecard"]),
+                         "docs": {"coverage": "evidence/neatlogs/coverage.md",
+                                  "evals": "evidence/neatlogs/evals-and-detections.md",
+                                  "traces": "evidence/traces.md"}},
+            "entire": {"repo": ENTIRE_REPO, "trails": TRAILS, "runners": RUNNERS,
+                       "checkpoints": _checkpoint_count(), "explain": _explain_dossiers(),
+                       "docs": {"entire": "evidence/entire/", "explain": "evidence/explain/",
+                                "runners": ".entire/runners/"}}}
     OUT.write_text(json.dumps(data, indent=1, ensure_ascii=False), encoding="utf-8")
     SITE_DATA.parent.mkdir(parents=True, exist_ok=True)
     SITE_DATA.write_text("window.SPEND_RADAR_DATA = " + json.dumps(data, ensure_ascii=False) + ";\n", encoding="utf-8")

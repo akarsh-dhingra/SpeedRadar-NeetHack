@@ -7,6 +7,7 @@
   var D = window.SPEND_RADAR_DATA;
   var REPO = "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack";
   var BLOB = REPO + "/blob/main/";
+  var NL_TRACE = "https://app.neatlogs.com/traces/";
   var FX = window.SRFX || { on: function () { return false; }, after: function () {}, intro: function (d, done) { done(); }, setOrigin: function () {}, setMotion: function () {} };
   var WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 
@@ -16,8 +17,9 @@
     { id: "disproved", label: "Disproved itself", icon: "shield", group: "Evidence" },
     { id: "recovery", label: "Recovery log", icon: "swap", group: "Evidence" },
     { id: "compare", label: "Before / after", icon: "split", group: "Evidence" },
-    { id: "business", label: "Business", icon: "briefcase", group: "Context" },
-    { id: "traces", label: "neatlogs traces", icon: "trace", group: "Context" }
+    { id: "business", label: "cfo.ai business plan", icon: "briefcase", group: "Tools" },
+    { id: "traces", label: "neatlogs", icon: "trace", group: "Tools" },
+    { id: "entire", label: "Entire", icon: "branch", group: "Tools" }
   ];
 
   var ICONS = {
@@ -238,6 +240,7 @@
       '<div><div class="ac-prov-k">neatlogs trace</div><div class="ac-prov-v"><span>' + esc(r.neatlogs_trace_id) + "</span>" + copyBtn(r.neatlogs_trace_id, "trace ID") + "</div></div>" +
       '<div><div class="ac-prov-k">Commit</div><div class="ac-prov-v"><span>' + esc(r.git_sha) + "</span>" + copyBtn(r.git_sha, "commit") + "</div></div>" +
       '<div><div class="ac-prov-k">Scorecard</div><div class="ac-prov-v"><span><a href="' + BLOB + esc(r.scorecard) + '" target="_blank" rel="noopener">' + esc(r.scorecard) + "</a></span>" + copyBtn(r.scorecard, "scorecard path") + "</div></div>" +
+      (r.code && r.code.checkpoint ? '<div><div class="ac-prov-k">Code · Entire checkpoint</div><div class="ac-prov-v"><span><a href="' + esc(r.code.entire_url) + '" target="_blank" rel="noopener">' + esc(r.code.checkpoint) + "</a></span>" + copyBtn(r.code.checkpoint, "checkpoint ID") + "</div></div>" : "") +
       '<div><div class="ac-prov-k">Started · models</div><div class="ac-prov-v"><span>' + esc(when(r)) + " · " + esc((r.metrics.models || []).join(", ") || "—") + "</span></div></div>" +
     "</div></section>";
   }
@@ -248,6 +251,51 @@
   }
 
   // ── views ────────────────────────────────────────────────────────
+  function toolsStrip() {
+    var N = D.neatlogs || {}, E = D.entire || {}, B = (D.business || {}).headlines || {};
+    function card(view, title, big, small, lines) {
+      return '<a class="ac-card sr-tilt sr-tool" href="#' + view + '" data-view-link="' + view + '"><div class="ac-card-head"><h3 class="ac-card-title">' + title + '</h3>' + icon("arrow") + '</div><div class="ac-stat-value">' + big + '</div><div class="ac-delta">' + small + '</div><ul class="sr-tool-lines">' + lines.map(function (l) { return "<li>" + l + "</li>"; }).join("") + "</ul></a>";
+    }
+    var caught = (E.trails || []).reduce(function (a, t) { return a + (t.findings || []).length; }, 0);
+    return '<div class="sr-section-title" data-enter><h2>Built with neatlogs, Entire and cfo.ai</h2><p>Each tool has a job in the loop, not a logo on a slide.</p></div>' +
+      '<div class="sr-tools" data-enter>' +
+        card("traces", "neatlogs", n(D.summary.runs_scored), "traced runs", [
+          "Debugger: case studies 01\u201305 each start from a trace or a scorecard",
+          "Auto-triage found the corrupt-PDF bug; fixed and resolved over the MCP",
+          n((N.detections || []).length) + " detections and evals published as traces",
+          n((N.prompts || []).length) + " prompt templates, versioned on every LLM span"]) +
+        card("entire", "Entire", n(E.checkpoints), "checkpoints", [
+          "Every run links to the checkpoint and agent session behind its code",
+          n((E.trails || []).length) + " trails reviewed by " + n((E.runners || []).length) + " repo-tailored runners; " + n(caught) + " real issues caught before merge",
+          "<span class=\"ac-code\">spendradar explain</span>: neatlogs span \u2192 code \u2192 checkpoint \u2192 prompt",
+          "entire-graph search / impact used to locate and size changes"]) +
+        card("business", "cfo.ai", esc(B.llm_cost_per_run || ""), "LLM cost per run, measured", [
+          "Plan built from neatlogs token counts at paid-equivalent prices",
+          "Pricing, costs, revenue and runway; base and growth scenarios",
+          "Finding: competitor data is ~99% of run cost, so caching decides margin",
+          "Team tier fixed with a fresh-run cap: 76.6% margin"]) +
+      "</div>";
+  }
+
+  function judgeChecklist() {
+    var rows = [
+      ["The agent improved", "Before/after runs with traces and numbers, n = 5 per side for case study 05", "#compare", "Before / after"],
+      ["Used neatlogs", "Trace IDs for every run, detections, evals, the auto-triage fix", "#traces", "neatlogs"],
+      ["Used Entire", "Checkpoints, trails with runner findings, explain dossiers", "#entire", "Entire"],
+      ["Used cfo.ai", "Pricing, costs, revenue and runway from measured costs", "#business", "cfo.ai plan"],
+      ["Recovers from failure", "Every recovery decision with the menu, the choice and the rule default", "#recovery", "Recovery log"],
+      ["Checks its own work", "Findings the self-audit overturned or downgraded, with reasons", "#disproved", "Disproved itself"],
+      ["Built in public", "#neatHack posts with timestamps", BLOB + "evidence/build-in-public.md", "Posts"],
+      ["Code written during the hackathon", "Dated commits from 10 Oct 12:30 IST, each with an Entire checkpoint", REPO + "/commits/main", "Commits"]
+    ];
+    return '<div class="sr-section-title" data-enter><h2>For judges: where each piece of evidence is</h2><p>Every number on this site comes from a saved scorecard or trace.</p></div>' +
+      '<section class="ac-card" data-enter><div class="ac-scroll"><table class="ac-table"><thead><tr><th>You asked for</th><th>What is here</th><th>Open</th></tr></thead><tbody>' +
+      rows.map(function (r) {
+        var ext = r[2].charAt(0) !== "#";
+        return "<tr><td>" + esc(r[0]) + '</td><td class="ac-muted">' + esc(r[1]) + '</td><td><a class="ac-link" href="' + esc(r[2]) + '"' + (ext ? ' target="_blank" rel="noopener"' : "") + ">" + esc(r[3]) + " " + icon("arrow") + "</a></td></tr>";
+      }).join("") + "</tbody></table></div></section>";
+  }
+
   function viewOverview() {
     var sm = D.summary, nC = sm.companies, held = sm.held_out_companies;
     var allLatest = sm.latest_runs_all_caught === nC;
@@ -297,6 +345,7 @@
       (ff ? '<div class="sr-section-title" data-enter><h2>It argues with itself</h2><p>Before reporting, the agent tries to disprove each finding. This one did not survive.</p></div><div data-enter id="featured">' +
         proofChain(fc, fr, ff, { foot: '<button class="ac-btn ac-btn--ghost" type="button" data-replay-chain>' + icon("play") + "Replay</button>" }) + "</div>" : "") +
 
+      toolsStrip() + judgeChecklist() +
       '<div class="sr-section-title" data-enter><h2>Run history</h2><p>Each column is one scored run. Pick a company to see its runs.</p></div>' +
       '<div class="ac-grid-2 sr-scroll" data-enter style="margin-top:0">' + heroCard(company(S.company) || bastion, latest(company(S.company) || bastion), false) + companyList(S.company) + "</div>"
     );
@@ -458,7 +507,9 @@
         return '<div class="ac-ba-side"><div class="sr-ba-side-label">' + label + '</div><div class="sr-ba-runs">' + ids.map(function (id) {
           var r = runOf(c, id); if (!r) return "";
           var m = r.metrics, ok = allCaught(m);
-          return '<a class="sr-ba-run sr-tilt" href="#run" data-open-run="' + id + '" data-company="' + c.key + '"><div><div class="ac-code ac-muted">' + id + " · " + esc(r.variant) + '</div><div class="ac-cells" style="margin-top:6px">' + cells(r, 0) + '</div></div><span class="sr-ba-score ' + (ok ? "ac-up" : "ac-down") + '">' + score(m) + '</span><span class="sr-ba-meta">' +
+          var fnd = cmp.finding && (r.findings || []).filter(function (f) { return f.id === cmp.finding; })[0];
+          var verdict = fnd ? '<div class="sr-ba-verdict">ML/AI audit verdict: ' + statusBadge(fnd.status) + "</div>" : "";
+          return '<a class="sr-ba-run sr-tilt" href="#run" data-open-run="' + id + '" data-company="' + c.key + '"><div><div class="ac-code ac-muted">' + id + " · " + esc(r.variant) + '</div><div class="ac-cells" style="margin-top:6px">' + cells(r, 0) + "</div>" + verdict + '</div><span class="sr-ba-score ' + (ok ? "ac-up" : "ac-down") + '">' + score(m) + '</span><span class="sr-ba-meta">' +
             (m.false_alarms == null ? "false alarms not counted" : n(m.false_alarms) + " false alarms") + " · " + n(m.fallback_hops) + " fallback hops" + (r.phase !== "done" ? " · did not finish" : "") + "</span></a>";
         }).join("") + "</div></div>";
       }
@@ -484,7 +535,7 @@
       b.tiers.map(function (t) { return '<tr><td class="ac-li-name" style="font-size:15px">' + esc(t.name) + "</td><td>" + esc(t.price) + " / month</td><td>" + esc(t.runs) + '</td><td class="ac-r ac-up">' + esc(t.margin_base_50pct_cached) + '</td><td class="ac-r ac-down">' + esc(t.margin_base_uncached) + '</td><td class="ac-r">' + (t.margin_with_cap ? '<span class="ac-up">' + esc(t.margin_with_cap) + "</span>" : '<span class="sr-muted">—</span>') + "</td></tr>"; }).join("") +
       "</tbody></table></div>";
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Business</h1><p class="ac-subtitle">Built in cfo.ai from measured costs: tokens per run from neatlogs traces at the same models\' published paid prices, plus Crustdata usage at its published prices. Development ran on free tiers.</p></div>' +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">cfo.ai business plan</h1><p class="ac-subtitle">Built in cfo.ai from measured costs: tokens per run from neatlogs traces at the same models\' published paid prices, plus Crustdata usage at its published prices. Development ran on free tiers.</p></div>' +
         '<a class="ac-btn ac-btn--ghost" href="' + BLOB + esc(b.source) + '" target="_blank" rel="noopener">' + icon("file") + "Full plan</a></div>" +
       '<div class="sr-callout" data-enter>' + esc(b.finding).replace("about 99%", "<b>about 99%</b>").replace("76.6%", "<b>76.6%</b>") + "<small>From " + esc(b.source) + ". Prices are proposals; scenarios are labelled assumptions in the plan.</small></div>" +
       '<div class="ac-stats sr-section" data-enter>' +
@@ -496,22 +547,84 @@
     );
   }
 
+  function trLink(id) { return '<a class="ac-code" href="' + NL_TRACE + esc(id) + '" target="_blank" rel="noopener">' + esc(String(id).slice(0, 12)) + "…</a>" + copyBtn(id, "trace ID"); }
+  function docLink(path, label) { return '<a class="ac-link" href="' + BLOB + esc(path) + '" target="_blank" rel="noopener">' + esc(label) + " " + icon("arrow") + "</a>"; }
+
   function viewTraces() {
+    var N = D.neatlogs || {}, t = N.triage || {};
     var rows = [];
     D.companies.forEach(function (c) { c.runs.forEach(function (r) { rows.push({ c: c, r: r }); }); });
-    rows.sort(function (a, b) { return (b.r.started_at || b.r.scored_at) < (a.r.started_at || a.r.scored_at) ? -1 : 1; });
+    function t(r) { var v = Date.parse(r.started_at || r.scored_at); return isNaN(v) ? 0 : v; }
+    rows.sort(function (a, b) { return t(b.r) - t(a.r); });  // newest first; timestamps come in mixed formats
+    var evals = (N.eval_traces || []).slice().reverse();
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">neatlogs traces</h1><p class="ac-subtitle">Every scored run with its trace ID. Search an ID in the neatlogs dashboard to see each LLM call, tool call, retry and recovery span.</p></div></div>' +
-      '<section class="ac-card" data-enter><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Company</th><th>Run</th><th>Variant</th><th>Score</th><th>Mode</th><th>neatlogs trace</th><th>Commit</th></tr></thead><tbody>' +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">neatlogs</h1><p class="ac-subtitle">The debugger, the eval board and the alarm system. Every run is one trace: each LLM call (with its versioned prompt template), tool call, retry, recovery decision, fallback hop and audit verdict is a span with its input and output.</p></div>' +
+        '<div class="ac-row">' + docLink(N.docs && N.docs.coverage || "evidence/neatlogs/coverage.md", "Feature coverage") + "</div></div>" +
+      '<div class="ac-stats sr-section" data-enter>' +
+        stat("Traced runs", n(rows.length), "one trace per run, tagged sha / run / variant") +
+        stat("Detections", n((N.detections || []).length), "group \u201cSpend Radar\u201d, created over the MCP") +
+        stat("Eval traces", n(evals.length), "scorecards published as spendradar_eval") +
+        stat("Prompt templates", n((N.prompts || []).length), "versioned on every LLM span") +
+      "</div>" +
+      (t.id ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">A bug neatlogs found on its own</h3><span class="ac-badge ac-badge--up">' + esc(t.status) + '</span></div>' +
+        '<dl class="sr-dl"><dt>Fix</dt><dd>' + esc(t.title) + "</dd><dt>Found by</dt><dd>" + esc(t.found_by) + "</dd>" +
+        "<dt>Before</dt><dd>" + trLink(t.before_trace) + " · Gemini 400 on a corrupt PDF sent to the LLM reader</dd>" +
+        "<dt>Fix commit</dt><dd class=\"ac-code\">" + esc(t.fix_commit) + "</dd><dt>After</dt><dd>" + trLink(t.after_trace) + " · " + esc(t.result) + "</dd></dl>" +
+        '<p class="ac-muted" style="margin:10px 0 0">Investigated and closed over the neatlogs MCP. The <a href="#entire">Entire</a> page follows this fix back to the coding-agent prompt that produced it.</p></section>' : "") +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Detections</h3>' + docLink(N.docs && N.docs.evals || "", "How they were built") + '</div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Detection</th><th>Runs on</th><th>Why</th></tr></thead><tbody>' +
+        (N.detections || []).map(function (d) { return "<tr><td>" + esc(d.name) + '</td><td class="ac-code ac-muted">' + esc(d.on) + "</td><td>" + esc(d.why) + "</td></tr>"; }).join("") + "</tbody></table></div></section>" +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Evals inside neatlogs</h3><span class="ac-card-meta">one eval:run span per run, PASS/FAIL, linked to the run\u2019s trace</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Eval trace</th><th>Variant</th><th class="ac-r">Runs passed</th><th style="padding-left:28px">Scorecard</th></tr></thead><tbody>' +
+        evals.map(function (e) { var ok = e.passed === e.runs; return "<tr><td>" + trLink(e.trace_id) + '</td><td class="ac-code ac-muted">' + esc(e.variant) + '</td><td class="ac-r ' + (ok ? "ac-up" : "ac-down") + '">' + e.passed + " / " + e.runs + '</td><td class="ac-code" style="padding-left:28px"><a href="' + BLOB + esc(e.scorecard) + '" target="_blank" rel="noopener">' + esc(e.scorecard.split("/").pop()) + "</a></td></tr>"; }).join("") +
+        '</tbody></table></div><p class="ac-muted" style="margin:10px 0 0">PASS = every planted error caught, no unsupported numbers, run finished. <span class="ac-code">history-all-acme-runs</span> and <span class="ac-code">before-fix-misses</span> re-score early runs, including runs killed on purpose and runs from before a fix, so their misses are real and expected.</p></section>' +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Every scored run</h3><span class="ac-card-meta">trace IDs open in the neatlogs dashboard (project members)</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Company</th><th>Run</th><th>Variant</th><th>Score</th><th>Mode</th><th>neatlogs trace</th><th>Code</th></tr></thead><tbody>' +
       rows.map(function (x) {
         var r = x.r, ok = allCaught(r.metrics);
+        var code = r.code && r.code.checkpoint ? '<a class="ac-code" href="' + esc(r.code.entire_url) + '" target="_blank" rel="noopener" title="Entire checkpoint ' + esc(r.code.checkpoint) + '">' + esc(r.git_sha) + "</a>" : '<span class="ac-code">' + esc(r.git_sha) + "</span>";
         return '<tr><td><span class="ac-cellid">' + avatar(x.c, "ac-avatar--sm") + esc(shortName(x.c)) + '</span></td><td class="ac-code"><a href="#run" data-open-run="' + r.run_id + '" data-company="' + x.c.key + '">' + r.run_id + '</a></td><td class="ac-code ac-muted">' + esc(r.variant) + '</td><td class="' + (ok ? "ac-up" : "ac-down") + '">' + score(r.metrics) + (r.phase !== "done" ? ' <span class="ac-badge ac-badge--down">unfinished</span>' : "") + "</td><td>" + (r.data_mode === "fixture" ? '<span class="ac-badge ac-badge--warn">Fixture</span>' : '<span class="ac-badge ac-badge--neutral">Real</span>') + (r.injected_faults.length ? ' <span class="ac-badge ac-badge--accent">Injected</span>' : "") +
-          '</td><td class="ac-code"><span class="ac-row" style="flex-wrap:nowrap">' + esc(r.neatlogs_trace_id) + copyBtn(r.neatlogs_trace_id, "trace ID") + '</span></td><td class="ac-code">' + esc(r.git_sha) + "</td></tr>";
+          '</td><td><span class="ac-row" style="flex-wrap:nowrap">' + trLink(r.neatlogs_trace_id) + "</span></td><td>" + code + "</td></tr>";
       }).join("") + "</tbody></table></div></section>"
     );
   }
 
-  var RENDER = { overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces };
+  function viewEntire() {
+    var E = D.entire || {};
+    var trails = (E.trails || []).map(function (t) {
+      var fs = (t.findings || []).map(function (f) {
+        return '<li class="sr-finding"><span class="ac-badge ' + (f.severity === "medium" ? "ac-badge--warn" : "ac-badge--neutral") + '">' + esc(f.severity) + '</span> <span class="ac-badge ac-badge--up">' + esc(f.status) + "</span> " + esc(f.summary) + ' <span class="ac-code ac-muted">fix ' + esc(f.fix) + "</span></li>";
+      }).join("");
+      return '<section class="ac-card sr-tilt" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Trail #' + t.number + " · " + esc(t.title) + '</h3><a class="ac-link" href="' + esc(E.repo) + "/trails/" + t.number + '" target="_blank" rel="noopener">Open trail ' + icon("arrow") + "</a></div>" +
+        '<p class="ac-muted" style="margin:0 0 8px"><span class="ac-code">' + esc(t.branch) + "</span> · runners: " + esc(t.runner_result) + "</p>" +
+        (fs ? '<ul class="sr-findings">' + fs + "</ul>" : '<p class="sr-empty" style="margin:0">No findings.</p>') + "</section>";
+    }).join("");
+    var caught = (E.trails || []).reduce(function (a, t) { return a + (t.findings || []).length; }, 0);
+    var dossiers = (E.explain || []).map(function (d) {
+      var spans = (d.spans || []).filter(function (s) { return s.commit_checkpoint; }).slice(0, 3).map(function (s) {
+        var cp = /checkpoint \[`([^`]+)`\]\(([^)]+)\)/.exec(s.commit_checkpoint || "");
+        var commit = /Commit `([^`]+)`/.exec(s.commit_checkpoint || "");
+        return '<ol class="sr-chain">' +
+          "<li><b>neatlogs span</b> <span class=\"ac-code\">" + esc(s.span) + "</span> " + ('<span class="ac-badge ' + (s.status === "ERROR" ? "ac-badge--down" : "ac-badge--neutral") + '">' + esc(s.status) + "</span>") + (s.via ? ' <span class="ac-muted">inside ' + esc(s.via) + "</span>" : "") + "</li>" +
+          "<li><b>Code</b> " + esc((s.code || "").replace(/`/g, "")) + "</li>" +
+          "<li><b>Written by</b> " + esc((s.written_by || "").replace(/`/g, "")) + "</li>" +
+          "<li><b>Commit · checkpoint</b> <span class=\"ac-code\">" + esc(commit ? commit[1] : "") + "</span> · " + (cp ? '<a class="ac-code" href="' + esc(cp[2]) + '" target="_blank" rel="noopener">' + esc(cp[1]) + "</a>" : "") + "</li>" +
+          "<li><b>Prompt</b> <span class=\"ac-muted\">" + esc((s.prompt || "").slice(0, 160)) + "</span></li></ol>";
+      }).join("");
+      return '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">spendradar explain ' + esc(d.trace_id.slice(0, 12)) + "…</h3>" + docLink(d.file, "Full dossier") + "</div>" + spans + "</section>";
+    }).join("");
+    return enter(
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Entire</h1><p class="ac-subtitle">Spend Radar cites a source for every number. Entire extends that to the agent\u2019s own code: every run records its commit and Entire checkpoint, every change since 11 Oct went through a trail reviewed by repo-tailored runners, and <span class="ac-code">spendradar explain</span> follows a neatlogs span back to the coding-agent session and prompt that wrote the line.</p></div>' +
+        '<a class="ac-btn ac-btn--ghost" href="' + esc(E.repo) + '" target="_blank" rel="noopener">' + icon("branch") + "Repo on Entire</a></div>" +
+      '<div class="ac-stats sr-section" data-enter>' +
+        stat("Checkpoints", n(E.checkpoints), "commits linked to the agent session behind them") +
+        stat("Trails", n((E.trails || []).length), "one per change, each reviewed by runners") +
+        stat("Issues runners caught", n(caught), "both fixed before merge") +
+        stat("Runners", n((E.runners || []).length), esc((E.runners || []).join(", "))) +
+      "</div>" +
+      '<div class="sr-callout" data-enter>Closed loop on the corrupt-PDF bug: neatlogs auto-triage flagged a Gemini 400 \u2192 <span class="ac-code">read_pdf</span> \u2192 the guard at <span class="ac-code">files.py:139</span> \u2192 Entire checkpoint <span class="ac-code">01M4K4TJ\u2026</span>, whose prompt <b>is the neatlogs triage task</b>.<small>From <span class="ac-code">spendradar explain</span>; dossiers below.</small></div>' +
+      '<div class="sr-biz sr-section">' + trails + "</div>" + dossiers
+    );
+  }
+
+  var RENDER = { overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
 
   // ── render + routing ─────────────────────────────────────────────
   function render(opts) {
