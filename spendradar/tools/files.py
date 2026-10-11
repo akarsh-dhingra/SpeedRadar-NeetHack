@@ -9,7 +9,7 @@ import neatlogs
 from openpyxl import load_workbook
 from pydantic import BaseModel
 
-from spendradar import llm
+from spendradar import llm, prompts
 from spendradar.tracing import tool_errors
 
 MONEY = re.compile(r"(-?[\d,]+\.\d{2})\s*$")
@@ -138,11 +138,9 @@ def read_pdf(path: str, mode: str = "text") -> dict:
         if err := _open_error(p):
             raise ToolError(f"corrupt PDF, not sent to the LLM reader: {err}")
         try:
-            res = llm.complete(
-                "extract",
-                "Extract this invoice exactly as printed. Amounts as numbers without separators. "
-                "Do not compute or correct anything; copy the stated total as printed.",
-                schema=InvoiceExtract, attachments=[(data, "application/pdf")])
+            with prompts.use(prompts.PDF_EXTRACT) as (system, prompt):
+                res = llm.complete("extract", prompt, system=system or None,
+                                   schema=InvoiceExtract, attachments=[(data, "application/pdf")])
         except llm.LLMError as e:
             raise ToolError(f"LLM PDF reader failed: {str(e)[:160]}") from e
         return {"extract": res.parsed.model_dump(), "parser": f"llm:{res.model}",

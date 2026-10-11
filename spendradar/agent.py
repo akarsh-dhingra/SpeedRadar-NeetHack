@@ -20,7 +20,7 @@ import neatlogs
 import yaml
 from pydantic import BaseModel
 
-from spendradar import analysis, audit, faults, llm, report, verify
+from spendradar import analysis, audit, faults, llm, prompts, report, verify
 from spendradar.tracing import record_error, set_io
 from spendradar.models import Check, Figure, Finding, RecoveryDecision, RunState, Source, Task
 from spendradar.tools import classify, crustdata, files
@@ -127,18 +127,14 @@ def _usage(state: RunState, res: llm.LLMResult | dict | None) -> None:
 def plan(state: RunState) -> None:
     listing = files.list_files(state.input_dir)
     comps = yaml.safe_load((Path(state.input_dir) / "competitors.yaml").read_text(encoding="utf-8"))
-    prompt = (
-        f"GOAL: {state.goal}\n\nINPUT FOLDER ({state.input_dir}):\n"
-        + "\n".join(f"- {f['path']} ({f['bytes']} bytes)" for f in listing)
-        + "\n\nCOMPETITORS:\n" + "\n".join(f"- {c['name']} ({c['domain']})" for c in comps["competitors"])
-        + "\n\nTOOLS:\n" + "\n".join(f"- {k}: {v}" for k, v in TOOL_DOCS.items())
-        + "\n\nWrite the task list. Paths are relative to the input folder. Read every finance file once "
-          "(invoices default to mode 'text'; ignore README/competitors.yaml), fetch every competitor, fetch jobs "
-          "and classify titles for every competitor (needed for ML/AI), and order tasks so inputs exist before "
-          "they are needed. One task per file or competitor action.")
+    variables = {
+        "goal": state.goal, "input_dir": state.input_dir,
+        "files": "\n".join(f"- {f['path']} ({f['bytes']} bytes)" for f in listing),
+        "competitors": "\n".join(f"- {c['name']} ({c['domain']})" for c in comps["competitors"]),
+        "tools": "\n".join(f"- {k}: {v}" for k, v in TOOL_DOCS.items())}
     with neatlogs.trace("plan", kind="AGENT") as span:
-        res = llm.complete("reason", prompt, schema=Plan,
-                           system="You are the planner of a finance analysis agent. Be complete and concrete.")
+        with prompts.use(prompts.PLAN, **variables) as (system, prompt):
+            res = llm.complete("reason", prompt, schema=Plan, system=system)
         _usage(state, res)
         p: Plan = res.parsed
         state.plan_rationale = p.rationale
@@ -233,7 +229,7 @@ def act(state: RunState, task: Task) -> list[Check]:
         return []
     if task.tool == "read_salary_table":
         with open(Path(state.input_dir) / a["path"], encoding="utf-8", newline="") as f:
-            state.salary = {r["category"]: _num(r["loaded_annual_cost_usd"], f"{path} {r.get('category')}")
+            state.salary = {r["category"]: _num(r["loaded_annual_cost_usd"], f"{a['path']} {r.get('category')}")
                             for r in csv.DictReader(f)}
         return []
     if task.tool == "fetch_competitor":
@@ -445,12 +441,9 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
     tools = [{"name": o, "description": RECOVERY[o], "parameters": {
         "type": "object", "properties": {"reason": {"type": "string", "description": "one line"}},
         "required": ["reason"]}} for o in options]
-    prompt = (f"A step of the finance agent failed verification.\nTask: {task.tool} {json.dumps(task.args)}\n"
-              f"Failure: {failure}\nDetail: {detail}\nAttempts so far: {task.attempts}\n"
-              f"Previous decisions for this task: "
-              f"{[d.chosen for d in state.decisions if d.task_id in (task.id, task.parent)]}\n"
-              "Pick the recovery action most likely to produce a correct, sourced number. "
-              "Do not repeat an action that already failed for this task.")
+    variables = {"task": f"{task.tool} {json.dumps(task.args)}", "failure": failure, "detail": detail,
+                 "attempts": task.attempts,
+                 "previous": [d.chosen for d in state.decisions if d.task_id in (task.id, task.parent)]}
     with neatlogs.trace("decide:recovery", kind="AGENT") as span:
         span.set_attribute("spendradar.recovery.options", json.dumps(options))
         span.set_attribute("spendradar.recovery.default", default)
@@ -458,8 +451,8 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
         set_io(span, input={"task": task.id, "tool": task.tool, "failure": failure, "detail": detail[:500],
                             "options": options, "default": default})
         try:
-            choice = llm.choose("reason", prompt, tools,
-                                system="You choose recovery actions for a finance analysis agent.")
+            with prompts.use(prompts.RECOVERY, **variables) as (system, prompt):
+                choice = llm.choose("reason", prompt, tools, system=system)
             _usage(state, choice.result)
             chosen, reason, model = choice.name, choice.args.get("reason", ""), choice.result.model
         except llm.LLMError as e:
@@ -531,6 +524,7 @@ def execute(state: RunState) -> None:
         task = state.queue.pop(0)
         task.attempts += 1
         if task.attempts > MAX_ATTEMPTS:
+            neatlogs.log("task {task} hit the retry cap; not analysed", level="warning", task=task.id)
             task.status = "failed"
             state.not_analysed.append({"input": task.args.get("path") or task.args.get("domain"),
                                        "reason": f"retry cap ({MAX_ATTEMPTS}) reached"})
@@ -555,6 +549,9 @@ def execute(state: RunState) -> None:
         bad = [c for c in checks if not c.passed]
         if failure is None and bad:
             failure = f"{bad[0].name} failed"
+        neatlogs.log("task {task} {tool}: {outcome}", level="warning" if failure else "info",
+                     task=task.id, tool=task.tool, outcome=(failure or "verified")[:200],
+                     attempt=task.attempts, queue_left=len(state.queue))
         if failure:
             detail = failure if failure.startswith("tool_error") else "; ".join(f"{c.target}: {c.detail}" for c in bad)
             with neatlogs.trace(f"verify:{task.tool}", kind="GUARDRAIL") as span:
@@ -641,15 +638,12 @@ def _line_item_check(state: RunState) -> None:
     if not invs:
         return
     flagged_vendors = {fl["target"] for fl in state.flags if "mis-categorised" in fl["issue"]}
-    prompt = ("For each invoice, say which budget category the WORK in its line items belongs to: "
-              "engineering, ml_ai, sales, marketing or infra_cloud ('unclear' if you cannot tell). Judge only from "
-              "the line items, not from the cost centre or vendor name.\n\n"
-              + "\n".join(f"- {i['number']} | vendor {i['vendor']} | lines: "
-                          + "; ".join(line["description"] for line in i["lines"]) for i in invs))
+    invoices = "\n".join(f"- {i['number']} | vendor {i['vendor']} | lines: "
+                         + "; ".join(line["description"] for line in i["lines"]) for i in invs)
     with neatlogs.trace("verify:line_items_vs_cost_centre", kind="GUARDRAIL") as span:
         try:
-            res = llm.complete("extract", prompt, schema=LineItemReview,
-                               system="You classify invoice line items into budget categories.")
+            with prompts.use(prompts.LINE_ITEMS, invoices=invoices) as (system, prompt):
+                res = llm.complete("extract", prompt, schema=LineItemReview, system=system)
         except llm.LLMError as e:  # not run is not passed: note it, keep confidence honest
             state.notes.append(f"line-item vs cost-centre check not run: {str(e)[:120]}")
             set_io(span, output={"ran": False, "error": str(e)[:500]})
@@ -784,12 +778,22 @@ def _internal_findings(state: RunState) -> None:
 # ----------------------------------------------------------------------------- driver
 
 def run_phases(state: RunState) -> RunState:
-    with neatlogs.trace("spendradar_run", kind="WORKFLOW", session_id=state.run_id) as root:
+    # End user = the (fictional) customer company whose files are analysed: neatlogs groups runs per
+    # customer, which is the unit the cfo.ai plan prices. Session = run id, so a resumed run joins its first trace.
+    customer = Path(state.input_dir).name
+    with neatlogs.trace("spendradar_run", kind="WORKFLOW", session_id=state.run_id,
+                        end_user_id=f"customer:{customer}",
+                        end_user_metadata={"dataset": customer, "data_mode": state.data_mode,
+                                           "fictional": True}) as root:
         tid = format(root.get_span_context().trace_id, "032x")
         state.trace_id = state.trace_id or tid
         state.trace_ids.append(tid)
         root.set_attribute("spendradar.run_id", state.run_id)
         root.set_attribute("spendradar.resumed_at_phase", state.phase)
+        set_io(root, input={"goal": state.goal, "input_dir": state.input_dir, "run_id": state.run_id,
+                            "resumed_at_phase": state.phase, "data_mode": state.data_mode,
+                            "injected_faults": faults.active()})
+        neatlogs.log("run {run_id} starting at phase {phase}", run_id=state.run_id, phase=state.phase)
         if state.phase == "plan":
             plan(state)
         if state.phase == "execute":
@@ -809,6 +813,15 @@ def run_phases(state: RunState) -> RunState:
         # injected run (e.g. 1011-13475c, 1011-ac099b) stored and reported "fired: none".
         _record_faults(state)
         save(state)
+        set_io(root, output={
+            "phase": state.phase, "report": f"runs/{state.run_id}/report.md",
+            "findings": {f.id: f.status for f in state.findings},
+            "not_analysed": [n["input"] for n in state.not_analysed],
+            "recovery_decisions": len(state.decisions),
+            "recovery_non_default": sum(d.chosen != d.default for d in state.decisions),
+            "faults_fired": state.faults_fired, "crustdata_credits": state.crustdata_credits})
+        neatlogs.log("run {run_id} finished at phase {phase} with {n} findings",
+                     run_id=state.run_id, phase=state.phase, n=len(state.findings))
     return state
 
 

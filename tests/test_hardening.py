@@ -178,3 +178,23 @@ def test_set_io_keeps_long_values_valid_json():
     tracing.set_io(Span(), output={"x": "y" * 50_000})
     out = json.loads(seen["output.value"])
     assert out["truncated"] is True and len(seen["output.value"]) <= tracing.MAX_IO
+
+
+def test_prompt_render_is_single_pass_and_strict():
+    from spendradar import prompts
+
+    assert prompts.render("a {{x}} b", {"x": "{{y}}", "y": "NO"}) == "a {{y}} b"
+    with pytest.raises(KeyError):
+        prompts.render("{{missing}}", {})
+
+
+def test_every_prompt_template_renders_with_its_own_variables():
+    import re
+
+    from spendradar import prompts
+
+    for p in (prompts.PLAN, prompts.RECOVERY, prompts.AUDIT_JUDGE, prompts.LINE_ITEMS,
+              prompts.CLASSIFY_TITLES, prompts.PDF_EXTRACT):
+        names = set(re.findall(r"\{\{(\w+)\}\}", p.system + p.user))
+        out = prompts.render(p.user, {n: f"<{n}>" for n in names})
+        assert "{{" not in out and p.key and p.version

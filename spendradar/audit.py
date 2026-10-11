@@ -19,7 +19,7 @@ from typing import Literal
 import neatlogs
 from pydantic import BaseModel
 
-from spendradar import analysis, llm
+from spendradar import analysis, llm, prompts
 from spendradar.tracing import record_error, set_io
 from spendradar.models import Finding, RunState
 
@@ -96,18 +96,10 @@ def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str
 
 def _judge(role: str, f: Finding, evidence: list[str], checks: list[str],
            exclude: tuple[str, ...] = ()) -> tuple[Verdict, llm.LLMResult]:
-    prompt = (f"FINDING ({f.category}, confidence {f.confidence}):\n{f.statement}\n\n"
-              f"DETERMINISTIC CHECKS:\n" + "\n".join(f"- {c}" for c in checks)
-              + "\n\nEVIDENCE THAT MIGHT CONTRADICT IT:\n" + ("\n".join(f"- {e}" for e in evidence) or "- none found")
-              + "\n\nTry to disprove the finding. 'overturn' = the evidence shows it is wrong or unsupported; "
-                "'downgrade' = it may hold but the evidence weakens it materially; 'confirm' = it survives. "
-                "For an invoice flagged as mis-categorised, decide from the LINE ITEMS: does the work belong to the "
-                "category of the cost centre it was billed to? The kind of work decides the category, not which "
-                "cost centre paid. If any invoice's line items do not match its cost centre, the flag is correct: "
-                "'confirm' and set corrected_category to the category the line items belong to. "
-                "Judge only from the evidence given; do not invent facts.")
-    res = llm.complete(role, prompt, schema=Verdict, exclude=exclude,
-                       system="You are a sceptical finance auditor checking an analyst's findings.")
+    with prompts.use(prompts.AUDIT_JUDGE, category=f.category, confidence=f.confidence, statement=f.statement,
+                     checks="\n".join(f"- {c}" for c in checks),
+                     evidence="\n".join(f"- {e}" for e in evidence) or "- none found") as (system, prompt):
+        res = llm.complete(role, prompt, schema=Verdict, exclude=exclude, system=system)
     return res.parsed, res
 
 
