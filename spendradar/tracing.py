@@ -8,6 +8,7 @@ formats and every secret value loaded from .env out of all text.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
@@ -71,6 +72,14 @@ def _scrub(value: Any, secrets: list[str]) -> Any:
 def mask_secrets(item: dict, *, context: Any = None) -> dict:
     """neatlogs `mask` callback: runs on every telemetry item before export."""
     return _scrub(item, _secret_values())
+
+
+def set_io(span, input: Any = None, output: Any = None) -> None:
+    """Fill the span's Input/Output panes in neatlogs (OpenInference input.value/output.value);
+    custom spendradar.* attributes alone leave them empty, and detections match on these."""
+    for key, val in (("input.value", input), ("output.value", output)):
+        if val is not None:
+            span.set_attribute(key, val if isinstance(val, str) else json.dumps(val, default=str)[:10000])
 
 
 def git_sha() -> str:

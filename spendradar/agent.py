@@ -21,6 +21,7 @@ import yaml
 from pydantic import BaseModel
 
 from spendradar import analysis, audit, faults, llm, report, verify
+from spendradar.tracing import set_io
 from spendradar.models import Check, Figure, Finding, RecoveryDecision, RunState, Source, Task
 from spendradar.tools import classify, crustdata, files
 from spendradar.tools.files import ToolError
@@ -415,6 +416,8 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
         span.set_attribute("spendradar.recovery.options", json.dumps(options))
         span.set_attribute("spendradar.recovery.default", default)
         span.set_attribute("spendradar.recovery.failure", f"{failure}: {detail}"[:500])
+        set_io(span, input={"task": task.id, "tool": task.tool, "failure": failure, "detail": detail[:500],
+                            "options": options, "default": default})
         try:
             choice = llm.choose("reason", prompt, tools,
                                 system="You choose recovery actions for a finance analysis agent.")
@@ -425,6 +428,8 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
         span.set_attribute("spendradar.recovery.chosen", chosen)
         span.set_attribute("spendradar.recovery.reason", reason[:300])
         span.set_attribute("spendradar.recovery.differs_from_default", chosen != default)
+        set_io(span, output={"chosen": chosen, "reason": reason[:300], "model": model,
+                             "differs_from_default": chosen != default})
     state.decisions.append(RecoveryDecision(task_id=task.id, failed_check=f"{failure}: {detail}"[:300],
                                             options=options, chosen=chosen, reason=reason, model=model,
                                             default=default))
@@ -514,6 +519,8 @@ def execute(state: RunState) -> None:
             with neatlogs.trace(f"verify:{task.tool}", kind="GUARDRAIL") as span:
                 span.set_attribute("spendradar.verify.passed", False)
                 span.set_attribute("spendradar.verify.detail", detail[:500])
+                set_io(span, input={"task": task.id, "tool": task.tool, "args": task.args},
+                       output={"passed": False, "failure": failure[:300], "detail": detail[:500]})
             if task.attempts >= MAX_ATTEMPTS:
                 chosen = "mark_low_confidence" if not failure.startswith("tool_error") else "skip"
             else:

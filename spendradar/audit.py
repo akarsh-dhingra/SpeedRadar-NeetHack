@@ -20,6 +20,7 @@ import neatlogs
 from pydantic import BaseModel
 
 from spendradar import analysis, llm
+from spendradar.tracing import set_io
 from spendradar.models import Finding, RunState
 
 NEWS_WORDS = ("layoff", "lay off", "laid off", "job cuts", "cuts jobs", "restructur", "hiring freeze",
@@ -115,14 +116,17 @@ def self_audit(state: RunState) -> None:
             evidence = _evidence_against(state, f, news)
             checks = [rc, src]
             span.set_attribute("spendradar.audit.evidence", json.dumps(evidence)[:2000])
+            set_io(span, input={"finding": f.id, "statement": f.statement, "evidence_against": evidence})
             if not rc_ok or not src_ok:
                 f.status, f.audit_notes = "overturned", [rc, src]
                 span.set_attribute("spendradar.audit.verdict", "overturned (deterministic)")
+                set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
             if not evidence and f.kind == "internal" and "mis-categorised" not in f.statement:
                 f.status = "confirmed"
                 f.audit_notes.append("deterministic internal finding; no contradicting evidence")
                 span.set_attribute("spendradar.audit.verdict", "confirmed (deterministic)")
+                set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
             try:
                 v, res = _judge("reason", f, evidence, checks)
@@ -130,6 +134,7 @@ def self_audit(state: RunState) -> None:
             except llm.LLMError as e:
                 f.status = "downgraded"
                 f.audit_notes.append(f"audit LLM unavailable ({str(e)[:80]}); downgraded to be safe")
+                set_io(span, output={"status": f.status, "how": "llm unavailable", "notes": f.audit_notes})
                 continue
             f.audit_notes.append(f"{res.model}: {v.verdict} — {v.reason}")
             final = v.verdict
@@ -153,6 +158,7 @@ def self_audit(state: RunState) -> None:
                 f.status = "confirmed"  # the flag itself is confirmed; the correction is applied in the report
                 f.confidence = 1.0 if v.verdict != "overturn" else f.confidence
             span.set_attribute("spendradar.audit.verdict", f.status)
+            set_io(span, output={"status": f.status, "how": "llm", "confidence": f.confidence, "notes": f.audit_notes})
 
 
 def _usage_add(state: RunState, res: llm.LLMResult) -> None:

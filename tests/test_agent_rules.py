@@ -158,3 +158,29 @@ def test_fired_faults_are_saved(tmp_path, monkeypatch):
     agent._record_faults(s)
     assert s.faults_fired == ["crustdata:429"] and "crustdata:429" in s.injected
     faults.configure([]); faults.fired.clear()
+
+
+def test_eval_verdict_fails_on_any_miss():
+    from spendradar.neatlogs_evals import verdict
+
+    ok = {"planted_caught": 5, "planted_total": 5, "planted_detail": {}, "unsupported_numbers_in_report": 0,
+          "false_alarms": 0, "phase": "done"}
+    assert verdict(ok) == ("PASS", [])
+    miss = {**ok, "planted_caught": 4, "planted_detail": {"P1": True, "P2": False}}
+    assert verdict(miss)[0] == "FAIL" and "P2" in verdict(miss)[1][0]
+    assert verdict({**ok, "phase": "audit"})[0] == "FAIL"
+
+
+def test_set_io_writes_openinference_fields():
+    from spendradar.tracing import set_io
+
+    class Span:
+        def __init__(self):
+            self.a = {}
+
+        def set_attribute(self, k, v):
+            self.a[k] = v
+
+    s = Span()
+    set_io(s, input={"x": 1}, output="done")
+    assert s.a == {"input.value": '{"x": 1}', "output.value": "done"}

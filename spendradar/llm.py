@@ -27,6 +27,7 @@ import yaml
 from pydantic import BaseModel, ValidationError
 
 from spendradar import faults
+from spendradar.tracing import set_io
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -370,6 +371,8 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
                 span.set_attribute("spendradar.fallback.to", model)
                 span.set_attribute("spendradar.fallback.provider", provider)
                 span.set_attribute("spendradar.fallback.reasons", json.dumps(errors[-3:]))
+                set_io(span, input={"role": role, "previous_errors": errors[-3:]},
+                       output={"fallback_to": model, "provider": provider})
         call = {"openai": _call_openai, "gemini": _call_gemini, "openrouter": _call_openrouter}[provider]
         for attempt in range(CONFIG["retries_per_model"] + 1):
             LEDGER.wait_turn(model)

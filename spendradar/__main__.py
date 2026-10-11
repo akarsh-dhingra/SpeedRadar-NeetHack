@@ -64,6 +64,7 @@ def main(argv: list[str] | None = None) -> None:
     e.add_argument("--score", nargs="*", help="score existing run ids instead of launching runs")
     e.add_argument("--fixtures", default=None, help="EVALS ONLY: run against altered fixtures")
     e.add_argument("--data", default="data/acme", help="input folder, e.g. data/kestrel (held-out)")
+    e.add_argument("--no-neatlogs", action="store_true", help="do not publish the scorecard as a neatlogs eval trace")
     args = ap.parse_args(argv)
 
     if args.cmd == "ledger":
@@ -83,6 +84,12 @@ def main(argv: list[str] | None = None) -> None:
 
         path = evals.run_eval(args.n, args.variant, args.evidence, args.score, args.fixtures, args.data)
         card = json.loads(path.read_text(encoding="utf-8"))
+        if not args.no_neatlogs:
+            from spendradar import neatlogs_evals
+
+            card["neatlogs_eval_trace_id"] = neatlogs_evals.publish(card, path)
+            path.write_text(json.dumps(card, indent=1), encoding="utf-8")
+            print(f"neatlogs eval trace: {card['neatlogs_eval_trace_id']}")
         print(f"scorecard: {path}")
         print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_without_fallback", "planted_total",
                                                 "summary_all_runs")}, indent=1))
