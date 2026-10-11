@@ -146,3 +146,15 @@ def test_job_window_is_stable_within_a_week():
     week = {agent.job_window_start(365, date(2026, 10, d)) for d in range(5, 12)}  # Mon 5 .. Sun 11 Oct
     assert week == {"2025-10-05"}
     assert agent.job_window_start(365, date(2026, 10, 12)) == "2025-10-12"  # next Monday moves it
+
+
+def test_fired_faults_are_saved(tmp_path, monkeypatch):
+    # injected runs used to store and report "fired: none": the record happened after the last save
+    from spendradar import faults
+    monkeypatch.setattr(agent, "RUNS", tmp_path, raising=False)
+    faults.configure(["crustdata:429"])
+    assert faults.fire("crustdata:429")
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    agent._record_faults(s)
+    assert s.faults_fired == ["crustdata:429"] and "crustdata:429" in s.injected
+    faults.configure([]); faults.fired.clear()

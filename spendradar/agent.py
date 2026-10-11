@@ -736,13 +736,21 @@ def run_phases(state: RunState) -> RunState:
             state.phase = "report"
             save(state)
         if state.phase == "report":
+            _record_faults(state)  # before the report, so its header shows which faults actually fired
             with neatlogs.trace("report", kind="CHAIN"):
                 report.write(state)
             state.phase = "done"
             save(state)
-        state.injected = faults.active()
-        state.faults_fired = list(faults.fired)
+        # Recorded and saved last as well. These two lines used to run after the final save, so every
+        # injected run (e.g. 1011-13475c, 1011-ac099b) stored and reported "fired: none".
+        _record_faults(state)
+        save(state)
     return state
+
+
+def _record_faults(state: RunState) -> None:
+    state.injected = faults.active()
+    state.faults_fired = sorted(set(state.faults_fired) | set(faults.fired))  # a resumed run keeps earlier ones
 
 
 def new_state(input_dir: str, tags: list[str], sha: str, run_id: str) -> RunState:
