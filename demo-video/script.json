@@ -15,7 +15,7 @@
    "lines": [
     {
      "id": "hook1",
-     "say": "Your competitor just doubled their M L team.",
+     "say": "Your competitor just doubled their em ell team.",
      "cap": "Your competitor just doubled their ML team.",
      "exag": 0.7
     },
@@ -65,7 +65,7 @@
     },
     {
      "id": "run3",
-     "say": "Budget, policy, salaries, invoices. Then real headcount for five competitors, from Crust data.",
+     "say": "Budget, policy, salaries, invoices. Then real headcount for five competitors, from Crust-data.",
      "cap": "Budget, policy, salaries, invoices. Then real headcount for 5 competitors, from Crustdata.",
      "src": "state.json done t01-t31; competitors: 5"
     },
@@ -109,7 +109,7 @@
     },
     {
      "id": "aud2",
-     "say": "It flagged a gap of up to five point two eight million dollars in Acme's M L team.",
+     "say": "It flagged a gap of up to five point two eight million dollars in Acme's em ell team.",
      "cap": "It flagged a gap of up to $5.28M in Acme's ML team.",
      "src": "run 1011-777bb7 finding f_ml_ai"
     },
@@ -159,7 +159,7 @@
    "lines": [
     {
      "id": "nl1",
-     "say": "Every call, every retry, every decision, traced in neat logs.",
+     "say": "Every call, every retry, every decision, traced in neet logs.",
      "cap": "Every call, every retry, every decision — traced in neatlogs."
     },
     {
@@ -186,19 +186,19 @@
      "id": "ent1",
      "say": "Entire gave our coding agent a memory. More than sixty checkpoints, each tying a commit to the prompt that wrote it.",
      "cap": "Entire gave our coding agent a memory: 60+ checkpoints, each tying a commit to the prompt that wrote it.",
-     "src": "git ls-remote origin refs/entire/checkpoints/*: 67 refs, 11 Oct"
+     "src": "evidence/frontend_data.json entire.checkpoints = 69"
     },
     {
      "id": "ent2",
-     "say": "Click any neat logs span, and explain walks back to the line of code, the commit, and the exact prompt behind it.",
+     "say": "Click any neet logs span, and explain walks back to the line of code, the commit, and the exact prompt behind it.",
      "cap": "Click any neatlogs span → the code line → the commit → the exact prompt behind it.",
      "src": "evidence/explain/5fcef2f7f2f8-decide-recovery.md"
     },
     {
      "id": "ent3",
-     "say": "And Entire's review runner caught a real bug in our audit, before we merged it.",
-     "cap": "Entire's review runner caught a real bug in our audit — before we merged it.",
-     "src": "hackathon.md 2026-10-11 13:30 entry; trail #2 finding 01M4N4SF2YQX fixed in a16758f"
+     "say": "And Entire's review runners caught two real bugs, before we merged.",
+     "cap": "Entire's review runners caught two real bugs — before we merged.",
+     "src": "evidence/frontend_data.json entire.trails: findings a16758f (medium), 62c6b69 (low), both resolved"
     }
    ]
   },
@@ -209,12 +209,12 @@
    "lines": [
     {
      "id": "cfo1",
-     "say": "And C F O dot A I turned our measured costs into a real plan.",
+     "say": "And see eff oh dot ay eye turned our measured costs into a real plan.",
      "cap": "And cfo.ai turned our measured costs into a real plan."
     },
     {
      "id": "cfo2",
-     "say": "Under three cents of A I per run. Competitor data is ninety-nine percent of the cost.",
+     "say": "Under three cents of ay eye per run. Competitor data is ninety-nine percent of the cost.",
      "cap": "Under 3¢ of AI per run. Competitor data: ~99% of the cost.",
      "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt; Assumptions LLM cost per run $0.0285"
     },
@@ -239,7 +239,7 @@
     },
     {
      "id": "out2",
-     "say": "Team kwep. Hashtag neat hack!",
+     "say": "Team kwep. Hashtag neet hack!",
      "cap": "team qwep · #neatHack",
      "exag": 0.75
     }

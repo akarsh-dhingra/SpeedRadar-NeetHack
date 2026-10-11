@@ -292,14 +292,41 @@
    "downgraded"
   ]
  },
- "checkpoints_pushed": 67,
- "runner_finding": {
-  "id": "01M4N4SF2YQX",
-  "severity": "medium",
-  "summary": "news evidence skipped when signals disagree",
-  "fix": "a16758f",
-  "trail": 2
- },
+ "checkpoints": 69,
+ "trails": [
+  {
+   "number": 1,
+   "title": "Code provenance: every run links to the Entire checkpoint that wrote its code",
+   "runners": "no blocking issues",
+   "findings": []
+  },
+  {
+   "number": 2,
+   "title": "Case study 05: deterministic audit verdicts for disagreeing competitor signals",
+   "runners": "no blocking issues",
+   "findings": [
+    {
+     "severity": "medium",
+     "status": "resolved",
+     "fix": "a16758f",
+     "summary": "Disagreeing signals skipped the judge, so news evidence (layoffs, acquisitions) was never weighed. Now the shortcut applies only without news."
+    }
+   ]
+  },
+  {
+   "number": 3,
+   "title": "spendradar explain: neatlogs span -> code -> Entire checkpoint, session and prompt",
+   "runners": "no blocking issues",
+   "findings": [
+    {
+     "severity": "low",
+     "status": "resolved",
+     "fix": "62c6b69",
+     "summary": "Trace pagination could loop forever if the cursor did not advance."
+    }
+   ]
+  }
+ ],
  "cfo": {
   "llm_per_run": "$0.0285",
   "crustdata_per_uncached_run": "$9.24",

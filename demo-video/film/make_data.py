@@ -82,8 +82,8 @@ facts = {
                 "prompt": "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)"},
     "case02": {"peers_before": "2/5", "peers_after": "5/5", "credits_before": 26.6, "credits_after": 5.4},
     "case05": {"before": ["confirmed", "overturned", "downgraded", "overturned", "overturned"], "after": ["downgraded"] * 5},
-    "checkpoints_pushed": 67,
-    "runner_finding": {"id": "01M4N4SF2YQX", "severity": "medium", "summary": "news evidence skipped when signals disagree", "fix": "a16758f", "trail": 2},
+    "checkpoints": fd["entire"]["checkpoints"],
+    "trails": [{"number": t["number"], "title": t["title"], "runners": t.get("runner_result"), "findings": t.get("findings", [])} for t in fd["entire"]["trails"]],
     "cfo": {"llm_per_run": "$0.0285", "crustdata_per_uncached_run": "$9.24", "starting_cash": 25000, "starter": "$99/mo · 8 runs", "team": "$399/mo · 40 runs",
             "base_positive": "Jan 2028", "growth_positive": "Jun 2027", "downside": "runs out Dec 2027", "test_team": "$495"},
 }
