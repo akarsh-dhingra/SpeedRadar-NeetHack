@@ -1,0 +1,314 @@
+{
+ "_source": "evidence/frontend_data.json summary; business/cfoai exports; evidence/explain; evidence/case-studies 02 and 05; git ls-remote (checkpoints)",
+ "summary": {
+  "runs_scored": 61,
+  "runs_unfinished": 3,
+  "companies": 7,
+  "held_out_companies": 6,
+  "latest_runs_all_caught": 7,
+  "latest_runs_false_alarms": 0,
+  "recovery_decisions": 289,
+  "recovery_overrides": 161,
+  "findings_overturned": 11,
+  "findings_downgraded": 23
+ },
+ "injected": [
+  {
+   "company": "acme",
+   "run_id": "1010-a32118",
+   "faults": [
+    "crustdata:429",
+    "llm:429"
+   ],
+   "planted_caught": 5,
+   "planted_total": 5
+  },
+  {
+   "company": "bastion",
+   "run_id": "1011-4d998b",
+   "faults": [
+    "crustdata:429",
+    "llm:429"
+   ],
+   "planted_caught": 6,
+   "planted_total": 6
+  },
+  {
+   "company": "ledgerly",
+   "run_id": "1011-3cd178",
+   "faults": [
+    "crustdata:429",
+    "llm:429"
+   ],
+   "planted_caught": 5,
+   "planted_total": 5
+  }
+ ],
+ "companies": [
+  {
+   "key": "acme",
+   "name": "Acme Observability Inc.",
+   "industry": "observability SaaS",
+   "competitors": [
+    "Honeycomb",
+    "Sentry",
+    "Arize",
+    "Chronosphere",
+    "Grafana Labs"
+   ]
+  },
+  {
+   "key": "bastion",
+   "name": "Bastion Security Inc.",
+   "industry": "cybersecurity",
+   "competitors": [
+    "Snyk",
+    "Huntress",
+    "Abnormal Security",
+    "Tines",
+    "Vanta"
+   ]
+  },
+  {
+   "key": "carebridge",
+   "name": "Carebridge Health Inc.",
+   "industry": "digital health",
+   "competitors": [
+    "Spring Health",
+    "Headway",
+    "Sword Health",
+    "Cityblock Health",
+    "Komodo Health"
+   ]
+  },
+  {
+   "key": "kestrel",
+   "name": "Kestrel Metrics Inc.",
+   "industry": "observability SaaS",
+   "competitors": [
+    "Honeycomb",
+    "Sentry",
+    "Arize",
+    "Chronosphere",
+    "Grafana Labs"
+   ]
+  },
+  {
+   "key": "ledgerly",
+   "name": "Ledgerly Payments Inc.",
+   "industry": "fintech (spend management)",
+   "competitors": [
+    "Ramp",
+    "Brex",
+    "Mercury",
+    "Airwallex",
+    "Spendesk"
+   ]
+  },
+  {
+   "key": "parcelwise",
+   "name": "Parcelwise Commerce Inc.",
+   "industry": "e-commerce logistics",
+   "competitors": [
+    "Shippo",
+    "ShipBob",
+    "Recharge",
+    "Gorgias",
+    "Yotpo"
+   ]
+  },
+  {
+   "key": "peoplegraph",
+   "name": "Peoplegraph HR Inc.",
+   "industry": "HR tech",
+   "competitors": [
+    "Lattice",
+    "Culture Amp",
+    "15Five",
+    "Leapsome",
+    "HiBob"
+   ]
+  }
+ ],
+ "featured_metrics": {
+  "planted_caught": 5,
+  "planted_total": 5,
+  "false_alarms": 0,
+  "unsupported_numbers_in_report": 0,
+  "findings_overturned": 1,
+  "findings_downgraded": 0,
+  "recovery_decisions": 10,
+  "recovery_non_default": 5,
+  "llm_calls": 31,
+  "llm_tokens_in": 13467,
+  "llm_tokens_out": 67151,
+  "llm_latency_s": 378.1,
+  "fallback_hops": 0,
+  "crustdata_credits": 0.0,
+  "models": [
+   "gemini-3.5-flash-lite",
+   "gpt-5-nano"
+  ]
+ },
+ "planted": [
+  {
+   "id": "budget_total_mismatch",
+   "label": "Budget row total does not equal the sum of its months",
+   "caught": true
+  },
+  {
+   "id": "invoice_total_mismatch",
+   "label": "Invoice line items do not add up to the stated total",
+   "caught": true
+  },
+  {
+   "id": "invoice_miscategorised",
+   "label": "Invoice billed to the wrong cost centre",
+   "caught": true
+  },
+  {
+   "id": "invoice_scanned",
+   "label": "Scanned invoice with no text layer",
+   "caught": true
+  },
+  {
+   "id": "invoice_corrupt",
+   "label": "Corrupt or empty PDF",
+   "caught": true
+  }
+ ],
+ "cash": {
+  "_source": "business/cfoai/Monthly P&L & Cash.xlsx (Main Scenario = Base), business/cfoai/round2/Summary-Base-Growth-Downside.xlsx",
+  "months": "Nov 2026 – Oct 2028",
+  "base": [
+   22885,
+   20770,
+   18654,
+   16663,
+   14946,
+   13353,
+   11884,
+   10689,
+   9618,
+   8671,
+   7998,
+   7449,
+   7237,
+   7149,
+   7397,
+   7769,
+   8477,
+   9584,
+   10815,
+   12382,
+   14073,
+   16100,
+   18252,
+   20739
+  ],
+  "growth": [
+   22885,
+   20770,
+   18654,
+   17034,
+   15708,
+   14877,
+   14615,
+   14920,
+   15868,
+   17384,
+   19469,
+   22121,
+   25416,
+   29700,
+   34626,
+   40541,
+   47098,
+   54644,
+   62832,
+   71662,
+   81482,
+   91943,
+   103393,
+   115486
+  ],
+  "downside": [
+   22885,
+   20770,
+   18654,
+   16539,
+   14424,
+   12309,
+   10267,
+   8350,
+   6506,
+   4736,
+   3091,
+   1519,
+   20,
+   -1354,
+   -2654,
+   -3793,
+   -4859,
+   -5763,
+   -6594,
+   -7263,
+   -7734,
+   -8132,
+   -8369,
+   -8532
+  ]
+ },
+ "explain": {
+  "trace": "5fcef2f7f2f862bcbafe9636d6819d94",
+  "code": "spendradar/agent.py:447",
+  "commit": "11a51083",
+  "checkpoint": "01M4JF3MC0VP8STJD2CY50GYM6",
+  "session": "f356ebcd-1778-45d3-a192-663d385625b4",
+  "chosen": "narrow_range",
+  "default": "mark_low_confidence",
+  "model": "gpt-5-nano",
+  "prompt": "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)"
+ },
+ "case02": {
+  "peers_before": "2/5",
+  "peers_after": "5/5",
+  "credits_before": 26.6,
+  "credits_after": 5.4
+ },
+ "case05": {
+  "before": [
+   "confirmed",
+   "overturned",
+   "downgraded",
+   "overturned",
+   "overturned"
+  ],
+  "after": [
+   "downgraded",
+   "downgraded",
+   "downgraded",
+   "downgraded",
+   "downgraded"
+  ]
+ },
+ "checkpoints_pushed": 67,
+ "runner_finding": {
+  "id": "01M4N4SF2YQX",
+  "severity": "medium",
+  "summary": "news evidence skipped when signals disagree",
+  "fix": "a16758f",
+  "trail": 2
+ },
+ "cfo": {
+  "llm_per_run": "$0.0285",
+  "crustdata_per_uncached_run": "$9.24",
+  "starting_cash": 25000,
+  "starter": "$99/mo · 8 runs",
+  "team": "$399/mo · 40 runs",
+  "base_positive": "Jan 2028",
+  "growth_positive": "Jun 2027",
+  "downside": "runs out Dec 2027",
+  "test_team": "$495"
+ }
+}

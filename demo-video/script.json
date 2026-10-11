@@ -1,53 +1,249 @@
 {
-  "_about": "Narration for the Spend Radar demo film (v2). `say` is what the voice reads (spelled for pronunciation); `cap` is the on-screen caption. `exag` sets the voice's expressiveness for that line (0.5 calm .. 0.75 lively). Every number comes from the evidence named in `src`. Scene visuals live in film/src/scenes; their length follows the narration.",
-  "voice": {"engine": "chatterbox", "reference": "LibriSpeech dev-clean reader 1673 (CC BY 4.0)", "exaggeration": 0.6, "cfg_weight": 0.45, "tempo": 1.07},
-  "scenes": [
-    {"id": "hook", "pad_before": 0.3, "pad_after": 0.25, "lines": [
-      {"id": "hook1", "say": "Your competitor just doubled their M L team.", "cap": "Your competitor just doubled their ML team.", "exag": 0.7},
-      {"id": "hook2", "say": "And you'll find out... next quarter.", "cap": "And you'll find out… next quarter.", "exag": 0.7},
-      {"id": "hook3", "say": "Unless your agent finds out first.", "cap": "Unless your agent finds out first.", "exag": 0.75}
-    ]},
-    {"id": "title", "pad_before": 0.15, "pad_after": 0.3, "lines": [
-      {"id": "title1", "say": "This is Spend Radar. It reads your finance files, checks the market with real data, and then tries to prove itself wrong.", "cap": "This is Spend Radar. It reads your finance files, checks the market with real data — then tries to prove itself wrong."}
-    ]},
-    {"id": "how", "pad_before": 0.15, "pad_after": 0.25, "lines": [
-      {"id": "how1", "say": "It plans the job, then reads the budget, the invoices, and the policy.", "cap": "It plans the job, then reads the budget, the invoices and the policy."},
-      {"id": "how2", "say": "It pulls real competitor headcount from Crust data.", "cap": "It pulls real competitor headcount from Crustdata."},
-      {"id": "how3", "say": "And Python does every calculation, so each number carries its source.", "cap": "Python does every calculation, so each number carries its source.", "src": "CLAUDE.md §4.2"}
-    ]},
-    {"id": "recover", "pad_before": 0.15, "pad_after": 0.25, "lines": [
-      {"id": "rec1", "say": "Things break. A scanned P D F. A rate limit. Totals that don't add up.", "cap": "Things break. A scanned PDF. A rate limit. Totals that don't add up.", "exag": 0.65},
-      {"id": "rec2", "say": "So it picks a recovery, and in a hundred and eighty-three of three hundred and seventy-two decisions, it overrode the default.", "cap": "It picks a recovery — and in 183 of 372 decisions, it overrode the default.", "src": "evidence/frontend_data.json summary.recovery_overrides / recovery_decisions"}
-    ]},
-    {"id": "audit", "pad_before": 0.2, "pad_after": 0.3, "lines": [
-      {"id": "aud1", "say": "Now, our favourite part.", "cap": "Now, our favourite part.", "exag": 0.7},
-      {"id": "aud2", "say": "It flagged a gap of up to five point two eight million dollars in Acme's M L team.", "cap": "It flagged a gap of up to $5.28M in Acme's ML team.", "src": "run 1011-777bb7 finding f_ml_ai"},
-      {"id": "aud3", "say": "Then it argued with itself, and overturned its own claim.", "cap": "Then it argued with itself — and overturned its own claim.", "exag": 0.7},
-      {"id": "aud4", "say": "Wrong claims never reach the report.", "cap": "Wrong claims never reach the report."}
-    ]},
-    {"id": "general", "pad_before": 0.15, "pad_after": 0.25, "lines": [
-      {"id": "gen1", "say": "Seven companies. Six it had never seen.", "cap": "7 companies. 6 it had never seen.", "src": "summary.companies = 7, held_out_companies = 6"},
-      {"id": "gen2", "say": "Every planted error, caught. Zero false alarms.", "cap": "Every planted error caught. Zero false alarms.", "exag": 0.7, "src": "summary.latest_runs_all_caught = 7, latest_runs_false_alarms = 0"},
-      {"id": "gen3", "say": "Even with Crust data and the model rate-limited on purpose.", "cap": "Even with Crustdata and the LLM rate-limited on purpose.", "src": "summary.injected_runs: faults crustdata:429 + llm:429, all planted errors caught"}
-    ]},
-    {"id": "neatlogs", "pad_before": 0.15, "pad_after": 0.25, "lines": [
-      {"id": "nl1", "say": "Every call, every retry, every decision, traced in neat logs.", "cap": "Every call, every retry, every decision — traced in neatlogs."},
-      {"id": "nl2", "say": "One trace showed it throwing away three of five competitors. The fix kept all five, and cut credits from twenty-six point six to five point four.", "cap": "One trace: 3 of 5 competitors thrown away. The fix: all 5 kept, credits 26.6 → 5.4.", "src": "evidence/case-studies/02-competitor-substitution.md"},
-      {"id": "nl3", "say": "Another showed the same data getting three different verdicts. Now, it's one. Every time.", "cap": "Same data, 3 different verdicts. Now: 1. Every time.", "exag": 0.65, "src": "evidence/case-studies/05-audit-verdict-variance.md"}
-    ]},
-    {"id": "entire", "pad_before": 0.15, "pad_after": 0.25, "lines": [
-      {"id": "ent1", "say": "Entire gave our coding agent a memory. More than sixty checkpoints, each tying a commit to the prompt that wrote it.", "cap": "Entire gave our coding agent a memory: 60+ checkpoints, each tying a commit to the prompt that wrote it.", "src": "git ls-remote origin refs/entire/checkpoints/*: 67 refs, 11 Oct"},
-      {"id": "ent2", "say": "Click any neat logs span, and explain walks back to the line of code, the commit, and the exact prompt behind it.", "cap": "Click any neatlogs span → the code line → the commit → the exact prompt behind it.", "src": "evidence/explain/5fcef2f7f2f8-decide-recovery.md"},
-      {"id": "ent3", "say": "And Entire's review runner caught a real bug in our audit, before we merged it.", "cap": "Entire's review runner caught a real bug in our audit — before we merged it.", "src": "hackathon.md 2026-10-11 13:30 entry; trail #2 finding 01M4N4SF2YQX fixed in a16758f"}
-    ]},
-    {"id": "cfo", "pad_before": 0.15, "pad_after": 0.25, "lines": [
-      {"id": "cfo1", "say": "And C F O dot A I turned our measured costs into a real plan.", "cap": "And cfo.ai turned our measured costs into a real plan."},
-      {"id": "cfo2", "say": "Under three cents of A I per run. Competitor data is ninety-nine percent of the cost.", "cap": "Under 3¢ of AI per run. Competitor data: ~99% of the cost.", "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt; Assumptions LLM cost per run $0.0285"},
-      {"id": "cfo3", "say": "Base case: cash-flow positive by January twenty twenty-eight. Next move: test the Team plan at four ninety-five.", "cap": "Base case: cash-flow positive Jan 2028. Next: test Team at $495.", "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt"}
-    ]},
-    {"id": "outro", "pad_before": 0.2, "pad_after": 1.8, "lines": [
-      {"id": "out1", "say": "Spend Radar. Every number has a source.", "cap": "Spend Radar. Every number has a source.", "exag": 0.65},
-      {"id": "out2", "say": "Team kwep. Hashtag neat hack!", "cap": "team qwep · #neatHack", "exag": 0.75}
-    ]}
-  ]
+ "_about": "Narration for the Spend Radar demo film (v2). `say` is what the voice reads (spelled for pronunciation); `cap` is the on-screen caption. `exag` sets the voice's expressiveness for that line (0.5 calm .. 0.75 lively). Every number comes from the evidence named in `src`. Scene visuals live in film/src/scenes; their length follows the narration.",
+ "voice": {
+  "engine": "chatterbox",
+  "reference": "LibriSpeech dev-clean reader 1673 (CC BY 4.0)",
+  "exaggeration": 0.6,
+  "cfg_weight": 0.45,
+  "tempo": 1.1
+ },
+ "scenes": [
+  {
+   "id": "hook",
+   "pad_before": 0.3,
+   "pad_after": 0.25,
+   "lines": [
+    {
+     "id": "hook1",
+     "say": "Your competitor just doubled their M L team.",
+     "cap": "Your competitor just doubled their ML team.",
+     "exag": 0.7
+    },
+    {
+     "id": "hook2",
+     "say": "And you'll find out... next quarter.",
+     "cap": "And you'll find out… next quarter.",
+     "exag": 0.7
+    },
+    {
+     "id": "hook3",
+     "say": "Unless your agent finds out first.",
+     "cap": "Unless your agent finds out first.",
+     "exag": 0.75
+    }
+   ]
+  },
+  {
+   "id": "title",
+   "pad_before": 0.15,
+   "pad_after": 0.3,
+   "lines": [
+    {
+     "id": "title1",
+     "say": "This is Spend Radar. It reads your finance files, checks the market with real data, and then tries to prove itself wrong.",
+     "cap": "This is Spend Radar. It reads your finance files, checks the market with real data — then tries to prove itself wrong."
+    }
+   ]
+  },
+  {
+   "id": "run",
+   "pad_before": 0.15,
+   "pad_after": 0.25,
+   "lines": [
+    {
+     "id": "run1",
+     "say": "Let's watch a real run, on Acme's files.",
+     "cap": "Let's watch a real run, on Acme's files.",
+     "src": "runs/1011-777bb7 (data mode: real)",
+     "exag": 0.65
+    },
+    {
+     "id": "run2",
+     "say": "The model writes a plan. Then the agent works through it, one tool call at a time.",
+     "cap": "The model writes a plan. The agent works through it, one tool call at a time.",
+     "src": "runs/1011-777bb7/state.json plan_rationale, done (41 tasks)"
+    },
+    {
+     "id": "run3",
+     "say": "Budget, policy, salaries, invoices. Then real headcount for five competitors, from Crust data.",
+     "cap": "Budget, policy, salaries, invoices. Then real headcount for 5 competitors, from Crustdata.",
+     "src": "state.json done t01-t31; competitors: 5"
+    },
+    {
+     "id": "run4",
+     "say": "Python checks every result. Seventy-one checks. Here, a budget row is off by one point four five percent.",
+     "cap": "Python checks every result: 71 checks. Here, a budget row is off by 1.45%.",
+     "src": "state.json checks (71), decisions[t01].failed_check"
+    },
+    {
+     "id": "run5",
+     "say": "The rule says, mark it low confidence. The model chose to re-read the exact row instead.",
+     "cap": "The rule says: mark it low confidence. The model chose to re-read the exact row instead.",
+     "src": "state.json decisions[t01]: default mark_low_confidence, chosen narrow_range",
+     "exag": 0.65
+    },
+    {
+     "id": "run6",
+     "say": "A scanned invoice? Read it another way. A corrupt one? Try a second parser, then list it as not analysed.",
+     "cap": "Scanned invoice? Read it another way. Corrupt one? Second parser, then listed as not analysed.",
+     "src": "state.json decisions t15 (reparse_alt), t16/t16r (reparse_alt, skip), not_analysed"
+    },
+    {
+     "id": "run7",
+     "say": "Half of its ten recovery calls beat the default rule.",
+     "cap": "5 of its 10 recovery calls beat the default rule.",
+     "src": "frontend_data run 1011-777bb7 metrics: recovery_decisions 10, recovery_non_default 5"
+    }
+   ]
+  },
+  {
+   "id": "audit",
+   "pad_before": 0.2,
+   "pad_after": 0.3,
+   "lines": [
+    {
+     "id": "aud1",
+     "say": "Then comes the self-audit, our favourite part.",
+     "cap": "Then comes the self-audit — our favourite part.",
+     "exag": 0.7
+    },
+    {
+     "id": "aud2",
+     "say": "It flagged a gap of up to five point two eight million dollars in Acme's M L team.",
+     "cap": "It flagged a gap of up to $5.28M in Acme's ML team.",
+     "src": "run 1011-777bb7 finding f_ml_ai"
+    },
+    {
+     "id": "aud3",
+     "say": "Then it argued with itself, and overturned its own claim.",
+     "cap": "Then it argued with itself — and overturned its own claim.",
+     "exag": 0.7
+    },
+    {
+     "id": "aud4",
+     "say": "Wrong claims never reach the report.",
+     "cap": "Wrong claims never reach the report."
+    },
+    {
+     "id": "aud5",
+     "say": "What's left is a report where every number links to its source.",
+     "cap": "What's left: a report where every number links to its source.",
+     "src": "runs/1011-777bb7/report.md"
+    }
+   ]
+  },
+  {
+   "id": "general",
+   "pad_before": 0.15,
+   "pad_after": 0.25,
+   "lines": [
+    {
+     "id": "gen1",
+     "say": "Seven companies. Six it had never seen before.",
+     "cap": "7 companies. 6 it had never seen before.",
+     "src": "summary.companies = 7, held_out_companies = 6"
+    },
+    {
+     "id": "gen2",
+     "say": "Every planted error, caught. Zero false alarms. Even with the APIs rate-limited on purpose.",
+     "cap": "Every planted error caught. Zero false alarms — even with the APIs rate-limited on purpose.",
+     "exag": 0.7,
+     "src": "summary.latest_runs_all_caught = 7, latest_runs_false_alarms = 0; injected_runs crustdata:429 + llm:429"
+    }
+   ]
+  },
+  {
+   "id": "neatlogs",
+   "pad_before": 0.15,
+   "pad_after": 0.25,
+   "lines": [
+    {
+     "id": "nl1",
+     "say": "Every call, every retry, every decision, traced in neat logs.",
+     "cap": "Every call, every retry, every decision — traced in neatlogs."
+    },
+    {
+     "id": "nl2",
+     "say": "One trace showed it throwing away three of five competitors. The fix kept all five, and cut credits from twenty-six point six to five point four.",
+     "cap": "One trace: 3 of 5 competitors thrown away. The fix: all 5 kept, credits 26.6 → 5.4.",
+     "src": "evidence/case-studies/02-competitor-substitution.md"
+    },
+    {
+     "id": "nl3",
+     "say": "Another showed the same data getting three different verdicts. Now, it's one. Every time.",
+     "cap": "Same data, 3 different verdicts. Now: 1. Every time.",
+     "exag": 0.65,
+     "src": "evidence/case-studies/05-audit-verdict-variance.md"
+    }
+   ]
+  },
+  {
+   "id": "entire",
+   "pad_before": 0.15,
+   "pad_after": 0.25,
+   "lines": [
+    {
+     "id": "ent1",
+     "say": "Entire gave our coding agent a memory. More than sixty checkpoints, each tying a commit to the prompt that wrote it.",
+     "cap": "Entire gave our coding agent a memory: 60+ checkpoints, each tying a commit to the prompt that wrote it.",
+     "src": "git ls-remote origin refs/entire/checkpoints/*: 67 refs, 11 Oct"
+    },
+    {
+     "id": "ent2",
+     "say": "Click any neat logs span, and explain walks back to the line of code, the commit, and the exact prompt behind it.",
+     "cap": "Click any neatlogs span → the code line → the commit → the exact prompt behind it.",
+     "src": "evidence/explain/5fcef2f7f2f8-decide-recovery.md"
+    },
+    {
+     "id": "ent3",
+     "say": "And Entire's review runner caught a real bug in our audit, before we merged it.",
+     "cap": "Entire's review runner caught a real bug in our audit — before we merged it.",
+     "src": "hackathon.md 2026-10-11 13:30 entry; trail #2 finding 01M4N4SF2YQX fixed in a16758f"
+    }
+   ]
+  },
+  {
+   "id": "cfo",
+   "pad_before": 0.15,
+   "pad_after": 0.25,
+   "lines": [
+    {
+     "id": "cfo1",
+     "say": "And C F O dot A I turned our measured costs into a real plan.",
+     "cap": "And cfo.ai turned our measured costs into a real plan."
+    },
+    {
+     "id": "cfo2",
+     "say": "Under three cents of A I per run. Competitor data is ninety-nine percent of the cost.",
+     "cap": "Under 3¢ of AI per run. Competitor data: ~99% of the cost.",
+     "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt; Assumptions LLM cost per run $0.0285"
+    },
+    {
+     "id": "cfo3",
+     "say": "Base case: cash-flow positive by January twenty twenty-eight. Next move: test the Team plan at four ninety-five.",
+     "cap": "Base case: cash-flow positive Jan 2028. Next: test Team at $495.",
+     "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt"
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "pad_before": 0.2,
+   "pad_after": 1.8,
+   "lines": [
+    {
+     "id": "out1",
+     "say": "Spend Radar. Every number has a source.",
+     "cap": "Spend Radar. Every number has a source.",
+     "exag": 0.65
+    },
+    {
+     "id": "out2",
+     "say": "Team kwep. Hashtag neat hack!",
+     "cap": "team qwep · #neatHack",
+     "exag": 0.75
+    }
+   ]
+  }
+ ]
 }

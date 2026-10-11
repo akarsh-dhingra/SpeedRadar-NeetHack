@@ -54,6 +54,9 @@ jobs:
           [ -f dev-clean.tar.gz ] || curl -sSfL https://openslr.elda.org/resources/12/dev-clean.tar.gz -o dev-clean.tar.gz || curl -sSfL https://openslr.trmal.net/resources/12/dev-clean.tar.gz -o dev-clean.tar.gz
           tar xzf dev-clean.tar.gz
           python refs.py --speaker "$(python -c "import json;print(json.load(open('../script.json'))['voice']['reference'].split('reader ')[1].split()[0])")"
+      - name: Previous takes (unchanged lines are reused, not re-spoken)
+        uses: actions/cache/restore@v4
+        with: { path: demo-video/build/voice/lines, key: "${{ needs.voice-key.outputs.key }}", restore-keys: "voice-v2-" }
       - name: Lines (shard ${{ matrix.shard }})
         run: python tts_lines.py ${{ matrix.shard }} 6
       - uses: actions/upload-artifact@v4
