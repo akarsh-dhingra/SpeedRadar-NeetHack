@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N525ZQ174NPSPNEYSV321V",
+  "strategy": "manual-commit",
+  "branch": "feat/deterministic-audit",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "evidence/case-studies/05-audit-verdict-variance.md",
+    "spendradar/audit.py",
+    "tests/test_report_audit.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 5693,
+    "cache_read_tokens": 2513735,
+    "output_tokens": 3505,
+    "api_call_count": 6
+  }
+}
