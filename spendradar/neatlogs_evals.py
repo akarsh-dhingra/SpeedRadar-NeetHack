@@ -51,7 +51,9 @@ def publish(card: dict, scorecard: Path) -> str:
                 with neatlogs.trace("eval:run", kind="GUARDRAIL") as span:
                     set_io(span, input={"run_id": s["run_id"], "run_trace_id": s["trace_id"],
                                         "dataset": s["dataset"], "data_mode": s["data_mode"],
-                                        "git_sha": s["git_sha"], "ground_truth": s["ground_truth"]},
+                                        "git_sha": s["git_sha"], "ground_truth": s["ground_truth"],
+                                        "entire_checkpoint": (s.get("code") or {}).get("checkpoint", ""),
+                                        "entire_url": (s.get("code") or {}).get("entire_url", "")},
                            output={"verdict": v, "why": why,
                                    "planted_caught": f"{s['planted_caught']}/{s['planted_total']}",
                                    "false_alarms": s["false_alarms"],
