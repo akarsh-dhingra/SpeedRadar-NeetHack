@@ -46,7 +46,7 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 _TBD_
 
 ## Limitations
-_TBD_
+See README "Limitations (honest)". In short: competitor people cost is an estimate (Crustdata headcount × our loaded cost); people cost only; all company finance data is fictional; ML/AI is the weakest estimate; development ran on free LLM tiers plus hackathon OpenAI credits, with only fictional and public data sent; business costs are paid-equivalent estimates; several before/after comparisons are n = 1 per side.
 
 ## Submission
 _TBD_
@@ -100,3 +100,7 @@ _TBD_
 - Planned: fix the three open items from the 10:49 entry.
 - Done: audit now sees the line-item check result (Acme mis-categorised invoice: before 1 of 2 complete runs, after **3 of 3**, each 5/5, 0 false alarms, 0 fallback hops; scorecard `evidence/evals/20261011T112120-de18e4f-dirty-after-audit-linecheck.json`); eval keeps unfinished runs out of averages and saves their stderr; fallback hops counted for tool LLM calls, and PDFs routed to Gemini up front. Details and traces in case study 04. Front-end data regenerated.
 - Tests run: pytest 68 passed (5 new).
+
+### 2026-10-11 12:05 IST — evidence site and demo script
+- Done: static evidence site in `site/` (`63c0490`) on the Audit Console design system, reading the export; export now orders runs by start time and carries task logs, recovery menus and a counts-only summary. Demo script rewritten around the site with every number cited (`evidence/demo-script.md`, 368 spoken words). Post 5 placeholder filled from the export summary.
+- Tests run: pytest 68 passed; `node --check` on site scripts; headless Edge screenshots of the overview and run pages.

@@ -130,11 +130,11 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 >
 > Overturned claims go in the report, not in the bin.
 >
-> Final scorecard: {{N}} claims caught before reporting.
+> Across every run with an exported audit log: 5 findings overturned and 31 downgraded before reporting. The latest: a $5,280,000 ML/AI gap its own auditor threw out (run 1011-777bb7).
 
 **Image:** the report's "Overturned claims" section next to the `audit:f_ml_ai` span (trace `af0df27e2d3433e0c608fb28a018a22d`).
 
-**Sources:** `README.md` (Limitations), `evidence/traces.md` (trace `36362eb966cdbb85dcb2fb1b280e1034`, run 1010-9e86fc), commit `15d1109`.
+**Sources:** `evidence/frontend_data.json` (`summary.findings_overturned` 5, `findings_downgraded` 31; run 1011-777bb7 finding f_ml_ai), `README.md` (Limitations), `evidence/traces.md` (trace `36362eb966cdbb85dcb2fb1b280e1034`, run 1010-9e86fc), commit `15d1109`.
 
 **Posted:** —  
 **Link:** —
