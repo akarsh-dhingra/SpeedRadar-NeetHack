@@ -5,7 +5,7 @@ name: demo-video
 on:
   push:
     branches: [demo-video]
-    paths: ["demo-video/**", "site/**", ".github/workflows/demo-video.yml"]
+    paths: ["demo-video/**", "!demo-video/voice/**", "site/**", ".github/workflows/demo-video.yml"]
   workflow_dispatch:
 
 concurrency:
