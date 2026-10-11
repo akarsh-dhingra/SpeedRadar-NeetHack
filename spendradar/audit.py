@@ -66,6 +66,17 @@ def _sources_ok(state: RunState, f: Finding) -> tuple[bool, str]:
     return not missing, "all figures sourced" if not missing else f"unsourced figures: {missing}"
 
 
+AGREEMENT_MIN = 0.6  # below this, a competitor's independent signals for a category contradict each other
+
+
+def _disagreeing_competitors(state: RunState, f: Finding) -> list[str]:
+    if f.kind != "policy":
+        return []
+    return [p.name for p in state.competitors.values()
+            if analysis.category_range(p, f.category)
+            and (ag := analysis.signal_agreement(p, f.category)) is not None and ag < AGREEMENT_MIN]
+
+
 def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str]:
     ev = []
     if f.kind == "policy":
@@ -75,7 +86,7 @@ def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str
                 continue
             sigs = [s for s in p.signals if s.category == f.category]
             ag = analysis.signal_agreement(p, f.category)
-            if ag is not None and ag < 0.6:
+            if ag is not None and ag < AGREEMENT_MIN:
                 ev.append(f"{p.name} {f.category} signals disagree: " + "; ".join(
                     f"{s.name}={s.headcount:.0f} (as of {s.as_of})" for s in sigs))
         for n in news:
@@ -119,9 +130,22 @@ def self_audit(state: RunState) -> None:
                 span.set_attribute("spendradar.audit.verdict", "overturned (deterministic)")
                 set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
-            if not evidence and f.kind == "internal" and "mis-categorised" not in f.statement:
+            disagree = _disagreeing_competitors(state, f)
+            if f.kind == "policy" and disagree:
+                # Case study 05: on identical data the LLM judge returned confirmed / downgraded / overturned
+                # across runs. Disagreeing competitor signals are a fact Python can see, and the honest verdict
+                # for them is always the same: the gap may be real, but it is not confirmed.
+                f.status = "downgraded"
+                f.confidence = round(f.confidence * 0.5, 3)
+                f.audit_notes.append(
+                    f"deterministic: competitor signals disagree for {', '.join(disagree)} "
+                    f"(agreement < {AGREEMENT_MIN}); the comparison cannot be confirmed, so it is downgraded")
+                span.set_attribute("spendradar.audit.verdict", "downgraded (deterministic)")
+                set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
+                continue
+            if not evidence and f.kind in ("internal", "policy") and "mis-categorised" not in f.statement:
                 f.status = "confirmed"
-                f.audit_notes.append("deterministic internal finding; no contradicting evidence")
+                f.audit_notes.append(f"deterministic {f.kind} finding; no contradicting evidence")
                 span.set_attribute("spendradar.audit.verdict", "confirmed (deterministic)")
                 set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
