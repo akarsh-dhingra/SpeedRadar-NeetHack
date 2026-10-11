@@ -131,7 +131,8 @@ def self_audit(state: RunState) -> None:
                 set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
             disagree = _disagreeing_competitors(state, f)
-            if f.kind == "policy" and disagree:
+            news_ev = [e for e in evidence if e.startswith("news ")]
+            if f.kind == "policy" and disagree and not news_ev:
                 # Case study 05: on identical data the LLM judge returned confirmed / downgraded / overturned
                 # across runs. Disagreeing competitor signals are a fact Python can see, and the honest verdict
                 # for them is always the same: the gap may be real, but it is not confirmed.
@@ -173,6 +174,11 @@ def self_audit(state: RunState) -> None:
                 except llm.LLMError as e:
                     f.audit_notes.append(f"second opinion unavailable: {str(e)[:80]}")
                     record_error(f"audit:{f.id}:second_opinion", str(e), finding=f.id)
+            if f.kind == "policy" and disagree and final == "confirm":
+                # News sent this to the judge (trail #2 review finding), but disagreeing signals still rule out
+                # a clean confirm: the judge may overturn on the news, never upgrade past "downgrade".
+                final = "downgrade"
+                f.audit_notes.append(f"floored at downgrade: competitor signals disagree for {', '.join(disagree)}")
             f.status = {"confirm": "confirmed", "downgrade": "downgraded", "overturn": "overturned"}[final]
             if final != "confirm":
                 f.confidence = round(f.confidence * (0.5 if final == "downgrade" else 0.0), 3)
