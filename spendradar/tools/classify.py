@@ -41,7 +41,8 @@ def classify_titles(titles: list[str], batch: int = 40) -> tuple[dict[str, dict]
         prompt = "Classify each title. Return every title exactly as given.\n" + "\n".join(f"- {t}" for t in chunk)
         res = llm.complete("extract", prompt, system=SYSTEM, schema=TitleBatch)
         usage.append({"model": res.model, "tokens_in": res.tokens_in, "tokens_out": res.tokens_out,
-                      "latency_s": res.latency_s, "cached": res.cached, "reasks": res.reasks})
+                      "latency_s": res.latency_s, "cached": res.cached, "reasks": res.reasks,
+                      "fallbacks": res.fallbacks})
         # Models echo titles trimmed; match on the stripped form and key by the original title,
         # or titles with stray whitespace (common in Crustdata) are silently dropped.
         by_stripped = {t.strip(): t for t in chunk}

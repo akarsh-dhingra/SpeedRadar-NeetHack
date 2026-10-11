@@ -141,5 +141,5 @@ def read_pdf(path: str, mode: str = "text") -> dict:
             raise ToolError(f"LLM PDF reader failed: {str(e)[:160]}") from e
         return {"extract": res.parsed.model_dump(), "parser": f"llm:{res.model}",
                 "llm": {"model": res.model, "tokens_in": res.tokens_in, "tokens_out": res.tokens_out,
-                        "latency_s": res.latency_s, "cached": res.cached}}
+                        "latency_s": res.latency_s, "cached": res.cached, "fallbacks": res.fallbacks}}
     raise ToolError(f"unknown mode {mode!r}")

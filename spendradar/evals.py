@@ -144,6 +144,7 @@ def _agg(vals: list[float]) -> dict:
 def run_eval(n: int, variant: str, evidence: bool, score_only: list[str] | None = None,
              fixtures: str | None = None, data: str = "data/acme") -> Path:
     run_ids = list(score_only or [])
+    process: dict[str, dict] = {}
     for _ in range(0 if score_only else n):
         cmd = [sys.executable, "-m", "spendradar", "run", data, "--variant", variant]
         cmd += ["--evidence"] if evidence else []
@@ -154,16 +155,24 @@ def run_eval(n: int, variant: str, evidence: bool, score_only: list[str] | None 
             print(out.stdout[-2000:], out.stderr[-2000:])
             raise SystemExit("run failed to start")
         run_ids.append(m.group(1))
-    scores = [score_run(r) for r in run_ids]
-    no_fallback = [s for s in scores if s["fallback_hops"] == 0]
+        process[m.group(1)] = {"exit_code": out.returncode, "stderr_tail": out.stderr[-2000:]}
+    scores = [score_run(r) | process.get(r, {}) for r in run_ids]
+    # A run that stopped early is kept in "runs" (with its stderr) but never averaged in as if complete.
+    incomplete = [s for s in scores if s["phase"] != "done" or s.get("exit_code", 0) != 0]
+    for s in incomplete:
+        print(f"run {s['run_id']} did not finish (phase {s['phase']}, exit {s.get('exit_code')}); "
+              f"left out of the averages", file=sys.stderr)
+    complete = [s for s in scores if s not in incomplete]
+    no_fallback = [s for s in complete if s["fallback_hops"] == 0]
     keys = ("planted_caught", "false_alarms", "unsupported_numbers_in_report", "overturned", "downgraded", "recovery_decisions",
             "llm_calls", "llm_tokens_in", "llm_tokens_out", "llm_latency_s", "crustdata_credits")
     card = {
         "created": datetime.now().isoformat(timespec="seconds"), "variant": variant, "evidence": evidence,
         "git_sha": scores[0]["git_sha"] if scores else "", "n_runs": len(scores),
+        "n_runs_incomplete": len(incomplete), "incomplete_run_ids": [s["run_id"] for s in incomplete],
         "n_runs_without_fallback": len(no_fallback),
         "planted_total": scores[0]["planted_total"] if scores else 0,
-        "summary_all_runs": {k: _agg([s[k] for s in scores]) for k in keys} if scores else {},
+        "summary_all_runs": {k: _agg([s[k] for s in complete]) for k in keys} if complete else {},
         "summary_no_fallback_runs": {k: _agg([s[k] for s in no_fallback]) for k in keys} if no_fallback else {},
         "runs": scores,
     }

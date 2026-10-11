@@ -91,7 +91,7 @@ def main(argv: list[str] | None = None) -> None:
             path.write_text(json.dumps(card, indent=1), encoding="utf-8")
             print(f"neatlogs eval trace: {card['neatlogs_eval_trace_id']}")
         print(f"scorecard: {path}")
-        print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_without_fallback", "planted_total",
+        print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_incomplete", "n_runs_without_fallback", "planted_total",
                                                 "summary_all_runs")}, indent=1))
         return
 

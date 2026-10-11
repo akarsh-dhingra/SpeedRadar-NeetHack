@@ -332,6 +332,9 @@ def _call_openrouter(model: str, prompt: str, system: str | None, schema: type[B
 
 # ---------------------------------------------------------------- the chain
 
+TEXT_ONLY_PROVIDERS = ("openai", "openrouter")  # their routes here raise on attachments
+
+
 def _chain(role: str) -> list[tuple[str, str]]:
     r = CONFIG["roles"][role]
     # A provider without a configured key is skipped, so the chain degrades to what is available.
@@ -356,9 +359,11 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
         res.cached = True
         return res
 
-    # Models the ledger already knows are out of quota are routed around up front; that is
-    # planned routing, not a fallback. A fallback is a hop after a call failed in *this* request.
-    chain = [(p, m) for p, m in _chain(role) if LEDGER.remaining(m) > 0 and m not in exclude]
+    # Models the ledger already knows are out of quota, and text-only providers when a file is
+    # attached, are routed around up front; that is planned routing, not a fallback. A fallback
+    # is a hop after a call failed in *this* request.
+    chain = [(p, m) for p, m in _chain(role) if LEDGER.remaining(m) > 0 and m not in exclude
+             and not (attachments and p in TEXT_ONLY_PROVIDERS)]
     fallbacks: list[str] = []
     errors: list[str] = []
     for i, (provider, model) in enumerate(chain):

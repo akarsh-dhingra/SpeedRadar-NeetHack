@@ -98,6 +98,55 @@ def test_scanned_pdf_still_goes_to_the_llm_reader(monkeypatch):
     assert called == [1]
 
 
+def _fallback_result(parsed):
+    from spendradar import llm
+    return llm.LLMResult(text="", parsed=parsed, model="gemini-3.1-flash-lite", provider="gemini", tokens_in=5,
+                         tokens_out=2, latency_s=0.1, fallbacks=["gemini-3.1-flash-lite"])
+
+
+def test_llm_pdf_reader_reports_its_fallback_hop(monkeypatch):
+    # run 1011-3cd178 (llm:429 injected): a fallback call happened, but fallback_hops read 0
+    from spendradar import llm
+    from spendradar.tools import files
+
+    ex = files.InvoiceExtract(invoice_number="1", vendor="v", cost_centre="c", invoice_date="d", lines=[],
+                              stated_total=0.0)
+    monkeypatch.setattr(llm, "complete", lambda *a, **k: _fallback_result(ex))
+    out = files.read_pdf("data/acme/invoices/12_nimbus_2026-10.pdf", mode="llm")
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    agent._usage(s, out["llm"])
+    assert s.llm_usage["gemini-3.1-flash-lite"]["fallback_hops"] == 1
+
+
+def test_pdf_attachments_skip_text_only_providers_without_a_fallback(monkeypatch):
+    # OpenAI and OpenRouter routes are text-only; a PDF going to Gemini is planned routing, not a fallback
+    from spendradar import llm
+
+    monkeypatch.setattr(llm, "cache_enabled", lambda: False)
+    monkeypatch.setattr(llm, "_chain", lambda role: [("openai", "gpt-5-nano"), ("gemini", "g1"), ("openrouter", "o:free")])
+    monkeypatch.setattr(llm.LEDGER, "remaining", lambda m: 10)
+    monkeypatch.setattr(llm.LEDGER, "wait_turn", lambda m: None)
+    monkeypatch.setattr(llm.LEDGER, "record", lambda *a: None)
+    monkeypatch.setattr(llm, "_call_gemini", lambda *a: ("ok", None, 1, 1))
+    monkeypatch.setattr(llm, "_call_openai", lambda *a: (_ for _ in ()).throw(ValueError("stub: OpenAI down")))
+    res = llm._run_chain("extract", "p", None, None, None, attachments=[(b"%PDF", "application/pdf")])
+    assert res.model == "g1" and res.fallbacks == []
+    res = llm._run_chain("extract", "p", None, None, None)  # text calls still start at OpenAI
+    assert res.model == "g1" and res.fallbacks == ["g1"]
+
+
+def test_title_classifier_reports_its_fallback_hop(monkeypatch):
+    from spendradar import llm
+    from spendradar.tools import classify
+
+    monkeypatch.setattr(llm, "complete", lambda *a, **k: _fallback_result(classify.TitleBatch(labels=[])))
+    _, usage = classify.classify_titles(["ML Engineer"])
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    for u in usage:
+        agent._usage(s, u)
+    assert s.llm_usage["gemini-3.1-flash-lite"]["fallback_hops"] == 1
+
+
 def _inv(path, vendor, number, total, date="2026-05-28"):
     return {"path": path, "vendor": vendor, "number": number, "date": date, "cost_centre": "Infrastructure",
             "category": "infra_cloud", "lines": [], "line_sum": total, "stated_total": total}
@@ -169,6 +218,52 @@ def test_eval_verdict_fails_on_any_miss():
     miss = {**ok, "planted_caught": 4, "planted_detail": {"P1": True, "P2": False}}
     assert verdict(miss)[0] == "FAIL" and "P2" in verdict(miss)[1][0]
     assert verdict({**ok, "phase": "audit"})[0] == "FAIL"
+
+
+def test_eval_keeps_unfinished_runs_out_of_the_averages(tmp_path, monkeypatch):
+    # run 1011-d2d05c stopped at step 26 and was averaged in as if complete; its stderr was dropped
+    import json
+    import subprocess
+    from spendradar import evals
+
+    outs = iter([(0, "a1", ""), (1, "b2", "Traceback ... LLMError: all models failed")])
+
+    def fake_run(cmd, **k):
+        code, rid, err = next(outs)
+        return subprocess.CompletedProcess(cmd, code, stdout=f'{{"run_id": "{rid}"}}', stderr=err)
+
+    def fake_score(rid):
+        return {"run_id": rid, "git_sha": "abc", "phase": "done" if rid == "a1" else "audit", "planted_total": 5,
+                "planted_caught": 5 if rid == "a1" else 1, "fallback_hops": 0,
+                **{k: 0 for k in ("false_alarms", "unsupported_numbers_in_report", "overturned", "downgraded",
+                                  "recovery_decisions", "llm_calls", "llm_tokens_in", "llm_tokens_out",
+                                  "llm_latency_s", "crustdata_credits")}}
+
+    monkeypatch.setattr(evals.subprocess, "run", fake_run)
+    monkeypatch.setattr(evals, "score_run", fake_score)
+    monkeypatch.setattr(evals, "OUT", tmp_path)
+    card = json.loads(evals.run_eval(2, "t", False).read_text(encoding="utf-8"))
+    assert card["n_runs"] == 2 and card["n_runs_incomplete"] == 1
+    assert card["summary_all_runs"]["planted_caught"] == {"mean": 5, "min": 5, "max": 5, "n": 1}
+    bad = card["runs"][1]
+    assert bad["exit_code"] == 1 and "LLMError" in bad["stderr_tail"]
+
+
+def test_audit_sees_the_line_item_check_for_a_miscategorised_invoice():
+    # run 1011-4f1f02: the line-item check said invoice 08 was ml_ai work billed to marketing, but the auditor
+    # never saw that result, re-judged from raw descriptions, and overturned a correct flag
+    from spendradar import audit
+    from spendradar.models import Check, Finding
+
+    s = RunState(run_id="x", goal="g", input_dir="d")
+    s.invoices = [{**_inv("invoices/08_t.pdf", "Tensorforge GPU", "INV-8", 1.0), "category": "marketing",
+                   "cost_centre": "Marketing", "lines": [{"description": "A-class GPU hours (training)"}]}]
+    s.checks = [Check(name="verify:line_items", target="invoices/08_t.pdf", passed=False,
+                      detail="cost centre → marketing, line items → ml_ai")]
+    f = Finding(id="f_cat", category="internal", kind="internal", confidence=0.0,
+                statement="Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.")
+    ev = audit._evidence_against(s, f, [])
+    assert any("line-item check" in e and "line items → ml_ai" in e for e in ev)
 
 
 def test_set_io_writes_openinference_fields():

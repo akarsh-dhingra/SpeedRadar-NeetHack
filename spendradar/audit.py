@@ -82,10 +82,15 @@ def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str
             ev.append(f"news {n['date']} {n['company']}: {n['title']} ({n['url']})")
     if "mis-categorised" in f.statement:
         vendor = f.statement.split(":")[0]
+        line_checks = {c.target: c.detail for c in state.checks if c.name == "verify:line_items" and not c.passed}
         for inv in state.invoices:
             if inv["vendor"] == vendor:
                 ev.append(f"{inv['number']} cost centre '{inv['cost_centre']}' → {inv['category']}; lines: "
                           + "; ".join(line['description'] for line in inv["lines"]))
+                # The agent's own line-item check already judged this invoice; the auditor must weigh that
+                # result rather than re-judge from scratch (run 1011-4f1f02 overturned a correct flag).
+                if inv.get("path") in line_checks:
+                    ev.append(f"{inv['number']} line-item check: {line_checks[inv['path']]}")
     return ev
 
 
