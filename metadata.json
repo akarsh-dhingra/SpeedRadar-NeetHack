@@ -1,0 +1,27 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N6B6CGG1RDCGAP7RSG9STX",
+  "strategy": "manual-commit",
+  "branch": "feat/explain",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "spendradar/neatlogs_mcp.py",
+    "tests/test_explain.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 1472,
+    "cache_read_tokens": 890285,
+    "output_tokens": 1557,
+    "api_call_count": 2
+  }
+}

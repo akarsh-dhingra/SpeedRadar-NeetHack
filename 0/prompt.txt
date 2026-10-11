@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bebgmb99i</task-id>
+<tool-use-id>toolu_01HeEiRQEpfCnboBVfCUY6ap</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-akarsh-neatHack/f356ebcd-1778-45d3-a192-663d385625b4/tasks/bebgmb99i.output</output-file>
+<status>completed</status>
+<summary>Background command "Wait for runner reviews on GitHub trails and list findings" completed (exit code 0)</summary>
+</task-notification>
