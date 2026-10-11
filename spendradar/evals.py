@@ -17,6 +17,7 @@ from datetime import datetime
 from pathlib import Path
 
 from spendradar.models import RunState
+from spendradar.provenance import code_provenance
 
 TRUTH = Path("evals/ground_truth.json")
 OUT = Path("evidence/evals")
@@ -114,7 +115,8 @@ def score_run(run_id: str) -> dict:
     inv_err = {c: round(100 * abs(inv_got.get(c, 0) - v) / v, 2) for c, v in inv_true.items()}
     usage = {m: u for m, u in state.llm_usage.items()}
     return {
-        "run_id": run_id, "trace_id": state.trace_id, "git_sha": state.git_sha, "tags": state.tags,
+        "run_id": run_id, "trace_id": state.trace_id, "git_sha": state.git_sha, "code": state.code,
+        "tags": state.tags,
         "phase": state.phase, "data_mode": state.data_mode, "injected": state.injected,
         "dataset": Path(state.input_dir).name, "ground_truth": truth_path.as_posix(),
         "planted_caught": sum(caught.values()), "planted_total": len(caught), "planted_detail": caught,
@@ -169,6 +171,7 @@ def run_eval(n: int, variant: str, evidence: bool, score_only: list[str] | None 
     card = {
         "created": datetime.now().isoformat(timespec="seconds"), "variant": variant, "evidence": evidence,
         "git_sha": scores[0]["git_sha"] if scores else "", "n_runs": len(scores),
+        "scored_with_code": code_provenance(),
         "n_runs_incomplete": len(incomplete), "incomplete_run_ids": [s["run_id"] for s in incomplete],
         "n_runs_without_fallback": len(no_fallback),
         "planted_total": scores[0]["planted_total"] if scores else 0,
