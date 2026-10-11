@@ -13,22 +13,12 @@ const W = 1600, H = 900, FPS = 30;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Each clip: where to go, what to do before filming, what to do while filming, how long.
-const CLIPS = [
+const CLIPS = [ // v3 uses these two on its drawn monitors
   { name: "intro", hash: "overview", seconds: 8.5, pre: async () => {}, during: [] },
-  { name: "proof", hash: "overview", seconds: 5.5, skipIntro: true,
-    pre: async (p) => { await p.evaluate(() => document.getElementById("featured").scrollIntoView({ block: "center" })); await sleep(600); },
-    during: [[0.15, async (p) => p.click("[data-replay-chain]")]] },
-  { name: "matrix", hash: "overview", seconds: 4.0, skipIntro: true,
-    pre: async (p) => { await p.evaluate(() => window.scrollTo(0, 0)); await sleep(300); }, during: [] },
   { name: "run", hash: "run", seconds: 9.0, skipIntro: true, company: "bastion",
-    pre: async (p) => { await sleep(200); }, during: [[1.4, async (p) => p.evaluate(() => document.getElementById("timeline").scrollIntoView({ block: "start" }))]] },
-  { name: "recovery", hash: "recovery", seconds: 4.5, skipIntro: true,
-    pre: async () => {}, during: [[2.6, async (p) => p.evaluate(() => window.scrollBy({ top: 520, behavior: "smooth" }))]] },
-  { name: "compare", hash: "compare", seconds: 4.0, skipIntro: true, pre: async () => {}, during: [] },
-  { name: "business", hash: "business", seconds: 4.5, skipIntro: true, pre: async () => {}, during: [] },
-  { name: "traces", hash: "traces", seconds: 3.5, skipIntro: true,
-    pre: async () => {}, during: [[0.8, async (p) => p.evaluate(() => window.scrollBy({ top: 700, behavior: "smooth" }))]] },
-];
+    pre: async () => { await sleep(200); },
+    during: [[0.3, async (p) => p.click("[data-replay-run]").catch(() => {})], [1.6, async (p) => p.evaluate(() => document.getElementById("timeline")?.scrollIntoView({ block: "start" }))]] },
+]
 
 async function film(browser, clip) {
   const page = await browser.newPage();
