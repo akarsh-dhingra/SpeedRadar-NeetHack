@@ -1,0 +1,21 @@
+Yo, I have to show this project on a call to the mentors and all. So explain me how to run and explain the
+
+---
+
+I do have some time, more than 12 to 20 hours for the hackathon to finish. What else can I improve upon? And the website that you made, shows everything, but it does not show what our project initially means. Like, I want to show like how it planned and acted in a very simple way. So can you improve upon that? And tell me what we can improve upon. Like, as you said, that one of our limit is that most of our case studies n equal to 1 plus side. So maybe we can im- increase that. So let me know.
+
+---
+
+And maybe can we also get some real life example for like if we ha- can get some real life bills and all. And work on top of that. To see if our project really works.
+
+---
+
+.
+
+---
+
+continue
+
+---
+
+Like make sure that the website is understandable to a human reviewer. Because currently it's not. It's very filled with knowledge, but it is not easy to understand.
