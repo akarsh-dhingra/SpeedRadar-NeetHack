@@ -38,10 +38,18 @@ def _download(url: str, dest: Path) -> None:
 
 
 def _read(path: Path) -> dict:
+    """Text parser first. If it errors, or its result fails verify:totals, take the reparse_alt recovery
+    (the LLM reader), as the agent does for invoices (run 1011-334cde chose reparse_alt for both cases)."""
     from spendradar.tools.files import ToolError, read_pdf
+    from spendradar.verify import totals_check
 
     try:
-        return {"route": "text", **read_pdf(str(path), "text")}
+        r = read_pdf(str(path), "text")
+        ex = r["extract"]
+        chk = totals_check(path.name, [ln["amount"] for ln in ex["lines"]], ex["stated_total"])
+        if chk.passed:
+            return {"route": "text", **r}
+        first_error = f"verify:totals failed: {chk.detail}"
     except ToolError as e:
         first_error = str(e)
     try:
@@ -54,6 +62,7 @@ def main(argv: list[str] | None = None) -> None:
     load_dotenv(".env")
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--variant", default="real-invoices")
     args = ap.parse_args(argv)
     os.environ["SPENDRADAR_LLM_CACHE"] = "0"  # real model calls, as in an evidence run
 
@@ -65,7 +74,7 @@ def main(argv: list[str] | None = None) -> None:
     gt = json.loads(GT.read_text(encoding="utf-8"))
     items = gt["invoices"][: args.limit] if args.limit else gt["invoices"]
     run_id = "real-" + datetime.now().strftime("%m%d-%H%M%S")
-    init_tracing(run_id, ["variant:real-invoices", "evidence", "real-data:public"])
+    init_tracing(run_id, [f"variant:{args.variant}", "evidence", "real-data:public"])
     results = []
     with neatlogs.trace("spendradar_real_invoices", kind="WORKFLOW", session_id=run_id) as root:
         trace_id = format(root.get_span_context().trace_id, "032x")
@@ -95,13 +104,14 @@ def main(argv: list[str] | None = None) -> None:
     shutdown_tracing()
     read = [x for x in results if "extracted_total" in x]
     card = {"created": datetime.now().isoformat(timespec="seconds"), "git_sha": git_sha(), "run_id": run_id,
+            "variant": args.variant,
             "neatlogs_trace_id": trace_id, "source": gt["source"], "license": gt["license"],
             "n_invoices": len(results), "read_ok": len(read),
             "total_correct": sum(1 for x in results if x["total_correct"]),
             "agent_totals_check_passed": sum(1 for x in read if x["agent_totals_check"]["passed"]),
             "invoices": results}
     OUT.mkdir(parents=True, exist_ok=True)
-    out = OUT / f"{datetime.now():%Y%m%dT%H%M%S}-{card['git_sha']}.json"
+    out = OUT / f"{datetime.now():%Y%m%dT%H%M%S}-{card['git_sha']}-{args.variant}.json"
     out.write_text(json.dumps(card, indent=1), encoding="utf-8")
     print(f"scorecard: {out}")
     print(json.dumps({k: card[k] for k in ("n_invoices", "read_ok", "total_correct", "agent_totals_check_passed",
