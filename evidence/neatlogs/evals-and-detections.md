@@ -44,3 +44,4 @@ To make detections possible, `decide:recovery`, `verify:*`, `audit:*` and `fallb
 
 ## 3. Status log
 - 2026-10-11 10:40 IST: `f15f0cd3…` and run trace `b960a985…` ingested. `5f65daea…` and `62f49bd3…` return HTTP 409, and `edb79383…` and `7bd86a1d…` return not found. The doctor probe fails, so ingestion is stalled server-side.
+- 2026-10-11 13:29 IST: FAIL eval trace `7bd86a1de6d857afcecbdd24daa9325c` ingested: 4 `eval:run` spans with status ERROR, trace status error. `preview_detection` with the "Eval: run FAILED" pattern matched **4** spans, and with "Eval: planted error missed" **5** spans (4 × invoice_miscategorised, 1 × invoice_scanned). That matches scorecard `20261011T104734-d1ff728-before-fix-misses.json` exactly. The trace's own `detections` list was still empty when I checked, because detection backfill is asynchronous. `get_detection_trend` returned an empty response.
