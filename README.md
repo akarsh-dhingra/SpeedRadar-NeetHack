@@ -70,6 +70,7 @@ flowchart LR
 - Runs are tagged `sha:<commit>`, `run:<id>`, `variant:<label>`, `evidence`, `inject:<fault>`, `fixture`. `session_id` = run id, so a resumed run groups with its first trace.
 - Secrets are masked client-side before export (`mask=` callback, unit-tested).
 - **Every bug fix below started from a trace.** Trace list: [`evidence/traces.md`](evidence/traces.md).
+- **Evals and detections live in neatlogs too.** `spendradar eval` publishes each scorecard as a `spendradar_eval` trace: one `eval:run` span per run, with PASS/FAIL and a link to that run's trace, plus one `eval:planted_error` span per planted error. A detection group ("Spend Radar") flags failed evals, missed planted errors, LLM 400s, competitor substitution, fallback hops, non-default recoveries and self-audit overturns: [`evidence/neatlogs/evals-and-detections.md`](evidence/neatlogs/evals-and-detections.md).
 
 ### Entire: context for the coding agent
 - Every commit by the coding agent carries an `Entire-Checkpoint` trailer that links it to the prompt and transcript behind it. Checkpoints are pushed with the repo.
@@ -111,7 +112,7 @@ uv run python -m spendradar run data/acme             # full run → runs/<id>/r
 uv run python -m spendradar run data/acme --evidence  # LLM cache off, tagged as evidence
 uv run python -m spendradar run data/acme --inject crustdata:429 --inject llm:429
 uv run python -m spendradar run data/acme --crash-after-step 15 && uv run python -m spendradar resume <id>
-uv run python -m spendradar eval --n 3 --evidence     # scorecard → evidence/evals/
+uv run python -m spendradar eval --n 3 --evidence     # scorecard → evidence/evals/ + a spendradar_eval trace in neatlogs (--no-neatlogs to skip)
 uv run python -m spendradar ledger                    # today's free-tier quota use
 uv run pytest
 ln -sf ../../scripts/pre-commit .git/hooks/pre-commit # gitleaks + .env-value secret scan
