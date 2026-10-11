@@ -43,13 +43,16 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **18:1x IST — Secret handling incident (caught before any push).** A new provider key was pasted into the coding-agent chat. Entire's checkpoint transcript stored it unredacted: a 32-hex key scores 4.0 bits of entropy, below Entire's 4.5 threshold, and no built-in pattern matched it. Caught by searching all git objects before pushing. Deleted the local checkpoint ref, added a personal Entire redactor pack (git-ignored), and extended the neatlogs mask and gitleaks rules. Nothing was pushed with the key.
 
 ## Demo
-_TBD_
+- Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
+- Evidence site: `site/index.html` (static; built from `evidence/frontend_data.json`).
 
 ## Limitations
 See README "Limitations (honest)". In short: competitor people cost is an estimate (Crustdata headcount × our loaded cost); people cost only; all company finance data is fictional; ML/AI is the weakest estimate; development ran on free LLM tiers plus hackathon OpenAI credits, with only fictional and public data sent; business costs are paid-equivalent estimates; several before/after comparisons are n = 1 per side.
 
 ## Submission
-_TBD_
+- Window: Mon 12 Oct 2026, 7:00–11:55 PM IST. Quote-post the official neatlogs submission post on X.
+- Must contain: team qwep, project Spend Radar, repo https://github.com/akarsh-dhingra/SpeedRadar-NeetHack, demo video link.
+- Posted: link to add.
 
 ### 2026-10-10 20:22 IST — corrupt PDF no longer reaches the LLM (neatlogs auto-triage fix 2cd5e9df)
 - Planned: act on the neatlogs triage "Handle corrupt PDF files in read_pdf" (8 linked traces, e.g. 36362eb966cdbb85dcb2fb1b280e1034, the Gemini 400 INVALID_ARGUMENT on invoice 13).
@@ -104,3 +107,6 @@ _TBD_
 ### 2026-10-11 12:05 IST — evidence site and demo script
 - Done: static evidence site in `site/` (`63c0490`) on the Audit Console design system, reading the export; export now orders runs by start time and carries task logs, recovery menus and a counts-only summary. Demo script rewritten around the site with every number cited (`evidence/demo-script.md`, 368 spoken words). Post 5 placeholder filled from the export summary.
 - Tests run: pytest 68 passed; `node --check` on site scripts; headless Edge screenshots of the overview and run pages.
+
+### 2026-10-11 12:10 IST — evidence index brought up to date
+- Done: `evidence/evals/README.md` now lists the 28 scorecards from 10–11 Oct (generated from the files); `evidence/traces.md` has 17 trace entries for the held-out, fault-injection and audit-fix runs (the two injected runs annotated: their fallback call was not counted before `de18e4f`); README results cover the held-out companies and case study 04; new Entire checkpoint snapshot (47 refs on GitHub); Demo and Submission sections filled except the links that do not exist yet.

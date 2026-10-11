@@ -37,8 +37,8 @@ Covers all three tools (neatlogs, Entire, cfo.ai) as CLAUDE.md §13 requires. Ca
 
 ## 1:50–2:10 · Entire
 **On screen:** terminal: `git log -3` showing `Entire-Checkpoint:` trailers, then `entire checkpoint list`, then `evidence/entire/graph-impact-decide_recovery.txt`.
-**VO:** "Entire kept the coding agent's context. Commits carry a checkpoint that links the change to the prompt and transcript behind it; forty-six are on GitHub. Before changing the recovery menu, we used Entire's code graph to find every caller of decide recovery."
-[`git ls-remote origin 'refs/entire/checkpoints/*' | wc -l` = 46 on 11 Oct; evidence/entire/README.md]
+**VO:** "Entire kept the coding agent's context. Commits carry a checkpoint that links the change to the prompt and transcript behind it; more than forty are on GitHub. Before changing the recovery menu, we used Entire's code graph to find every caller of decide recovery."
+[`git ls-remote origin 'refs/entire/checkpoints/*' | wc -l` = 47 at 12:04 IST on 11 Oct, and it grows with every commit; evidence/entire/README.md]
 
 ## 2:10–2:35 · cfo.ai
 **On screen:** site **Business** page (callout, then the tiers table). Cut to the cfo.ai Summary page.
@@ -52,6 +52,6 @@ Covers all three tools (neatlogs, Entire, cfo.ai) as CLAUDE.md §13 requires. Ca
 
 ---
 
-Spoken word count: 368, roughly 2:30 at a steady pace. If it runs long, cut the latency sentence in 0:55–1:30 first, then the code-graph sentence in Entire.
+Spoken word count: 370, roughly 2:30 at a steady pace. If it runs long, cut the latency sentence in 0:55–1:30 first, then the code-graph sentence in Entire.
 
 **Do not say:** "AI-powered", "magic", any number not in brackets above. If a number changes after a new export, update it here from `evidence/frontend_data.json` before recording.

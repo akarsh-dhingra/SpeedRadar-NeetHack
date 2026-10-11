@@ -95,9 +95,12 @@ All numbers come from scorecards in [`evidence/evals/`](evidence/evals/).
 | 5 evidence runs on gpt-5-nano, 0 fallback hops | bb61e37 | 5/5 in all 5 | 0 | 5/5 | 0 (cached) |
 | fixture run (Sentry marketing ×5 planted) | bb61e37 | 6/6 | 0 | 5/5 | 0 (cached) |
 
-Case studies (each n = 1 per side, with caveats stated):
+**Held-out companies** ([case study 04](evidence/case-studies/04-held-out-companies.md)): six more fictional companies in five other industries, built after the agent and never used to tune it. The latest finished run of all seven companies catches every planted error with 0 false alarms (`summary` in [`evidence/frontend_data.json`](evidence/frontend_data.json); per-run values in [`evidence/evals/README.md`](evidence/evals/README.md)). Fault-injected runs (Crustdata 429 + LLM 429) on Acme, Ledgerly and Bastion still caught every planted error.
+
+Case studies (each n = 1 per side unless stated, with caveats):
 - [01: reasoning calls took ~2 minutes each](evidence/case-studies/01-unbounded-llm-latency.md). Mean reasoning-call latency went from 120.9 s to 6.5 s after adding a per-call timeout with fallback.
 - [02: one weak category threw away 3 of 5 peers](evidence/case-studies/02-competitor-substitution.md). Substitutions went from 3 to 0, and credits from 26.6 to 5.4.
+- [04: held-out companies](evidence/case-studies/04-held-out-companies.md). Exposed a missing duplicate-invoice check, a missed one-off mis-categorised invoice, Windows path bugs and an audit that ignored its own line-item check. Acme's mis-categorised invoice after that last fix: caught in 3 of 3 runs (before: 1 of 2).
 - [03: bugs that only showed on fallback models](evidence/case-studies/03-fallback-model-quality.md). Runs that crashed went from 1/3 to 0/3, and the mis-categorised invoice from caught 0/3 to 3/3 on the main model.
 
 Paid-equivalent cost per run (n = 5, gpt-5-nano): **$0.0285 LLM** (range $0.0270–$0.0296) **+ 20.8 Crustdata credits** with no cache.
