@@ -198,3 +198,15 @@ def test_every_prompt_template_renders_with_its_own_variables():
         names = set(re.findall(r"\{\{(\w+)\}\}", p.system + p.user))
         out = prompts.render(p.user, {n: f"<{n}>" for n in names})
         assert "{{" not in out and p.key and p.version
+
+
+def test_code_provenance_links_commit_to_entire_checkpoint():
+    from spendradar import provenance
+
+    p = provenance.code_provenance()
+    assert len(p["commit"]) == 40
+    if p["checkpoint"]:  # this repo's commits carry Entire-Checkpoint trailers
+        assert p["entire_url"].startswith("https://entire.io/gh/") and p["checkpoint_commit"] in p["entire_url"]
+    line = provenance.markdown_line(p)
+    assert p["commit"][:7] in line
+    assert provenance.markdown_line({}) == "- Code: not in a git checkout"

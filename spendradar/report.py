@@ -6,6 +6,7 @@ from pathlib import Path
 
 from spendradar import llm
 from spendradar.models import Figure, RunState, Source
+from spendradar.provenance import markdown_line
 
 LABEL = {"engineering": "Engineering", "ml_ai": "ML/AI", "sales": "Sales", "marketing": "Marketing",
          "infra_cloud": "Infra/cloud", "internal": "Internal checks"}
@@ -35,6 +36,7 @@ def write(state: RunState) -> Path:
     co = state.company
     out += [f"# Spend Radar report — {co}" + (" (fictional)" if state.company_fictional else ""), "",
             f"- Run `{state.run_id}` · commit `{state.git_sha}` · neatlogs trace `{state.trace_id}`",
+            markdown_line(state.code),
             f"- **Data mode: {mode}** · LLM models used: {', '.join(providers) or 'none'}"
             + (f" · **injected faults: {', '.join(state.injected)} (fired: {', '.join(state.faults_fired) or 'none'})**"
                if state.injected else ""),

@@ -107,6 +107,7 @@ class RunState(BaseModel):
     company_fictional: bool = False
     started_at: str = Field(default_factory=now)
     git_sha: str = ""
+    code: dict = Field(default_factory=dict)  # provenance.code_provenance(): commit, Entire checkpoint, links
     tags: list[str] = Field(default_factory=list)
     trace_id: str = ""  # first trace of the run
     trace_ids: list[str] = Field(default_factory=list)  # one per process (resume adds one); session_id = run_id
