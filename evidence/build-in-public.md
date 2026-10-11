@@ -6,7 +6,7 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 ## Post 1 — the idea + the loop (Sat 10 Oct, ~1 PM IST)
 
-**Status:** draft — not posted
+**Status:** posted (Akarsh confirmed 2026-10-11 10:18 IST; post time and link to add)
 
 **Text:**
 
@@ -39,7 +39,7 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 ## Post 2 — first full traced run (Sat 10 Oct, evening)
 
-**Status:** draft — not posted
+**Status:** posted (Akarsh confirmed 2026-10-11 10:18 IST; post time and link to add)
 
 **Text:**
 
