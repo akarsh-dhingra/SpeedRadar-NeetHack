@@ -183,3 +183,54 @@ def test_evidence_against_includes_news_and_miscategorised():
     inv = [e for e in ev if "INV1" in e]
     assert len(inv) == 1 and "ads; seo" in inv[0]
     assert not any("INV2" in e for e in ev)
+
+
+def _ml_profile(name, values):
+    from spendradar.models import CompetitorProfile, CompetitorSignal, Source
+
+    src = Source(kind="crustdata", ref="test", note="unit test")
+    return CompetitorProfile(name=name, domain=f"{name}.io", signals=[
+        CompetitorSignal(name=f"s{i}", category="ml_ai", headcount=v, as_of="2026-10-01", source=src)
+        for i, v in enumerate(values)])
+
+
+def test_disagreeing_signals_downgrade_without_asking_the_llm(monkeypatch):
+    from spendradar import audit, llm
+    from spendradar.models import Finding, RunState
+
+    st = RunState(run_id="t", goal="g", input_dir="data/acme", git_sha="x", tags=[])
+    st.competitors = {"a": _ml_profile("A", [0, 10]), "b": _ml_profile("B", [5, 5])}
+    f = Finding(id="f_ml_ai", category="ml_ai", kind="policy", statement="s", confidence=0.4)
+    monkeypatch.setattr(audit, "_recompute_ok", lambda s, f: (True, "ok"))
+    monkeypatch.setattr(audit, "_sources_ok", lambda s, f: (True, "ok"))
+    monkeypatch.setattr(audit, "_recent_negative_news", lambda s: [])
+    monkeypatch.setattr(llm, "complete", lambda *a, **k: (_ for _ in ()).throw(AssertionError("no LLM")))
+    st.findings = [f]
+    audit.self_audit(st)
+    assert f.status == "downgraded" and f.confidence == 0.2 and "A" in f.audit_notes[-1]
+    assert audit._disagreeing_competitors(st, f) == ["A"]  # B's signals agree
+
+
+def test_disagreeing_signals_with_news_still_go_to_the_judge(monkeypatch):
+    """Trail #2 runner finding: news evidence must be weighed, not dropped by the deterministic shortcut."""
+    from types import SimpleNamespace
+
+    from spendradar import audit
+    from spendradar.models import Finding, RunState
+
+    st = RunState(run_id="t", goal="g", input_dir="data/acme", git_sha="x", tags=[])
+    st.competitors = {"a": _ml_profile("A", [0, 10])}
+    monkeypatch.setattr(audit, "_recompute_ok", lambda s, f: (True, "ok"))
+    monkeypatch.setattr(audit, "_sources_ok", lambda s, f: (True, "ok"))
+    monkeypatch.setattr(audit, "_recent_negative_news", lambda s: [
+        {"date": "2026-10-01", "company": "A", "title": "A lays off ML team", "url": "u"}])
+    monkeypatch.setattr(audit, "_usage_add", lambda s, r: None)
+    for verdict, expected in (("overturn", "overturned"), ("confirm", "downgraded")):
+        f = Finding(id="f_ml_ai", category="ml_ai", kind="policy", statement="s", confidence=0.4)
+        st.findings = [f]
+        res = SimpleNamespace(model="m")
+        monkeypatch.setattr(audit, "_judge", lambda *a, v=verdict, **k: (
+            SimpleNamespace(verdict=v, reason="r", corrected_category="none"), res))
+        monkeypatch.setitem(audit.llm.CONFIG, "second_opinion_max_per_run", 0)
+        audit.self_audit(st)
+        assert f.status == expected, (verdict, f.status)
