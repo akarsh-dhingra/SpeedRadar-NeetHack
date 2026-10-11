@@ -21,7 +21,8 @@ class ToolError(Exception):
 @neatlogs.span(kind="TOOL", name="act:list_files", tool_name="list_files")
 def list_files(folder: str) -> list[dict]:
     root = Path(folder)
-    return [{"path": str(p.relative_to(root)), "bytes": p.stat().st_size, "suffix": p.suffix.lower()}
+    # as_posix: on Windows str() gave "invoices\01.pdf", which silently disabled the plan-coverage check
+    return [{"path": p.relative_to(root).as_posix(), "bytes": p.stat().st_size, "suffix": p.suffix.lower()}
             for p in sorted(root.rglob("*")) if p.is_file() and not p.name.startswith(".")]
 
 

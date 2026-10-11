@@ -126,3 +126,16 @@ def test_planner_backslash_paths_are_normalised():
     # run 1010-0cb70b: the planner wrote Windows paths, which leaked into state and the report
     assert agent._normalise_path("data/kestrel", r"invoices\\08_ledgerline_2026-06.pdf") == "invoices/08_ledgerline_2026-06.pdf"
     assert agent._normalise_path("data/kestrel", r"data\kestrel\invoices\01.pdf") == "invoices/01.pdf"
+
+
+def test_plan_coverage_adds_invoices_the_planner_skipped():
+    # run 1011-ae5e18 (Bastion): the planner left out two invoices and, on Windows, the coverage check
+    # could not see it because list_files returned backslash paths
+    from spendradar.tools import files
+    listing = files.list_files("data/bastion")
+    assert all("\\" not in f["path"] for f in listing)
+    s = RunState(run_id="x", goal="g", input_dir="data/bastion")
+    s.queue = [Task(id="t01", tool="read_invoice", args={"path": "invoices/01_ironvault_2026-04.pdf"})]
+    agent._verify_plan(s, listing, {"competitors": []})
+    added = {t.args.get("path") for t in s.queue if t.reason == "added by plan coverage check"}
+    assert "invoices/11_ironvault_2026-08_resent.pdf" in added and "invoices/12_beacon_2026-10.pdf" in added
