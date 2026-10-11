@@ -110,3 +110,28 @@ See README "Limitations (honest)". In short: competitor people cost is an estima
 
 ### 2026-10-11 12:10 IST — evidence index brought up to date
 - Done: `evidence/evals/README.md` now lists the 28 scorecards from 10–11 Oct (generated from the files); `evidence/traces.md` has 17 trace entries for the held-out, fault-injection and audit-fix runs (the two injected runs annotated: their fallback call was not counted before `de18e4f`); README results cover the held-out companies and case study 04; new Entire checkpoint snapshot (47 refs on GitHub); Demo and Submission sections filled except the links that do not exist yet.
+
+### 2026-10-11 13:30–15:15 IST — failure-mode audit, neatlogs coverage, Entire trails/runners, case study 05, `explain` (logged 2026-10-11 15:12 IST)
+- **Planned:** (1) audit every way the agent can fail and every neatlogs feature (two read-only sonnet subagents; I checked their claims against the code before changing anything); (2) the Entire plan agreed with Akarsh (/grill-me): code provenance, deterministic audit (case study 05), `spendradar explain`, trails and runners on each change; Brain skipped (single coding agent).
+- **Done, hardening** (`298aa5a`, `0887a58`):
+  - LLM chain falls through on per-model and unexpected errors.
+  - Findings survive an empty budget, zero headcount and bad rules.
+  - Negative-total bug fixed.
+  - Crustdata charges only on success and fails fast on 4xx; resume keeps the cap.
+  - Tracing is optional.
+  - Line-item check not run is no longer a pass.
+  - Input validation, path guard, corrupt ledger/cache, safe HTML.
+- **Done, neatlogs** (`2ded774`, `aa76b14`):
+  - Versioned prompt templates on all 6 prompts; rendered text verified byte-identical at all 7 call sites.
+  - End user per customer; root span input/output; `log()` steps.
+  - Tool errors in span output. The first attempt wrote to a no-op span: neatlogs uses a private tracer provider. Found on trace `93ce24c6…`, fixed, confirmed on `f8b07091…`.
+  - Coverage matrix: `evidence/neatlogs/coverage.md`.
+- **Done, Entire:**
+  - CLI logged in; GitHub repo onboarded (mirror on aws-ap-south-1); Entire-hosted mirror `et/jeetnahai/neathack` added as remote `entire`.
+  - Six runners tailored with `entire runner setup -y` (`007b5c8`).
+  - Trails: #1 provenance, #2 case study 05, #3 explain. Runner reviews: #1 and #3 no findings; #2 one medium finding (news evidence skipped when signals disagree), fixed in `a16758f` and resolved.
+  - Approved via Akarsh's login. Entire counts author approvals as 0 of 1 required, so the branches were merged with git (`61e39d8`) and the trails stay open as the review record.
+- **Done, case study 05** (`evidence/case-studies/05-audit-verdict-variance.md`): ML/AI audit verdict 3 distinct → 1 across 5 identical runs (modal 3/5 → 5/5). Planted 5/5 both sides, fixture 6/6, 0 unsupported numbers, 0 fallback hops.
+- **Done, `spendradar explain`:** neatlogs span → code line → `entire why` (commit, checkpoint, session, prompt) → `entire graph impact`. On the corrupt-PDF bug the chain ends at checkpoint `01M4K4TJ…`, whose prompt is the neatlogs triage task. `evidence/explain/`.
+- **Secret check before the first push to the Entire mirror:** an exact-value scan of every .env value over unpushed objects flagged only `AWS_DEFAULT_REGION` (a public region name, not a secret). A key-format scan of all 1,466 branch and checkpoint objects found 0 matches.
+- **Tests run:** pytest 103 passed; ruff (F, E9) clean.
