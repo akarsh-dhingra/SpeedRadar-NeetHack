@@ -15,7 +15,7 @@ import neatlogs
 import yaml
 
 from spendradar import faults
-from spendradar.tracing import set_io
+from spendradar.tracing import set_io, tool_errors
 from spendradar.tools.files import ToolError
 
 BASE = "https://api.crustdata.com"
@@ -100,6 +100,7 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
 
 
 @neatlogs.span(kind="TOOL", name="act:crustdata_company", tool_name="crustdata_company")
+@tool_errors
 def crustdata_company(domain: str) -> dict:
     fx = FIXTURE_DIR / f"{domain}.json" if FIXTURE_DIR else None
     if fx and fx.exists():
@@ -116,6 +117,7 @@ def crustdata_company(domain: str) -> dict:
 
 
 @neatlogs.span(kind="TOOL", name="act:crustdata_jobs", tool_name="crustdata_jobs")
+@tool_errors
 def crustdata_jobs(domain: str, since: str, category: str | None = None, limit: int = 60) -> dict:
     conds = [{"field": "company.basic_info.primary_domain", "type": "=", "value": domain},
              {"field": "metadata.date_added", "type": "=>", "value": since}]

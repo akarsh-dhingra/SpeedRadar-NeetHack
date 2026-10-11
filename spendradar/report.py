@@ -122,7 +122,10 @@ def write(state: RunState) -> Path:
 
     path = Path("runs") / state.run_id / "report.md"
     path.write_text("\n".join(out), encoding="utf-8")
-    write_html(path)
+    try:
+        write_html(path)
+    except Exception as e:  # the Markdown report is the deliverable; HTML is a nicety
+        state.notes.append(f"report.html not written: {type(e).__name__}: {str(e)[:120]}")
     return path
 
 
@@ -141,7 +144,11 @@ code{font-size:.85em}del{color:var(--muted)}strong{color:var(--accent)}a{color:v
 def write_html(md_path: Path) -> Path:
     import markdown
 
-    body = markdown.markdown(md_path.read_text(encoding="utf-8"), extensions=["tables"])
+    import html
+
+    # Vendor names, audit notes and Crustdata text are untrusted: escape raw HTML before rendering.
+    text = html.escape(md_path.read_text(encoding="utf-8"), quote=False)
+    body = markdown.markdown(text, extensions=["tables"])
     body = body.replace("<strong>violated</strong>", '<strong style="color:var(--bad)">violated</strong>')
     out = md_path.with_suffix(".html")
     out.write_text(HTML_HEAD + body + "</body></html>", encoding="utf-8")

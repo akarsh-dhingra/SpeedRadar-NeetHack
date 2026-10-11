@@ -20,7 +20,7 @@ import neatlogs
 from pydantic import BaseModel
 
 from spendradar import analysis, llm
-from spendradar.tracing import set_io
+from spendradar.tracing import record_error, set_io
 from spendradar.models import Finding, RunState
 
 NEWS_WORDS = ("layoff", "lay off", "laid off", "job cuts", "cuts jobs", "restructur", "hiring freeze",
@@ -139,6 +139,7 @@ def self_audit(state: RunState) -> None:
             except llm.LLMError as e:
                 f.status = "downgraded"
                 f.audit_notes.append(f"audit LLM unavailable ({str(e)[:80]}); downgraded to be safe")
+                span.set_attribute("spendradar.error", str(e)[:500])
                 set_io(span, output={"status": f.status, "how": "llm unavailable", "notes": f.audit_notes})
                 continue
             f.audit_notes.append(f"{res.model}: {v.verdict} — {v.reason}")
@@ -155,6 +156,7 @@ def self_audit(state: RunState) -> None:
                         final = "downgrade"  # disagreement between providers → soften, never silently confirm
                 except llm.LLMError as e:
                     f.audit_notes.append(f"second opinion unavailable: {str(e)[:80]}")
+                    record_error(f"audit:{f.id}:second_opinion", str(e), finding=f.id)
             f.status = {"confirm": "confirmed", "downgrade": "downgraded", "overturn": "overturned"}[final]
             if final != "confirm":
                 f.confidence = round(f.confidence * (0.5 if final == "downgrade" else 0.0), 3)

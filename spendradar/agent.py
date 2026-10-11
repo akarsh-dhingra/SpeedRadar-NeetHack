@@ -149,6 +149,10 @@ def plan(state: RunState) -> None:
             args = {k: v for k, v in t.model_dump().items() if k not in ("tool", "reason") and v is not None}
             if "path" in args:
                 args["path"] = _normalise_path(state.input_dir, args["path"])
+                if not _inside(state.input_dir, args["path"]):  # never read outside the input folder
+                    state.notes.append(f"planner path outside the input folder dropped: {args['path']!r}")
+                    record_error("verify:plan_path", "planner path outside the input folder", path=args["path"])
+                    continue
             if args.get("domain") in known:
                 args["name"] = known[args["domain"]]
             state.queue.append(Task(id=f"t{i + 1:02d}", tool=t.tool, args=args, reason=t.reason))
@@ -157,6 +161,11 @@ def plan(state: RunState) -> None:
         _verify_plan(state, listing, comps)
     state.phase = "execute"
     save(state)
+
+
+def _inside(input_dir: str, rel: str) -> bool:
+    root = Path(input_dir).resolve()
+    return (root / rel).resolve().is_relative_to(root)
 
 
 def _normalise_path(input_dir: str, path: str) -> str:
@@ -177,6 +186,10 @@ def _verify_plan(state: RunState, listing: list[dict], comps: dict) -> None:
         missing: list[Task] = []
         for f in listing:
             path = f["path"]
+            if path.startswith("invoices/") and not path.lower().endswith(".pdf"):
+                if all(n["input"] != path for n in state.not_analysed):
+                    state.not_analysed.append({"input": path, "reason": "not a PDF invoice"})
+                continue
             if path.startswith("invoices/") and path not in planned_paths:
                 missing.append(Task(id="", tool="read_invoice", args={"path": path, "mode": "text"},
                                     reason="added by plan coverage check"))
@@ -220,7 +233,8 @@ def act(state: RunState, task: Task) -> list[Check]:
         return []
     if task.tool == "read_salary_table":
         with open(Path(state.input_dir) / a["path"], encoding="utf-8", newline="") as f:
-            state.salary = {r["category"]: float(r["loaded_annual_cost_usd"]) for r in csv.DictReader(f)}
+            state.salary = {r["category"]: _num(r["loaded_annual_cost_usd"], f"{path} {r.get('category')}")
+                            for r in csv.DictReader(f)}
         return []
     if task.tool == "fetch_competitor":
         return _act_competitor(state, a["name"], a["domain"])
@@ -229,6 +243,18 @@ def act(state: RunState, task: Task) -> list[Check]:
     if task.tool == "classify_titles":
         return _act_classify(state, a["domain"])
     raise ToolError(f"unknown tool {task.tool}")
+
+
+def _num(value, where: str) -> float:
+    """A spreadsheet/CSV number: accepts 1234, "1,234.00", "$1,234"; anything else is a clear tool error."""
+    if isinstance(value, (int, float)) and value == value:  # value == value rejects NaN
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", "").replace("$", "").strip())
+        except ValueError:
+            pass
+    raise files.ToolError(f"{where}: expected a number, found {value!r} (empty cell or uncached formula?)")
 
 
 def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list[Check]:
@@ -246,13 +272,13 @@ def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list
     for r in rows:
         cat, loc = r["category"], f"People!row {r['_row']}"
         if r["metric"] == "headcount":
-            b[1][cat] = r[months[-1]]
+            b[1][cat] = _num(r[months[-1]], f"{path} {loc} {months[-1]}")
             state.figures[f"hc_{cat}"] = Figure(id=f"hc_{cat}", label=f"{co} {cat} headcount (end FY27)",
                                                 value=r[months[-1]], unit="people", category=cat,
                                                 sources=[_src_file(state, path, f"{loc}, {months[-1]}")])
         elif r["metric"] == "people_cost":
-            parts = [float(r[m]) for m in months]
-            chk = verify.totals_check(f"budget:{cat}", parts, float(r["FY total"]))
+            parts = [_num(r[m], f"{path} {loc} {m}") for m in months]
+            chk = verify.totals_check(f"budget:{cat}", parts, _num(r["FY total"], f"{path} {loc} FY total"))
             chk.detail = f"{path} {loc}: {chk.detail}"
             checks.append(chk)
             # The line items are primary; a mismatching stated total is never used.
@@ -438,6 +464,8 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
             chosen, reason, model = choice.name, choice.args.get("reason", ""), choice.result.model
         except llm.LLMError as e:
             chosen, reason, model = default, f"LLM unavailable, rule default used: {str(e)[:120]}", "rule"
+            span.set_attribute("spendradar.error", str(e)[:500])
+        reason = str(reason)  # a model may return a non-string reason
         span.set_attribute("spendradar.recovery.chosen", chosen)
         span.set_attribute("spendradar.recovery.reason", reason[:300])
         span.set_attribute("spendradar.recovery.differs_from_default", chosen != default)
@@ -622,9 +650,10 @@ def _line_item_check(state: RunState) -> None:
         try:
             res = llm.complete("extract", prompt, schema=LineItemReview,
                                system="You classify invoice line items into budget categories.")
-        except llm.LLMError as e:
-            state.checks.append(Check(name="verify:line_items", target="invoices", passed=True,
-                                      detail=f"not run: {str(e)[:80]}"))
+        except llm.LLMError as e:  # not run is not passed: note it, keep confidence honest
+            state.notes.append(f"line-item vs cost-centre check not run: {str(e)[:120]}")
+            set_io(span, output={"ran": False, "error": str(e)[:500]})
+            span.set_attribute("spendradar.error", str(e)[:500])
             return
         _usage(state, res)
         by_number = {j.invoice_number.strip(): j for j in res.parsed.invoices}
@@ -786,6 +815,23 @@ def run_phases(state: RunState) -> RunState:
 def _record_faults(state: RunState) -> None:
     state.injected = faults.active()
     state.faults_fired = sorted(set(state.faults_fired) | set(faults.fired))  # a resumed run keeps earlier ones
+
+
+def validate_inputs(input_dir: str) -> None:
+    """Fail before any spend, with a clear message, on inputs the run cannot work without."""
+    root = Path(input_dir)
+    if not root.is_dir():
+        raise SystemExit(f"input folder not found: {input_dir}")
+    comp = root / "competitors.yaml"
+    try:
+        comps = yaml.safe_load(comp.read_text(encoding="utf-8"))
+        assert isinstance(comps, dict) and comps.get("competitors"), "needs a non-empty 'competitors' list"
+        for c in comps["competitors"] + (comps.get("substitutes") or []):
+            assert isinstance(c, dict) and c.get("name") and c.get("domain"), f"each entry needs name and domain: {c!r}"
+    except FileNotFoundError:
+        raise SystemExit(f"{comp} is missing") from None
+    except (yaml.YAMLError, AssertionError) as e:
+        raise SystemExit(f"{comp} is invalid: {e}") from None
 
 
 def new_state(input_dir: str, tags: list[str], sha: str, run_id: str) -> RunState:

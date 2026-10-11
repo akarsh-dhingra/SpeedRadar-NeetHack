@@ -101,6 +101,7 @@ def main(argv: list[str] | None = None) -> None:
     from spendradar import agent  # noqa: F401  (imported after env is ready)
 
     if args.cmd == "run":
+        agent.validate_inputs(args.target)
         run_id = agent.new_run_id()
         tags = _start(run_id, args)
         from spendradar.tracing import git_sha

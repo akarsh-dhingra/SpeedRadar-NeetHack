@@ -8,6 +8,7 @@ import neatlogs
 from pydantic import BaseModel
 
 from spendradar import llm
+from spendradar.tracing import tool_errors
 
 SYSTEM = (
     "You map job titles to spend categories for a people-cost comparison.\n"
@@ -31,6 +32,7 @@ class TitleBatch(BaseModel):
 
 
 @neatlogs.span(kind="TOOL", name="act:classify_titles", tool_name="classify_titles")
+@tool_errors
 def classify_titles(titles: list[str], batch: int = 40) -> tuple[dict[str, dict], list[dict]]:
     """Returns ({title: {category, model}}, [llm usage per call])."""
     uniq = sorted({t for t in titles if t})

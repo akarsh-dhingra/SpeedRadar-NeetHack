@@ -87,6 +87,24 @@ def set_io(span, input: Any = None, output: Any = None) -> None:
             span.set_attribute(key, text)
 
 
+def tool_errors(fn):
+    """Put a tool's exception into its span's Output pane (the TOOL span decorator marks ERROR
+    but leaves the output empty). Apply directly under @neatlogs.span so it runs inside the span."""
+    import functools
+
+    from opentelemetry import trace as otel
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            set_io(otel.get_current_span(), output={"error": f"{type(e).__name__}: {str(e)[:500]}"})
+            raise
+
+    return wrapper
+
+
 def record_error(name: str, error: str, **inputs: Any) -> None:
     """A GUARDRAIL span with ERROR status for a failure the agent caught and carried on from,
     so caught failures stay visible in neatlogs instead of vanishing into a note."""

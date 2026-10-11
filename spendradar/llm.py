@@ -82,7 +82,10 @@ class Ledger:
     def __init__(self, path: Path = LEDGER_PATH):
         self.path = path
         self.lock = threading.Lock()
-        self.data: dict = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        try:
+            self.data: dict = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        except (OSError, ValueError):  # corrupt ledger: start fresh rather than block every command
+            self.data = {}
         self.last_call: dict[str, float] = {}
 
     def _day(self, model: str) -> dict:
@@ -132,7 +135,9 @@ class Ledger:
 
     def _save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.data, indent=2, sort_keys=True), encoding="utf-8")
+        tmp = self.path.with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text(json.dumps(self.data, indent=2, sort_keys=True), encoding="utf-8")
+        tmp.replace(self.path)  # atomic: a crash never leaves a half-written ledger
 
     def summary(self) -> dict:
         return self.data.get(date.today().isoformat(), {})
@@ -361,9 +366,12 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
     key = hashlib.sha256(key.encode()).hexdigest()[:24] if exclude else key
     path = CACHE_DIR / f"{key}.json"
     if cache_enabled() and path.exists():
-        res = LLMResult(**json.loads(path.read_text(encoding="utf-8")))
-        res.cached = True
-        return res
+        try:
+            res = LLMResult(**json.loads(path.read_text(encoding="utf-8")))
+            res.cached = True
+            return res
+        except (OSError, ValueError, TypeError):  # corrupt or old-format entry: treat as a miss
+            pass
 
     # Models the ledger already knows are out of quota, and text-only providers when a file is
     # attached, are routed around up front; that is planned routing, not a fallback. A fallback
@@ -413,7 +421,9 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
                             tokens_out=tout, latency_s=round(time.monotonic() - t0, 2), fallbacks=fallbacks)
             if cache_enabled():
                 CACHE_DIR.mkdir(parents=True, exist_ok=True)
-                path.write_text(json.dumps(res.__dict__ | {"cached": False}, default=str), encoding="utf-8")
+                tmp = path.with_suffix(f".{os.getpid()}.tmp")
+                tmp.write_text(json.dumps(res.__dict__ | {"cached": False}, default=str), encoding="utf-8")
+                tmp.replace(path)
             return res
     raise LLMError(f"all models failed for role {role!r}: " + " | ".join(errors[-6:]))
 
