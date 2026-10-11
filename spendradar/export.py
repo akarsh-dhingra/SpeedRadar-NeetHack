@@ -48,9 +48,24 @@ COMPARISONS = [
      "before": ["1011-ae5e18"], "after": ["1011-f679dc", "1011-257f61"],
      "case_study": "evidence/case-studies/04-held-out-companies.md",
      "note": "In both after runs the planner happened to include every file; the fix is covered by a unit test."},
-    {"title": "One weak signal threw away 3 of 5 peers", "company": "acme",
+    {"title": "One weak signal threw away 3 of 5 peers (rerun, n = 5 per side)", "company": "acme",
+     "before": ["1011-324f77", "1011-45b4f4", "1011-e6132c", "1011-2c53f4", "1011-e8b645"],
+     "after": ["1011-efdab4", "1011-51f5c4", "1011-6d3ba6", "1011-1078e9", "1011-09fd9f"],
+     "case_study": "evidence/case-studies/02-competitor-substitution.md",
+     "note": "Same code, models and cached data on both sides; before = current main with only the fix reverted "
+             "(d311fb5). Peers kept: 2 of 5 in all 5 runs before, 5 of 5 in all 5 after; 3 substitutions per run "
+             "before, 0 after. 0 fallback hops.",
+     # Read from each run's state.json (competitors kept, substitute_competitor decisions); see the case study.
+     "per_run": {"label": "Chosen peers kept", "values": {
+         **{rid: {"text": "2 of 5 (3 swapped for New Relic / Datadog)", "good": False}
+            for rid in ("1011-324f77", "1011-45b4f4", "1011-e6132c", "1011-2c53f4", "1011-e8b645")},
+         **{rid: {"text": "5 of 5", "good": True}
+            for rid in ("1011-efdab4", "1011-51f5c4", "1011-6d3ba6", "1011-1078e9", "1011-09fd9f")}}}},
+    {"title": "One weak signal threw away 3 of 5 peers (original)", "company": "acme",
      "before": ["1010-b31657"], "after": ["1010-7bf26d"],
-     "case_study": "evidence/case-studies/02-competitor-substitution.md", "note": "n = 1 per side."},
+     "case_study": "evidence/case-studies/02-competitor-substitution.md", "note": "n = 1 per side.",
+     "per_run": {"label": "Chosen peers kept", "values": {"1010-b31657": {"text": "2 of 5", "good": False},
+                                                          "1010-7bf26d": {"text": "5 of 5", "good": True}}}},
 ]
 
 # Headline figures from the cfo.ai plan, copied from business/cfoai_plan.md ("Results" and "Fixing the
@@ -262,7 +277,24 @@ def _run(r: dict, card: dict, path: Path) -> dict:
                                        or t.get("args", {}).get("name") or ""),
                          "reason": t.get("reason", ""), "parent": t.get("parent"), "attempts": t.get("attempts", 1)}
                         for t in st.get("done", [])]
+    elif (prev := PREVIOUS.get(r["run_id"])) and (prev.get("tasks") or prev.get("findings")):
+        # runs/ is git-ignored, so no single machine holds every run folder. Keep the details an earlier export
+        # read from that run's own state rather than dropping them; scorecard values above still come fresh.
+        for k in ("started_at", "findings", "recovery", "plan_rationale", "tasks"):
+            out[k] = prev.get(k, out[k])
+        out["details_from"] = "previous export (run folder not on this machine)"
     return out
+
+
+PREVIOUS: dict[str, dict] = {}  # run_id -> run as last exported; filled by build()
+
+
+def _load_previous() -> None:
+    PREVIOUS.clear()
+    if OUT.exists():
+        for c in json.loads(OUT.read_text(encoding="utf-8")).get("companies", []):
+            for r in c.get("runs", []):
+                PREVIOUS[r["run_id"]] = r
 
 
 def _real_invoices() -> dict | None:
@@ -302,6 +334,7 @@ REAL_INVOICES_NOTE = None
 
 
 def build() -> Path:
+    _load_previous()
     companies: dict[str, dict] = {}
     latest: dict[str, tuple[dict, dict, Path]] = {}
     first_scored: dict[str, str] = {}
@@ -326,7 +359,8 @@ def build() -> Path:
         # Run order = when the run started (its state, UTC); runs without local state use the first scorecard
         # they appear in (written in IST), not a later re-score.
         c["runs"].sort(key=lambda r: _utc(r["started_at"]) if r["started_at"] else _utc(first_scored[r["run_id"]], IST))
-        done = [r for r in c["runs"] if r["phase"] == "done"]
+        # "Latest" never means a deliberate before-run (a fix reverted to re-measure a case study).
+        done = [r for r in c["runs"] if r["phase"] == "done" and not re.search(r"before|ablation", r["variant"])]
         c["latest_run_id"] = (done or c["runs"])[-1]["run_id"]
     order = ["acme"] + sorted(k for k in companies if k != "acme")
     comps = [companies[k] for k in order if k in companies]

@@ -33,7 +33,7 @@ def _download(url: str, dest: Path) -> None:
     if dest.exists() and dest.stat().st_size > 0:
         return
     dest.parent.mkdir(parents=True, exist_ok=True)
-    with urllib.request.urlopen(url, timeout=60) as r:  # noqa: S310 (fixed https host from the GT file)
+    with urllib.request.urlopen(url, timeout=60) as r:  # fixed https host from the GT file
         dest.write_bytes(r.read())
 
 

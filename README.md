@@ -107,10 +107,11 @@ All numbers come from scorecards in [`evidence/evals/`](evidence/evals/).
 
 Case studies (each n = 1 per side unless stated, with caveats):
 - [01: reasoning calls took ~2 minutes each](evidence/case-studies/01-unbounded-llm-latency.md). Mean reasoning-call latency went from 120.9 s to 6.5 s after adding a per-call timeout with fallback.
-- [02: one weak category threw away 3 of 5 peers](evidence/case-studies/02-competitor-substitution.md). Substitutions went from 3 to 0, and credits from 26.6 to 5.4.
+- [02: one weak category threw away 3 of 5 peers](evidence/case-studies/02-competitor-substitution.md). Substitutions went from 3 to 0, and credits from 26.6 to 5.4. **Rerun at n = 5 per side** (same code, models and data; before = fix reverted): peers kept 2 of 5 in all 5 runs → 5 of 5 in all 5, substitutions 3 per run → 0, 0 fallback hops.
 - [03: bugs that only showed on fallback models](evidence/case-studies/03-fallback-model-quality.md). Runs that crashed went from 1/3 to 0/3, and the mis-categorised invoice from caught 0/3 to 3/3 on the main model.
 - [04: held-out companies](evidence/case-studies/04-held-out-companies.md). Exposed a missing duplicate-invoice check, a missed one-off mis-categorised invoice, Windows path bugs and an audit that ignored its own line-item check. Acme's mis-categorised invoice after that last fix: caught in 3 of 3 runs (before: 1 of 2).
 - [05: same data, three different audit verdicts](evidence/case-studies/05-audit-verdict-variance.md). n = 5 per side, same models, 0 fallback hops: the ML/AI verdict went from 3 different verdicts across 5 identical runs to the same verdict in 5 of 5, with planted errors still 5/5 and the fixture 6/6. An Entire trail runner caught a gap in the first version of this fix (news evidence was skipped); fixed before merge.
+- [06: real invoices, gross vs net](evidence/case-studies/06-real-invoices-gross-vs-net.md). The invoice reader on 24 **real** public FCC broadcast-ad invoices with verified totals ([amazon/ConfBench](https://huggingface.co/datasets/amazon/ConfBench), CC BY-NC 4.0). The LLM reader often copied *Net Amount Due* instead of the gross total. After a prompt fix, n = 3 passes per side: wrong totals that nothing flags went from 2 per pass to 0 on the 12 invoices used to write the fix, and from 4 per pass to 0 on 12 held-out invoices. Cost: 7 of 12 held-out invoices are now flagged for review although their total is right.
 
 Paid-equivalent cost per run (n = 5, gpt-5-nano): **$0.0285 LLM** (range $0.0270–$0.0296) **+ 20.8 Crustdata credits** with no cache.
 
@@ -138,10 +139,10 @@ ln -sf ../../scripts/pre-commit .git/hooks/pre-commit # gitleaks + .env-value se
 
 - **Estimates.** Competitor people cost = Crustdata headcount by role × *Acme's* loaded cost (an assumption, `data/acme/salary_table.csv`). The comparison covers **people cost only**; infra/cloud is checked against Acme's own budget only.
 - **ML/AI is the weakest estimate.** Crustdata has no ML role, so ML share comes from LLM-classified job titles. Competitor signals for it disagree, so since case study 05 the self-audit always downgrades it (earlier runs overturned it in 1010-b31657 and 1010-a32118).
-- **Fictional company data.** Acme and its vendors are invented; only competitor data is real.
+- **Fictional company data.** Acme and its vendors are invented; only competitor data is real. The invoice reader alone was also tested on 24 real public invoices (case study 06); a full run on a real company's books has not been done.
 - **Crustdata coverage.** Function timeseries for large companies stop at 2025-11 (the freshness penalty applies). Chronosphere has no hiring data.
 - **LLM providers.** The main model is OpenAI gpt-5-nano (hackathon-provided credits). Fallbacks are Gemini free tier and OpenRouter `:free` models, which may use prompts for training. Only fictional and public data was sent; **real customer finance data must not go through free tiers.** Daily quotas are small: `gemini-3.8-flash` stopped after 15 requests on 10 Oct.
-- **Small samples.** Case studies 01–02 are n = 1 per side with different model mixes; 04 is mostly n = 1–3. Case study 05 and the gpt-5-nano batch are n = 5 with 0 fallback hops.
+- **Small samples.** Case study 01 is n = 1 per side with different model mixes; 04 is mostly n = 1–3. Case studies 02 (rerun) and 05 and the gpt-5-nano batch are n = 5 per side with 0 fallback hops; 06 is n = 3 passes of 12 invoices per side.
 - **Audit variance (fixed, narrow).** On identical data the ML/AI verdict used to vary (confirmed / overturned / downgraded). [Case study 05](evidence/case-studies/05-audit-verdict-variance.md) made disagreeing-signal findings deterministic (always downgraded). The LLM judge still decides findings with news evidence or mis-categorisation flags, and those can still vary.
 - **Business costs are paid-equivalent estimates**, not invoices.
 

@@ -396,7 +396,8 @@
   function toolWord(t, i) { return (TOOL_WORDS[t] || [t, t])[i || 0]; }
   function storyRun() {
     var c = company(D.featured.company) || D.companies[0];
-    var ok = c.runs.filter(function (r) { return r.tasks.length && r.findings.length && r.recovery.length && r.data_mode === "real" && !(r.injected_faults || []).length && r.phase === "done"; });
+    // Never a deliberate "before" run (a fix reverted for a case study): the walkthrough shows the agent as it is.
+    var ok = c.runs.filter(function (r) { return r.tasks.length && r.findings.length && r.recovery.length && r.data_mode === "real" && !(r.injected_faults || []).length && r.phase === "done" && !/before|ablation/i.test(r.variant); });
     return ok.length ? { c: c, r: ok[ok.length - 1] } : null;
   }
   function viewStory() {
@@ -663,6 +664,8 @@
           var m = r.metrics, ok = allCaught(m);
           var fnd = cmp.finding && (r.findings || []).filter(function (f) { return f.id === cmp.finding; })[0];
           var verdict = fnd ? '<div class="sr-ba-verdict">ML/AI audit verdict: ' + statusBadge(fnd.status) + "</div>" : "";
+          var pr = cmp.per_run && cmp.per_run.values[id];
+          if (pr) verdict += '<div class="sr-ba-verdict">' + esc(cmp.per_run.label) + ': <b class="' + (pr.good ? "ac-up" : "ac-down") + '">' + esc(pr.text) + "</b></div>";
           return '<a class="sr-ba-run sr-tilt" href="#run" data-open-run="' + id + '" data-company="' + c.key + '"><div><div class="ac-code ac-muted">' + id + " · " + esc(r.variant) + '</div><div class="ac-cells" style="margin-top:6px">' + cells(r, 0) + "</div>" + verdict + '</div><span class="sr-ba-score ' + (ok ? "ac-up" : "ac-down") + '">' + score(m) + '</span><span class="sr-ba-meta">' +
             (m.false_alarms == null ? "false alarms not counted" : n(m.false_alarms) + " false alarms") + " · " + n(m.fallback_hops) + " fallback hops" + (r.phase !== "done" ? " · did not finish" : "") + "</span></a>";
         }).join("") + "</div></div>";
