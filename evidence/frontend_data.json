@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-11T10:48:11",
+ "generated_at": "2026-10-11T11:21:45",
  "companies": [
   {
    "key": "acme",
@@ -32,1071 +32,6 @@
    ],
    "negative_controls": [],
    "runs": [
-    {
-     "run_id": "1010-b31657",
-     "variant": "before-fix",
-     "scored_at": "2026-10-10T14:15:41",
-     "git_sha": "11a5108",
-     "neatlogs_trace_id": "af0df27e2d3433e0c608fb28a018a22d",
-     "scorecard": "evidence/evals/20261010T141541-11a5108-before-fix.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 0,
-      "recovery_decisions": 13,
-      "recovery_non_default": 10,
-      "llm_calls": 35,
-      "llm_tokens_in": 12675,
-      "llm_tokens_out": 21575,
-      "llm_latency_s": 751.0,
-      "fallback_hops": 4,
-      "crustdata_credits": 26.6,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gemini-3.6-flash",
-       "gemini-3.8-flash",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-b31657/report.md",
-      "html": "runs/1010-b31657/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-7bf26d",
-     "variant": "after-fix-02",
-     "scored_at": "2026-10-10T14:15:41",
-     "git_sha": "22f00b0",
-     "neatlogs_trace_id": "288f07d84bb84e15754a241eef40d779",
-     "scorecard": "evidence/evals/20261010T141541-22f00b0-after-fix-02.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 1,
-      "recovery_decisions": 10,
-      "recovery_non_default": 7,
-      "llm_calls": 30,
-      "llm_tokens_in": 10260,
-      "llm_tokens_out": 25126,
-      "llm_latency_s": 141.9,
-      "fallback_hops": 2,
-      "crustdata_credits": 5.4,
-      "models": [
-       "gemini-2.5-flash",
-       "gemini-3.5-flash-lite",
-       "gemini-3.6-flash",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-7bf26d/report.md",
-      "html": "runs/1010-7bf26d/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-9e86fc",
-     "variant": "fixture-dev",
-     "scored_at": "2026-10-10T14:25:49",
-     "git_sha": "6bc76af",
-     "neatlogs_trace_id": "36362eb966cdbb85dcb2fb1b280e1034",
-     "scorecard": "evidence/evals/20261010T142549-6bc76af-fixture-dev.json",
-     "data_mode": "fixture",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 6,
-      "planted_total": 6,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 2,
-      "recovery_decisions": 11,
-      "recovery_non_default": 8,
-      "llm_calls": 9,
-      "llm_tokens_in": 3067,
-      "llm_tokens_out": 6726,
-      "llm_latency_s": 79.9,
-      "fallback_hops": 6,
-      "crustdata_credits": 1.8,
-      "models": [
-       "gemini-2.5-flash",
-       "gemini-3.5-flash-lite",
-       "gemini-3.6-flash",
-       "gemini-3.8-flash",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      },
-      {
-       "id": "fixture_sentry_marketing_x5",
-       "label": "Eval fixture: a competitor's headcount altered ×5",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-9e86fc/report.md",
-      "html": "runs/1010-9e86fc/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-7d05cb",
-     "variant": "gemma-mix-n3",
-     "scored_at": "2026-10-10T17:10:03",
-     "git_sha": "fd9a4ef",
-     "neatlogs_trace_id": "6f93a257acc67b3e7df1a245d10673e8",
-     "scorecard": "evidence/evals/20261010T171003-fd9a4ef-gemma-mix-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 1,
-      "recovery_decisions": 10,
-      "recovery_non_default": 7,
-      "llm_calls": 31,
-      "llm_tokens_in": 10628,
-      "llm_tokens_out": 15718,
-      "llm_latency_s": 276.1,
-      "fallback_hops": 5,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gemini-3.7-flash",
-       "gemma-4-31b-it",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-7d05cb/report.md",
-      "html": "runs/1010-7d05cb/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-4c9a03",
-     "variant": "gemma-mix-n3",
-     "scored_at": "2026-10-10T17:10:03",
-     "git_sha": "d1ff728",
-     "neatlogs_trace_id": "b16cc16a4424fc85ad5478646523ad6e",
-     "scorecard": "evidence/evals/20261010T171003-fd9a4ef-gemma-mix-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 4,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 1,
-      "recovery_decisions": 10,
-      "recovery_non_default": 7,
-      "llm_calls": 29,
-      "llm_tokens_in": 10785,
-      "llm_tokens_out": 12570,
-      "llm_latency_s": 387.7,
-      "fallback_hops": 11,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gemma-4-31b-it",
-       "google/gemma-4-31b-it:free",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": false
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-4c9a03/report.md",
-      "html": "runs/1010-4c9a03/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-21b4e0",
-     "variant": "gemma-mix-n3",
-     "scored_at": "2026-10-10T17:10:03",
-     "git_sha": "d1ff728",
-     "neatlogs_trace_id": "682db8d165a0c041fc26ab495438e142",
-     "scorecard": "evidence/evals/20261010T171003-fd9a4ef-gemma-mix-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 0,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 0,
-      "recovery_decisions": 9,
-      "recovery_non_default": 3,
-      "llm_calls": 10,
-      "llm_tokens_in": 3027,
-      "llm_tokens_out": 4871,
-      "llm_latency_s": 256.5,
-      "fallback_hops": 6,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemma-4-31b-it",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": false
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": false
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": false
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": false
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": false
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-21b4e0/report.md",
-      "html": "runs/1010-21b4e0/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-bbc370",
-     "variant": "after-cs03-n3",
-     "scored_at": "2026-10-10T18:01:56",
-     "git_sha": "6edff38",
-     "neatlogs_trace_id": "f2c2d7221ee763829581aec9aaeffd1b",
-     "scorecard": "evidence/evals/20261010T180156-6edff38-after-cs03-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 4,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 2,
-      "findings_downgraded": 0,
-      "recovery_decisions": 10,
-      "recovery_non_default": 7,
-      "llm_calls": 29,
-      "llm_tokens_in": 9515,
-      "llm_tokens_out": 12417,
-      "llm_latency_s": 448.8,
-      "fallback_hops": 6,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gemma-4-31b-it",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": false
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-bbc370/report.md",
-      "html": "runs/1010-bbc370/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-5a3921",
-     "variant": "after-cs03-n3",
-     "scored_at": "2026-10-10T18:01:56",
-     "git_sha": "6edff38",
-     "neatlogs_trace_id": "20f905ed5d9cb2614953d04a7b1e5ef8",
-     "scorecard": "evidence/evals/20261010T180156-6edff38-after-cs03-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 4,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 1,
-      "recovery_decisions": 10,
-      "recovery_non_default": 7,
-      "llm_calls": 30,
-      "llm_tokens_in": 9908,
-      "llm_tokens_out": 13340,
-      "llm_latency_s": 446.9,
-      "fallback_hops": 10,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gemma-4-31b-it",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": false
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-5a3921/report.md",
-      "html": "runs/1010-5a3921/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-ef57b1",
-     "variant": "after-cs03-n3",
-     "scored_at": "2026-10-10T18:01:56",
-     "git_sha": "6edff38",
-     "neatlogs_trace_id": "c39723ed4937eaccf37b3562de567024",
-     "scorecard": "evidence/evals/20261010T180156-6edff38-after-cs03-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 3,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 1,
-      "recovery_decisions": 9,
-      "recovery_non_default": 4,
-      "llm_calls": 22,
-      "llm_tokens_in": 8312,
-      "llm_tokens_out": 12655,
-      "llm_latency_s": 237.9,
-      "fallback_hops": 17,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gemma-4-31b-it",
-       "google/gemma-4-31b-it:free",
-       "nvidia/nemotron-3-super-120b-a12b:free"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": false
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": false
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-ef57b1/report.md",
-      "html": "runs/1010-ef57b1/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-767322",
-     "variant": "gpt5nano-n3",
-     "scored_at": "2026-10-10T18:37:13",
-     "git_sha": "bb61e37",
-     "neatlogs_trace_id": "5c512d38b1cc95f99d0682619343c0b0",
-     "scorecard": "evidence/evals/20261010T183713-bb61e37-gpt5nano-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 0,
-      "recovery_decisions": 10,
-      "recovery_non_default": 5,
-      "llm_calls": 29,
-      "llm_tokens_in": 12866,
-      "llm_tokens_out": 65187,
-      "llm_latency_s": 313.5,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-767322/report.md",
-      "html": "runs/1010-767322/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-bf52d4",
-     "variant": "gpt5nano-n3",
-     "scored_at": "2026-10-10T18:37:13",
-     "git_sha": "bb61e37",
-     "neatlogs_trace_id": "d4a8716f6d2ed79322ca0d252764837e",
-     "scorecard": "evidence/evals/20261010T183713-bb61e37-gpt5nano-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 0,
-      "recovery_decisions": 10,
-      "recovery_non_default": 5,
-      "llm_calls": 30,
-      "llm_tokens_in": 13270,
-      "llm_tokens_out": 68930,
-      "llm_latency_s": 340.6,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-bf52d4/report.md",
-      "html": "runs/1010-bf52d4/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-4d1835",
-     "variant": "gpt5nano-n3",
-     "scored_at": "2026-10-10T18:37:13",
-     "git_sha": "bb61e37",
-     "neatlogs_trace_id": "0dcf22977776591d6c8e47e0dffeed33",
-     "scorecard": "evidence/evals/20261010T183713-bb61e37-gpt5nano-n3.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 1,
-      "recovery_decisions": 10,
-      "recovery_non_default": 6,
-      "llm_calls": 30,
-      "llm_tokens_in": 13000,
-      "llm_tokens_out": 67240,
-      "llm_latency_s": 360.5,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-4d1835/report.md",
-      "html": "runs/1010-4d1835/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-824ed7",
-     "variant": "gpt5nano-fixture",
-     "scored_at": "2026-10-10T18:42:59",
-     "git_sha": "bb61e37",
-     "neatlogs_trace_id": "eb46da9f5383934b351975949f9584ba",
-     "scorecard": "evidence/evals/20261010T184259-bb61e37-gpt5nano-fixture.json",
-     "data_mode": "fixture",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 6,
-      "planted_total": 6,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 2,
-      "recovery_decisions": 11,
-      "recovery_non_default": 4,
-      "llm_calls": 30,
-      "llm_tokens_in": 13227,
-      "llm_tokens_out": 60200,
-      "llm_latency_s": 314.7,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      },
-      {
-       "id": "fixture_sentry_marketing_x5",
-       "label": "Eval fixture: a competitor's headcount altered ×5",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-824ed7/report.md",
-      "html": "runs/1010-824ed7/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-bd4980",
-     "variant": "gpt5nano-cost",
-     "scored_at": "2026-10-10T18:55:35",
-     "git_sha": "bb61e37",
-     "neatlogs_trace_id": "96bb795859c9f184fbcebb996b0e5b8f",
-     "scorecard": "evidence/evals/20261010T185535-bb61e37-gpt5nano-cost.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 0,
-      "recovery_decisions": 10,
-      "recovery_non_default": 5,
-      "llm_calls": 30,
-      "llm_tokens_in": 13847,
-      "llm_tokens_out": 62274,
-      "llm_latency_s": 310.9,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-bd4980/report.md",
-      "html": "runs/1010-bd4980/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-a67b26",
-     "variant": "gpt5nano-cost",
-     "scored_at": "2026-10-10T18:55:35",
-     "git_sha": "e896b86",
-     "neatlogs_trace_id": "c4c0b55ade5fdbae4032698bc949e0ac",
-     "scorecard": "evidence/evals/20261010T185535-bb61e37-gpt5nano-cost.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 1,
-      "findings_downgraded": 0,
-      "recovery_decisions": 10,
-      "recovery_non_default": 5,
-      "llm_calls": 30,
-      "llm_tokens_in": 12958,
-      "llm_tokens_out": 68004,
-      "llm_latency_s": 322.8,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-a67b26/report.md",
-      "html": "runs/1010-a67b26/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
-    {
-     "run_id": "1010-7309e6",
-     "variant": "eval",
-     "scored_at": "2026-10-10T20:54:37",
-     "git_sha": "8d11308",
-     "neatlogs_trace_id": "953bb991e2547b1591bb2bb6adb555b8",
-     "scorecard": "evidence/evals/20261010T205437-8d11308-eval.json",
-     "data_mode": "real",
-     "injected_faults": [],
-     "metrics": {
-      "planted_caught": 5,
-      "planted_total": 5,
-      "false_alarms": null,
-      "unsupported_numbers_in_report": 0,
-      "findings_overturned": 0,
-      "findings_downgraded": 1,
-      "recovery_decisions": 10,
-      "recovery_non_default": 5,
-      "llm_calls": 30,
-      "llm_tokens_in": 13140,
-      "llm_tokens_out": 64629,
-      "llm_latency_s": 373.8,
-      "fallback_hops": 0,
-      "crustdata_credits": 0.0,
-      "models": [
-       "gemini-3.5-flash-lite",
-       "gpt-5-nano"
-      ]
-     },
-     "planted": [
-      {
-       "id": "budget_total_mismatch",
-       "label": "Budget row total does not equal the sum of its months",
-       "caught": true
-      },
-      {
-       "id": "invoice_total_mismatch",
-       "label": "Invoice line items do not add up to the stated total",
-       "caught": true
-      },
-      {
-       "id": "invoice_miscategorised",
-       "label": "Invoice billed to the wrong cost centre",
-       "caught": true
-      },
-      {
-       "id": "invoice_scanned",
-       "label": "Scanned invoice with no text layer",
-       "caught": true
-      },
-      {
-       "id": "invoice_corrupt",
-       "label": "Corrupt or empty PDF",
-       "caught": true
-      }
-     ],
-     "false_alarm_detail": [],
-     "report": {
-      "markdown": "runs/1010-7309e6/report.md",
-      "html": "runs/1010-7309e6/report.html",
-      "available_locally": false
-     },
-     "findings": [],
-     "recovery": []
-    },
     {
      "run_id": "1010-19fbf2",
      "variant": "baseline-acme",
@@ -1876,6 +811,2017 @@
        "chosen": "skip",
        "rule_default": "skip",
        "reason": "PDF parsing failed with PdfminerException: No /Root object; reparse_alt action already attempted and failed. Skipping this invoice task for now and awaiting a clean copy or alternative data source."
+      }
+     ]
+    },
+    {
+     "run_id": "1010-b31657",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "11a5108",
+     "neatlogs_trace_id": "af0df27e2d3433e0c608fb28a018a22d",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 13,
+      "recovery_non_default": 10,
+      "llm_calls": 35,
+      "llm_tokens_in": 12675,
+      "llm_tokens_out": 21575,
+      "llm_latency_s": 751.0,
+      "fallback_hops": 4,
+      "crustdata_credits": 26.6,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemini-3.6-flash",
+       "gemini-3.8-flash",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-b31657/report.md",
+      "html": "runs/1010-b31657/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-7bf26d",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "22f00b0",
+     "neatlogs_trace_id": "288f07d84bb84e15754a241eef40d779",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 30,
+      "llm_tokens_in": 10260,
+      "llm_tokens_out": 25126,
+      "llm_latency_s": 141.9,
+      "fallback_hops": 2,
+      "crustdata_credits": 5.4,
+      "models": [
+       "gemini-2.5-flash",
+       "gemini-3.5-flash-lite",
+       "gemini-3.6-flash",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-7bf26d/report.md",
+      "html": "runs/1010-7bf26d/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-9e86fc",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "6bc76af",
+     "neatlogs_trace_id": "36362eb966cdbb85dcb2fb1b280e1034",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "fixture",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 6,
+      "planted_total": 6,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 2,
+      "recovery_decisions": 11,
+      "recovery_non_default": 8,
+      "llm_calls": 9,
+      "llm_tokens_in": 3067,
+      "llm_tokens_out": 6726,
+      "llm_latency_s": 79.9,
+      "fallback_hops": 6,
+      "crustdata_credits": 1.8,
+      "models": [
+       "gemini-2.5-flash",
+       "gemini-3.5-flash-lite",
+       "gemini-3.6-flash",
+       "gemini-3.8-flash",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      },
+      {
+       "id": "fixture_sentry_marketing_x5",
+       "label": "Eval fixture: a competitor's headcount altered ×5",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-9e86fc/report.md",
+      "html": "runs/1010-9e86fc/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-7d05cb",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "fd9a4ef",
+     "neatlogs_trace_id": "6f93a257acc67b3e7df1a245d10673e8",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 31,
+      "llm_tokens_in": 10628,
+      "llm_tokens_out": 15718,
+      "llm_latency_s": 276.1,
+      "fallback_hops": 5,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemini-3.7-flash",
+       "gemma-4-31b-it",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-7d05cb/report.md",
+      "html": "runs/1010-7d05cb/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-4c9a03",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "d1ff728",
+     "neatlogs_trace_id": "b16cc16a4424fc85ad5478646523ad6e",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 4,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 29,
+      "llm_tokens_in": 10785,
+      "llm_tokens_out": 12570,
+      "llm_latency_s": 387.7,
+      "fallback_hops": 11,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemma-4-31b-it",
+       "google/gemma-4-31b-it:free",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": false
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-4c9a03/report.md",
+      "html": "runs/1010-4c9a03/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-21b4e0",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "d1ff728",
+     "neatlogs_trace_id": "682db8d165a0c041fc26ab495438e142",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 0,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 0,
+      "recovery_decisions": 9,
+      "recovery_non_default": 3,
+      "llm_calls": 10,
+      "llm_tokens_in": 3027,
+      "llm_tokens_out": 4871,
+      "llm_latency_s": 256.5,
+      "fallback_hops": 6,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemma-4-31b-it",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": false
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": false
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": false
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": false
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": false
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-21b4e0/report.md",
+      "html": "runs/1010-21b4e0/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-bbc370",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "6edff38",
+     "neatlogs_trace_id": "f2c2d7221ee763829581aec9aaeffd1b",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 4,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 2,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 29,
+      "llm_tokens_in": 9515,
+      "llm_tokens_out": 12417,
+      "llm_latency_s": 448.8,
+      "fallback_hops": 6,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemma-4-31b-it",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": false
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-bbc370/report.md",
+      "html": "runs/1010-bbc370/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-5a3921",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "6edff38",
+     "neatlogs_trace_id": "20f905ed5d9cb2614953d04a7b1e5ef8",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 4,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 30,
+      "llm_tokens_in": 9908,
+      "llm_tokens_out": 13340,
+      "llm_latency_s": 446.9,
+      "fallback_hops": 10,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemma-4-31b-it",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": false
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-5a3921/report.md",
+      "html": "runs/1010-5a3921/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-ef57b1",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "6edff38",
+     "neatlogs_trace_id": "c39723ed4937eaccf37b3562de567024",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 3,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 1,
+      "recovery_decisions": 9,
+      "recovery_non_default": 4,
+      "llm_calls": 22,
+      "llm_tokens_in": 8312,
+      "llm_tokens_out": 12655,
+      "llm_latency_s": 237.9,
+      "fallback_hops": 17,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemma-4-31b-it",
+       "google/gemma-4-31b-it:free",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": false
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": false
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-ef57b1/report.md",
+      "html": "runs/1010-ef57b1/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-767322",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "bb61e37",
+     "neatlogs_trace_id": "5c512d38b1cc95f99d0682619343c0b0",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 29,
+      "llm_tokens_in": 12866,
+      "llm_tokens_out": 65187,
+      "llm_latency_s": 313.5,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-767322/report.md",
+      "html": "runs/1010-767322/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-bf52d4",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "bb61e37",
+     "neatlogs_trace_id": "d4a8716f6d2ed79322ca0d252764837e",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 30,
+      "llm_tokens_in": 13270,
+      "llm_tokens_out": 68930,
+      "llm_latency_s": 340.6,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-bf52d4/report.md",
+      "html": "runs/1010-bf52d4/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-4d1835",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "bb61e37",
+     "neatlogs_trace_id": "0dcf22977776591d6c8e47e0dffeed33",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 6,
+      "llm_calls": 30,
+      "llm_tokens_in": 13000,
+      "llm_tokens_out": 67240,
+      "llm_latency_s": 360.5,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-4d1835/report.md",
+      "html": "runs/1010-4d1835/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-824ed7",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "bb61e37",
+     "neatlogs_trace_id": "eb46da9f5383934b351975949f9584ba",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "fixture",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 6,
+      "planted_total": 6,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 2,
+      "recovery_decisions": 11,
+      "recovery_non_default": 4,
+      "llm_calls": 30,
+      "llm_tokens_in": 13227,
+      "llm_tokens_out": 60200,
+      "llm_latency_s": 314.7,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      },
+      {
+       "id": "fixture_sentry_marketing_x5",
+       "label": "Eval fixture: a competitor's headcount altered ×5",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-824ed7/report.md",
+      "html": "runs/1010-824ed7/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-bd4980",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "bb61e37",
+     "neatlogs_trace_id": "96bb795859c9f184fbcebb996b0e5b8f",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 30,
+      "llm_tokens_in": 13847,
+      "llm_tokens_out": 62274,
+      "llm_latency_s": 310.9,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-bd4980/report.md",
+      "html": "runs/1010-bd4980/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-a67b26",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "e896b86",
+     "neatlogs_trace_id": "c4c0b55ade5fdbae4032698bc949e0ac",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 30,
+      "llm_tokens_in": 12958,
+      "llm_tokens_out": 68004,
+      "llm_latency_s": 322.8,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-a67b26/report.md",
+      "html": "runs/1010-a67b26/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-7309e6",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "8d11308",
+     "neatlogs_trace_id": "953bb991e2547b1591bb2bb6adb555b8",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 30,
+      "llm_tokens_in": 13140,
+      "llm_tokens_out": 64629,
+      "llm_latency_s": 373.8,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-7309e6/report.md",
+      "html": "runs/1010-7309e6/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-4f8453",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "a9a0d0e",
+     "neatlogs_trace_id": "a8d7a3e9cef5f60e6fc5ee9e22ba70ad",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 2,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 9,
+      "llm_tokens_in": 3501,
+      "llm_tokens_out": 17358,
+      "llm_latency_s": 91.6,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-2.5-flash",
+       "gemini-3.5-flash-lite",
+       "gemini-3.8-flash",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-4f8453/report.md",
+      "html": "runs/1010-4f8453/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-6f37e8",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "d96e16f",
+     "neatlogs_trace_id": "6f2d2dd7d3cc60d33157d5ac4f16746a",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 2,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 0,
+      "recovery_decisions": 4,
+      "recovery_non_default": 2,
+      "llm_calls": 6,
+      "llm_tokens_in": 2684,
+      "llm_tokens_out": 4740,
+      "llm_latency_s": 606.8,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gemini-3.8-flash"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": false
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": false
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": false
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-6f37e8/report.md",
+      "html": "runs/1010-6f37e8/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-a32118",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "67fb8fd",
+     "neatlogs_trace_id": "6fcb0c5ef827b202df85e61406ca16d8",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [
+      "crustdata:429",
+      "llm:429"
+     ],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 1,
+      "llm_tokens_in": 270,
+      "llm_tokens_out": 189,
+      "llm_latency_s": 2.0,
+      "fallback_hops": 0,
+      "crustdata_credits": 2.0,
+      "models": [
+       "gemini-2.5-flash",
+       "gemini-3.5-flash-lite",
+       "gemini-3.6-flash",
+       "gemini-3.8-flash",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-a32118/report.md",
+      "html": "runs/1010-a32118/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1010-bdda52",
+     "variant": "history-all-acme-runs",
+     "scored_at": "2026-10-11T10:23:19",
+     "git_sha": "0658e56",
+     "neatlogs_trace_id": "522dfe5f0903595439c960a5e3b081c6",
+     "scorecard": "evidence/evals/20261011T102319-d1ff728-history-all-acme-runs.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 7,
+      "llm_calls": 13,
+      "llm_tokens_in": 3481,
+      "llm_tokens_out": 9829,
+      "llm_latency_s": 57.0,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-2.5-flash",
+       "gemini-3.5-flash-lite",
+       "gemini-3.6-flash",
+       "gemini-3.8-flash",
+       "nvidia/nemotron-3-super-120b-a12b:free"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1010-bdda52/report.md",
+      "html": "runs/1010-bdda52/report.html",
+      "available_locally": false
+     },
+     "findings": [],
+     "recovery": []
+    },
+    {
+     "run_id": "1011-777bb7",
+     "variant": "after-audit-linecheck",
+     "scored_at": "2026-10-11T11:21:20",
+     "git_sha": "de18e4f-dirty",
+     "neatlogs_trace_id": "9254be96468c5c234473b080cb6cd216",
+     "scorecard": "evidence/evals/20261011T112120-de18e4f-dirty-after-audit-linecheck.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 31,
+      "llm_tokens_in": 13467,
+      "llm_tokens_out": 67151,
+      "llm_latency_s": 378.1,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1011-777bb7/report.md",
+      "html": "runs/1011-777bb7/report.html",
+      "available_locally": true
+     },
+     "findings": [
+      {
+       "id": "f_engineering",
+       "category": "engineering",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.484,
+       "statement": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — The engineering headcount share is 39.4%, which satisfies the policy: engineering share must be at least 90% of the competitor median. The competitor median is given as a range (36.8%–39.3%); 0.9×36.8% = 33.12% and 0.9×39.3% = 35.37%. In all plausible medians within that range, 39.4% ≥ 35.37%, so the policy is met. The note that matching the competitor median would require 0–9 fewer people and the associated cost impact is consistent with the data. Deterministic checks state the figures were recomputed and sourced, with no contradictory evidence found. Therefore the finding stands."
+       ]
+      },
+      {
+       "id": "f_ml_ai",
+       "category": "ml_ai",
+       "kind": "policy",
+       "status": "overturned",
+       "confidence": 0.0,
+       "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": true,
+       "audit_notes": [
+        "gpt-5-nano: overturn — Contradictory ml_ai signals: Honeycomb shows ml_share_job_search=0 and ml_share_engineering_2y=9; Sentry shows ml_share_recent_titles=0 and ml_share_job_search=5 (as of 2026-10-11/2026-10-10). These data points imply ml_ai headcount shares near 0–9%, not 6.7%, and do not support the claim that Acme Observability Inc.'s ml_ai share is within 20% of the competitor median. The evidence data and timestamps differ from the original dataset and undermine the robustness of the finding.",
+        "second opinion gemini-3.5-flash-lite: downgrade — The contradicting evidence regarding competitor ml_ai signals shows mixed data points up to 9 percent, weakening the confidence of the violation relative to the 0.0 percent to 1.0 percent median benchmark."
+       ]
+      },
+      {
+       "id": "f_sales",
+       "category": "sales",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.498,
+       "statement": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — The company’s sales headcount share is 19.4%, which is within 25% of the competitor median (20.9%–21.4%). Deterministic checks matched and all figures are sourced; no evidence contradicts the claim. The reference to needing 5–7 additional hires (and ~$765k–$1,040k extra per year) to match the median is illustrative and does not undermine the policy-compliant conclusion."
+       ]
+      },
+      {
+       "id": "f_marketing",
+       "category": "marketing",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.422,
+       "statement": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — Acme's marketing headcount share is 7.3%, which is >= 0.8 * 4.1% (3.28%), thus meeting the policy that marketing share of headcount be at least 80% of the competitor median. The implied delta to reach the competitor median (~10 fewer marketing headcount, ~$1.5M less annual loaded cost) is internally consistent with the estimate. Deterministic checks were recomputed, matched, and all figures sourced; no contradictory evidence was found."
+       ]
+      },
+      {
+       "id": "f_totals_4",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_5",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_cat_6",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+       "policy_violated": null,
+       "audit_notes": [
+        "gpt-5-nano: confirm — INV-202608-008 shows cost centre Marketing but line items are category ml_ai (A-class GPU hours (training); Inference endpoints). Since the work category is ml_ai but the invoice was billed under Marketing, this is a miscategorisation per the rule that line items determine the category. The mix of lines supports the flag; corrected category should be ml_ai.",
+        "corrected category: ml_ai"
+       ]
+      },
+      {
+       "id": "f_infra_cloud",
+       "category": "infra_cloud",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      }
+     ],
+     "recovery": [
+      {
+       "task_id": "t01",
+       "chosen": "narrow_range",
+       "rule_default": "mark_low_confidence",
+       "reason": "Re-read failing range for budget_fy27.xlsx People!row 10 to rule out parse slip causing totals mismatch (line items sum 3,262,500 vs stated 3,310,500; 1.45% off)"
+      },
+      {
+       "task_id": "t01n",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Budget verification discrepancy detected for budget_fy27.xlsx: People!row 10 totals 3,262,500.00 vs stated 3,310,500.00 (1.45% off). This input previously used attempt 'narrow_range' and failed; marking low confidence to flag potential data quality issue."
+      },
+      {
+       "task_id": "t07",
+       "chosen": "reparse_alt",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals mismatch; attempt alternate parser to recover correct invoice totals."
+      },
+      {
+       "task_id": "t07r",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "reparse_alt already attempted and failed; no additional automated recovery options available; flag for human review to source a correct total."
+      },
+      {
+       "task_id": "t15",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "Attempt OCR-based extraction using alternate reader due to missing text layer in scanned PDF ('no text layer')."
+      },
+      {
+       "task_id": "t16",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "PDF read failed with 'No /Root object! - Is this really a PDF?'. Attempting alternate parser to extract text for read_invoice task."
+      },
+      {
+       "task_id": "t16r",
+       "chosen": "skip",
+       "rule_default": "skip",
+       "reason": "PDF corrupt; failed to parse with both LLM reader and alternate parser (reparse_alt); no data extracted. Cannot produce a sourced invoice number from this file. Proceed to alternative recovery steps."
+      },
+      {
+       "task_id": "t27",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Retry: verify:signals failed for Honeycomb; fetch an extra independent signal (e.g., alternative ML/AI signal or external indicators) to triangulate classification."
+      },
+      {
+       "task_id": "t29",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need independent signal to re-verify Arize ML/AI signals for classify_titles task (arize.com)."
+      },
+      {
+       "task_id": "t30",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need an extra independent signal (job postings) to augment ML/AI signals for Chronosphere and improve confidence in classification task."
+      }
+     ]
+    },
+    {
+     "run_id": "1011-5eb1a9",
+     "variant": "after-audit-linecheck",
+     "scored_at": "2026-10-11T11:21:20",
+     "git_sha": "de18e4f-dirty",
+     "neatlogs_trace_id": "56891cde8dd9038fbf37d9551f11efad",
+     "scorecard": "evidence/evals/20261011T112120-de18e4f-dirty-after-audit-linecheck.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 1,
+      "findings_downgraded": 0,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 31,
+      "llm_tokens_in": 14782,
+      "llm_tokens_out": 68443,
+      "llm_latency_s": 356.7,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1011-5eb1a9/report.md",
+      "html": "runs/1011-5eb1a9/report.html",
+      "available_locally": true
+     },
+     "findings": [
+      {
+       "id": "f_engineering",
+       "category": "engineering",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.484,
+       "statement": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — Deterministic checks: the numbers were recomputed and matched, and all figures are sourced. No evidence contradicts the finding: Acme’s engineering headcount share is 39.4% vs competitor median 36.8%–39.3%, and the policy requires the share to be at least 90% of the competitor median, which is satisfied. The note on required headcount adjustments and associated cost savings aligns with the supplied estimates, and no contrary data was found."
+       ]
+      },
+      {
+       "id": "f_ml_ai",
+       "category": "ml_ai",
+       "kind": "policy",
+       "status": "overturned",
+       "confidence": 0.0,
+       "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": true,
+       "audit_notes": [
+        "gpt-5-nano: overturn — External signals contradict the core numeric claim. Honeycomb reports ml_ai shares at 0% (ml_share_job_search) and 9% (ml_share_engineering_2y); Sentry reports 0% (ml_share_recent_titles) and 5% (ml_share_job_search). These figures differ markedly from the stated 6.7% ml_ai share and do not reliably support a violation of the policy that uses a competitor median of 0%–1%. Given the conflicting data and lack of a consistent, substantiated ml_ai headcount figure, the finding is not supported and should be overturned.",
+        "second opinion gemini-3.5-flash-lite: overturn — The analyst's finding has a confidence score of 0.0, and the contradictory evidence regarding competitor ML/AI shares shows significant variance and potential disagreement, making the conclusion unsupported."
+       ]
+      },
+      {
+       "id": "f_sales",
+       "category": "sales",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.498,
+       "statement": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — Acme's sales headcount share is 19.4% vs competitor median 20.9–21.4%. The deviation (~7% relative to the median) is within the 25% tolerance. Deterministic checks recomputed and matched; all figures sourced. No evidence found that contradicts the finding. Therefore the finding survives."
+       ]
+      },
+      {
+       "id": "f_marketing",
+       "category": "marketing",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.422,
+       "statement": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — The finding survives. Marketing headcount share is 7.3% versus a competitor median of 4.1%. The policy requires Marketing share to be at least 80% of the competitor median, i.e., 0.8 * 4.1% = 3.28%. 7.3% ≥ 3.28% → policy met. The statement that matching the competitor median would require 10 fewer people (≈ $1.5M annual savings at loaded cost) is consistent with the numbers provided. Deterministic checks were reported as matching and all figures sourced, with no contradictory evidence presented. Potential caveats exist in generalizing from a small competitor sample, or in how headcount is defined (FTE vs contractors), but no evidence here undermines the finding itself."
+       ]
+      },
+      {
+       "id": "f_totals_4",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_5",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_cat_6",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+       "policy_violated": null,
+       "audit_notes": [
+        "gpt-5-nano: confirm — INV-202608-008 shows cost centre 'Marketing' but line items are categorized as ml_ai (A-class GPU hours for training and inference endpoints). This line-item mismatch indicates mis-categorisation on that invoice. Although INV-202605-007 aligns (ML Platform -> ml_ai), the presence of at least one inconsistent invoice validates the flag. Therefore, the corrected category should be ml_ai.",
+        "corrected category: ml_ai"
+       ]
+      },
+      {
+       "id": "f_infra_cloud",
+       "category": "infra_cloud",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      }
+     ],
+     "recovery": [
+      {
+       "task_id": "t01",
+       "chosen": "narrow_range",
+       "rule_default": "mark_low_confidence",
+       "reason": "Parse slip check: budget_fy27.xlsx People!row 10 line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off); verify totals failed."
+      },
+      {
+       "task_id": "t01n",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Budget verification failure at budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Previous action 'narrow_range' already attempted; marking this row as low confidence and requires review to produce a sourced corrected total."
+      },
+      {
+       "task_id": "t05",
+       "chosen": "reparse_alt",
+       "rule_default": "mark_low_confidence",
+       "reason": "Attempt alt text extraction to resolve totals mismatch for invoices/04_nimbus_2026-07.pdf"
+      },
+      {
+       "task_id": "t05r",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals verification failed for invoices/04_nimbus_2026-07.pdf; line items sum 89,435.00 vs stated 96,935.00 (7.74% off); previous attempt (reparse_alt) failed. Marking data as low confidence and pending escalation to obtain a sourced, correct total."
+      },
+      {
+       "task_id": "t13",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "Alternate parser path: original text extraction failed due to scanned image; try OCR or alternate parser to extract text from PDF."
+      },
+      {
+       "task_id": "t14",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "pdfplumber failed to open the PDF; attempt alternate parser (text ↔ LLM reader) to extract invoice content"
+      },
+      {
+       "task_id": "t14r",
+       "chosen": "skip",
+       "rule_default": "skip",
+       "reason": "Previous attempt to reparse with alt parser failed; skipping this input to avoid repeating failed action. PDF appears corrupted: PdfminerException: No /Root object! Is this really a PDF?"
+      },
+      {
+       "task_id": "t27",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need an additional independent signal set (e.g., external job postings) to corroborate the Honeycomb ML/AI signal and produce a correct sourced number after verify:signals failure."
+      },
+      {
+       "task_id": "t29",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Independent signal corroboration for Arize; previous ML/AI signal failed verification; need extra data point (e.g., job postings signal) to source a correct number."
+      },
+      {
+       "task_id": "t30",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Acquire an additional independent ML/AI signal for Chronosphere to corroborate existing 1 ML/AI signal and improve verification."
+      }
+     ]
+    },
+    {
+     "run_id": "1011-ac4bf5",
+     "variant": "after-audit-linecheck",
+     "scored_at": "2026-10-11T11:21:20",
+     "git_sha": "de18e4f-dirty",
+     "neatlogs_trace_id": "8e06009c9c9edde53af208f08d6d135c",
+     "scorecard": "evidence/evals/20261011T112120-de18e4f-dirty-after-audit-linecheck.json",
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 31,
+      "llm_tokens_in": 14292,
+      "llm_tokens_out": 64151,
+      "llm_latency_s": 344.2,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1011-ac4bf5/report.md",
+      "html": "runs/1011-ac4bf5/report.html",
+      "available_locally": true
+     },
+     "findings": [
+      {
+       "id": "f_engineering",
+       "category": "engineering",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.484,
+       "statement": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — The evidence does not contradict the finding. Acme’s engineering headcount is reported at 39.4% and, given the competitor range of 36.8%–39.3%, the policy threshold (engineering headcount at least 90% of the competitor median) is satisfied: even using the lower bound of the range, 0.9 * 36.8% = 33.12%, and 39.4% exceeds this comfortably. The deterministic checks are claimed to be correct and sources provided; no contradictory evidence is present. Note the stated confidence is modest (0.484), which suggests cautious interpretation, but it does not overturn the numeric conclusion."
+       ]
+      },
+      {
+       "id": "f_ml_ai",
+       "category": "ml_ai",
+       "kind": "policy",
+       "status": "downgraded",
+       "confidence": 0.0,
+       "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": true,
+       "audit_notes": [
+        "gpt-5-nano: downgrade — Multiple external ml_ai headcount signals disagree with the finding (Honeycomb, Sentry, Arize) as of 2026-10-11, showing different ml_ai shares and timeframes. The original claim (6.7% vs competitor median) relies on a single deterministic source, while cross-vendor data conflict and are not aligned. This undermines robustness of the conclusion and suggests the result is not reliably supported across data sources/timeframes.",
+        "second opinion gemini-3.5-flash-lite: overturn — The analyst finding is based on a zero confidence score and conflicting signals from competitor peers like Arize showing up to 27 percent ML share, invalidating the strict median assumption."
+       ]
+      },
+      {
+       "id": "f_sales",
+       "category": "sales",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.498,
+       "statement": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — Deterministic checks align: Acme's sales share of headcount is 19.4% vs competitor median 20.9–21.4% (within 25% of median). The estimated cost to reach the median is consistent with the loaded cost, and no contradictory evidence was found. The finding remains correctly categorized in the Sales domain, so no correction is needed."
+       ]
+      },
+      {
+       "id": "f_marketing",
+       "category": "marketing",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.422,
+       "statement": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "gpt-5-nano: confirm — Acme's marketing share is 7.3% vs a competitor median of 4.1%. The policy requires marketing share to be at least 80% of the competitor median, i.e., 0.8 * 4.1% = 3.28%. 7.3% comfortably exceeds this threshold. Deterministic checks match and all figures are sourced; no evidence contradicts the finding. The note about reducing headcount to approach the median is consistent with the provided estimate."
+       ]
+      },
+      {
+       "id": "f_totals_4",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_5",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_cat_6",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+       "policy_violated": null,
+       "audit_notes": [
+        "gpt-5-nano: confirm — INV-202608-008 shows cost centre 'Marketing' but line items are categorized as ml_ai (A-class GPU hours (training); Inference endpoints). The work category is determined by the line items, not by who was billed; therefore the line-item/category mismatch indicates mis-categorisation. The existence of a correctly aligned INV-202605-007 (ml_ai with ML Platform) does not negate the clear mismatch on INV-202608-008. Hence the flag holds and corrected_category should be ml_ai.",
+        "corrected category: ml_ai"
+       ]
+      },
+      {
+       "id": "f_infra_cloud",
+       "category": "infra_cloud",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "statement": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      }
+     ],
+     "recovery": [
+      {
+       "task_id": "t01",
+       "chosen": "narrow_range",
+       "rule_default": "mark_low_confidence",
+       "reason": "Re-read failing row/range for budget_fy27.xlsx to rule out a parse slip: People!row 10 line items sum vs stated total (verify:totals failure)."
+      },
+      {
+       "task_id": "t01n",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Flag data as low confidence due to totals mismatch: row 10 for budget_fy27.xlsx budget:marketing shows line items sum 3,262,500.00 vs stated total 3,310,500.00 (1.45% off); previous recovery attempt 'narrow_range' was used and failed."
+      },
+      {
+       "task_id": "t07",
+       "chosen": "reparse_alt",
+       "rule_default": "mark_low_confidence",
+       "reason": "Retry reading Nimbus 2026-07 invoice using alternate parser to see if totals can be reconciled after verify:totals failed (line items sum 89,435.00 vs stated 96,935.00)."
+      },
+      {
+       "task_id": "t07r",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals verification failed: line items sum (89,435.00) differs from stated total (96,935.00) by 7.74% for invoices/04_nimbus_2026-07.pdf. Previous action reparse_alt already attempted; flag for manual review and data provenance check."
+      },
+      {
+       "task_id": "t15",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "Attempt an alternate parsing route (OCR/text extraction) on scanned PDF to recover numbers from Nimbus 2026-10 invoice."
+      },
+      {
+       "task_id": "t16",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "Try the alternate parser: re-read the PDF using the text↔LLM reader to extract content from invoices/13_brightloop_2026-10.pdf in text mode."
+      },
+      {
+       "task_id": "t16r",
+       "chosen": "skip",
+       "rule_default": "skip",
+       "reason": "Invoice file corrupt (No /Root object). Reparse_alt has already failed; skipping to avoid repeated failure; please provide a corrected PDF or allow manual data entry."
+      },
+      {
+       "task_id": "t27",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need an independent signal to corroborate Honeycomb ml_ai signals; previous verify:signals step failed (task: Honeycomb, domain honeycomb.io)."
+      },
+      {
+       "task_id": "t29",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need additional one-line ML/AI signal data for Arize (arize.com) after verify: signals failed; fetch a new independent signal to improve classification accuracy."
+      },
+      {
+       "task_id": "t30",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Attempting to recover from verify:signals failure by fetching an independent signal for Chronosphere ml_ai signals; this is a fresh data source to obtain a sourced number."
       }
      ]
     }

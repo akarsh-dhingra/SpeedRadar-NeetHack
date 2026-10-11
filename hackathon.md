@@ -95,3 +95,8 @@ _TBD_
   - That session finished its runs and handed off; all commits now come from the session opened on the repo folder. Committed its results: Bastion re-runs after the Windows coverage fix 1011-f679dc, 1011-257f61 (6/6, 6/6); fault-injection re-runs with fired-fault recording fixed 1011-3cd178 (Ledgerly 5/5) and 1011-4d998b (Bastion 6/6); case study 04 update; regenerated `evidence/frontend_data.json`.
   - Open, not fixed: (1) Acme mis-categorised invoice overturned by the gpt-5-nano audit in 1011-4f1f02 after the Acme-specific hint was removed; (2) `evals.run_eval` scores runs whose phase is not `done` and drops their stderr (1011-d2d05c stopped at step 26); (3) `fallback_hops` reads 0 in injected runs despite a gemini-3.1-flash-lite fallback call.
 - Tests run: pytest 63 passed after merging `eccd33f`.
+
+### 2026-10-11 11:25 IST — three open bugs fixed (`de18e4f`); Acme n = 3 after the audit fix
+- Planned: fix the three open items from the 10:49 entry.
+- Done: audit now sees the line-item check result (Acme mis-categorised invoice: before 1 of 2 complete runs, after **3 of 3**, each 5/5, 0 false alarms, 0 fallback hops; scorecard `evidence/evals/20261011T112120-de18e4f-dirty-after-audit-linecheck.json`); eval keeps unfinished runs out of averages and saves their stderr; fallback hops counted for tool LLM calls, and PDFs routed to Gemini up front. Details and traces in case study 04. Front-end data regenerated.
+- Tests run: pytest 68 passed (5 new).
