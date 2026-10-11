@@ -1,0 +1,154 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N1K9KE44JG2DHPAPDZJMYZ",
+  "session_id": "f356ebcd-1778-45d3-a192-663d385625b4",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T08:34:47.714755Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "save_step_count": 1,
+  "files_touched": [
+    "evidence/neatlogs/coverage.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-5-5",
+  "turn_id": "c428428aaddf",
+  "checkpoint_transcript_start": 3359,
+  "transcript_lines_at_start": 3359,
+  "compact_transcript_start": 494,
+  "token_usage": {
+    "input_tokens": 54,
+    "cache_creation_tokens": 26973,
+    "cache_read_tokens": 7793472,
+    "output_tokens": 13275,
+    "api_call_count": 25,
+    "subagent_tokens": {
+      "input_tokens": 0,
+      "cache_creation_tokens": 0,
+      "cache_read_tokens": 0,
+      "output_tokens": 0,
+      "api_call_count": 0
+    }
+  },
+  "skill_events_version": 1,
+  "skill_events": [
+    {
+      "id": "claude-skill-toolu_01PFdF2FgUKwAk6V68GB5VBd",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "grilling"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "98d18df7b085",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 32,
+        "end": 33,
+        "entry_ids": [
+          "cdda053b-dc09-48c5-b0bc-3bdd411131f2"
+        ],
+        "tool_use_id": "toolu_01PFdF2FgUKwAk6V68GB5VBd"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01PFdF2FgUKwAk6V68GB5VBd"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: grilling",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "prompt-skill-claude-code-grill-me-2026-10-11T08:29:38.599488Z",
+      "event_type": "prompt_invocation",
+      "skill": {
+        "name": "grill-me"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "prompt_slash_command",
+        "confidence": "explicit"
+      },
+      "turn_id": "83f28016a8c0",
+      "timestamp": "2026-10-11T08:29:38.599488Z",
+      "native": {
+        "command": "/grill-me"
+      },
+      "collapse": {
+        "target": "user_message",
+        "label": "/grill-me",
+        "default_collapsed": true
+      }
+    },
+    {
+      "id": "claude-skill-toolu_01TbL6BNYU9Y5qHMjGPLnXRN",
+      "event_type": "tool_invocation",
+      "skill": {
+        "name": "grilling"
+      },
+      "source": {
+        "agent": "claude-code",
+        "signal": "skill_tool_use",
+        "confidence": "explicit"
+      },
+      "turn_id": "c428428aaddf",
+      "transcript_anchor": {
+        "unit": "line",
+        "start": 3387,
+        "end": 3388,
+        "entry_ids": [
+          "1274597d-3734-4798-bb33-6ef37fba7922"
+        ],
+        "tool_use_id": "toolu_01TbL6BNYU9Y5qHMjGPLnXRN"
+      },
+      "native": {
+        "tool_name": "Skill",
+        "tool_use_id": "toolu_01TbL6BNYU9Y5qHMjGPLnXRN"
+      },
+      "collapse": {
+        "target": "tool_pair",
+        "label": "Skill: grilling",
+        "default_collapsed": true
+      }
+    }
+  ],
+  "session_metrics": {
+    "turn_count": 33
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T08:34:47.416092Z",
+    "agent_lines": 41,
+    "agent_removed": 0,
+    "human_added": 276,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 317,
+    "total_lines_changed": 321,
+    "agent_percentage": 12.77258566978193,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 259,
+      "user_lines_removed": 0,
+      "agent_lines_added": 41,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        "evidence/evals/20261011T135652-2ded774-hardening-neatlogs-v2.json": 259
+      }
+    }
+  ]
+}
