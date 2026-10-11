@@ -52,7 +52,7 @@ Show the blended Crustdata cost per run, gross margin per tier, and month-24 cas
 ## Prompt 4 (run last): one-page summary for the demo
 
 ```
-Write a one-page plan summary covering pricing, costs, revenue and runway across Base, Growth, Downside, Team repriced and Industry mix. Include: price per tier, cost to serve per tier, the biggest cost driver, the first cash-flow-positive month and lowest cash for each scenario, and the single decision this model supports. Keep it to what a judge can read in 30 seconds.
+Write a one-page plan summary covering pricing, costs, revenue and runway across Base, Growth, Downside, Team repriced, Team uncached cap and Industry mix. Include: price per tier, cost to serve per tier, the biggest cost driver, the first cash-flow-positive month and lowest cash for each scenario, and the single decision this model supports. Keep it to what a judge can read in 30 seconds.
 ```
 **Capture:** the summary page; it goes in the demo video at 1:45–2:20.
 

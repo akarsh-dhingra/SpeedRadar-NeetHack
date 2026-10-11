@@ -77,7 +77,7 @@ Two scenarios, each copied from Base and changing one thing:
 
 - **$495** is the Team price that matches Starter's 62.4% margin (cost to serve stays $185.94).
 - **Capping fresh competitor-data runs at 10 a month** (the other 30 served from cache) cuts Team's cost to serve from $185.94 to $93.54. Team then keeps 76.6%, more than Starter, **without a price change**, and with 0% caching it still keeps 76.6% because the cap bounds the worst case (Base Team at 0% cached: 7.1%).
-- Recommendation: **the cap**. It needs no price increase, protects the margin when caching underperforms, and matches how the agent already works (competitor data changes slowly; the job-search cache now holds for a week).
+- Our recommendation: **the cap** (Ari's summary recommends testing $495; see below). It needs no price increase, protects the margin when caching underperforms, and matches how the agent already works (competitor data changes slowly; the job-search cache now holds for a week).
 
 ### Cost by industry (round 2)
 
@@ -92,6 +92,22 @@ Measured competitor-data cost per uncached run differs by the customer's industr
 Industry mix month-24 cash: $22,647 (Base $20,739).
 
 **Cross-check:** for Team repriced, Team uncached cap and Industry mix, an independent Python recompute matches cfo.ai's monthly ending cash and net burn in every month to within $0.004. The full read (every scenario, input, table and the summary page) was taken over cfo.ai's MCP server with read-only tools: [`cfoai/round2/cfoai_mcp_read_2026-10-11.txt`](cfoai/round2/cfoai_mcp_read_2026-10-11.txt).
+
+### Ari's one-page summary (round 2)
+
+cfo.ai page "Spend Radar — Judge Summary" ([text](cfoai/round2/cfoai_judge_summary_2026-10-11.txt)). Every figure on it matches the monthly model. Its decision: **test Team at $495** before committing to $399; it matches Starter's 62.4% margin and adds $9,312 to month-24 cash versus Base, "assuming unchanged signups. Validate willingness to pay before treating that uplift as a forecast."
+
+The page left out the Team uncached cap scenario, which the prompt asked for. Side by side:
+
+| | Team at $495 | Team capped at 10 fresh runs |
+|---|---|---|
+| First cash-flow-positive month | Nov 2027 | Nov 2027 |
+| Lowest cash | $8,889 (Oct 2027) | $8,835 (Oct 2027) |
+| Month-24 cash vs Base | +$9,312 | +$8,963 |
+| Team margin per customer | 62.4% | 76.6% |
+| Needs customers to accept a higher price | yes | no |
+
+The two are within $349 of month-24 cash. Our pick is the cap, because it does not depend on willingness to pay and holds its margin at 0% caching; Ari's price test is the alternative if Team customers would pay more. They can be combined.
 
 ## What the plan tells us
 

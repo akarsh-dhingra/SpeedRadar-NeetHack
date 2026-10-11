@@ -1,0 +1,27 @@
+# cfo.ai 'Spend Radar — Judge Summary' page, read over MCP (inspect_pages, read-only), 2026-10-11, org 103087
+
+Page title: Spend Radar — Judge Summary [proof: inspect_pages org_id 103087]
+Page id / ref: Spend Radar — Judge Summary#184 [proof: inspect_pages org_id 103087]
+updatedAt: 2026-10-11T04:35:02.291083Z [proof: inspect_pages read org_id 103087]
+
+TEXT block 1 — ref: Spend Radar | 24-month launch plan#6e2 [proof: inspect_pages read org_id 103087]
+
+# Spend Radar | 24-month launch plan
+
+**Product:** AI people-spend benchmarking for finance teams. Pre-revenue, solo founder; Nov 2026–Oct 2028. Starting cash: **$25,000**.
+
+**Pricing:** Starter **$99/month, 8 runs**; Team **$399/month, 40 runs**. Team repriced tests **$495/month** with unchanged customer demand.
+
+**Monthly cost to serve, Starter / Team; month-24 recurring revenue; cash outlook:**
+
+- **Base:** $37.19 / $185.94; **$7,950 revenue**. Cash-flow positive **Jan 2028**; lowest cash **$7,149, Dec 2027**.
+- **Growth:** $25.19 / $125.94; **$19,875 revenue**. Cash-flow positive **Jun 2027**; lowest cash **$14,615, May 2027**.
+- **Downside:** $62.24 / $311.20; **$6,558 revenue**. **Not cash-flow positive within 24 months**; lowest cash **−$8,532, Oct 2028**. Cash runs out **Dec 2027**.
+- **Team repriced:** $37.19 / $185.94; **$8,910 revenue**. Cash-flow positive **Nov 2027**; lowest cash **$8,889, Oct 2027**.
+- **Industry mix:** $35.08 / $175.38; **$7,950 revenue**. Cash-flow positive **Jan 2028**; lowest cash **$7,626, Dec 2027**.
+
+**Cost driver:** Crustdata competitor data—about **99% of COGS**. Fixed costs: **$15.20 hosting + $2,100 salary/tools monthly**; hosting is excluded from per-customer costs above. Caching is 50%, except Downside at 25%; Downside also delays customers three months. Industry mix is 60% observability/digital health, 40% fintech.
+
+**Decision:** Test **Team at $495** before committing to $399: it matches Starter's **62.4% customer margin** and adds **$9,312** to month-24 cash versus Base, assuming unchanged signups. Validate willingness to pay before treating that uplift as a forecast.
+
+TABLE blocks on this page: none — the page's only block is the TEXT block above (blockCount 1) [proof: inspect_pages list + read, org_id 103087], so inspect_table_blocks was not applicable. The page text does not contain a "Team uncached cap" line {unverified as to whether you expected a newer page}.
