@@ -68,8 +68,12 @@ class NeatlogsMCP:
         offset = first.get("next_offset")
         while offset is not None and len(spans) < max_spans:
             page = self.call("get_trace_context", trace_id=trace_id, offset=offset)
-            spans += page.get("spans", [])
-            offset = page.get("next_offset")
+            new = page.get("spans", [])
+            nxt = page.get("next_offset")
+            spans += new
+            if not new or nxt is None or nxt <= offset:  # stop on an empty page or a cursor that does not advance
+                break
+            offset = nxt
         return {**first, "spans": spans}
 
     def close(self) -> None:

@@ -47,3 +47,15 @@ def test_dossier_prompt_is_scrubbed(monkeypatch):
     site = explain.locate("read_pdf", explain.span_index())
     text = explain.dossier("t" * 32, {"name": "read_pdf", "status": "ERROR", "span_id": "x"}, site)
     assert fake_key not in text and "***" in text and "01ABC" in text
+
+
+def test_trace_spans_stops_when_the_cursor_does_not_advance():
+    """Entire trail #3 runner finding 01M4N686NR31."""
+    from spendradar.neatlogs_mcp import NeatlogsMCP
+
+    pages = {None: {"spans": [{"span_id": "a"}], "next_offset": 1}, 1: {"spans": [{"span_id": "b"}], "next_offset": 1}}
+    calls = []
+    m = NeatlogsMCP.__new__(NeatlogsMCP)
+    m.call = lambda tool, trace_id, offset=None: calls.append(offset) or pages[offset]
+    out = m.trace_spans("t")
+    assert [s["span_id"] for s in out["spans"]] == ["a", "b"] and len(calls) == 2
