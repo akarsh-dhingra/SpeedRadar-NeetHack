@@ -1,0 +1,18 @@
+{
+  "tool_use_id": "toolu_01RP8EFqkV81nMqsD1Q6VqmB",
+  "agent_id": "aa1d017f8d754b085",
+  "subagent_type": "web-fetch",
+  "task_description": "Check Remotion license terms",
+  "files": [
+    "scripts/pre-commit"
+  ],
+  "token_usage": {
+    "input_tokens": 6,
+    "cache_creation_tokens": 12382,
+    "cache_read_tokens": 11176,
+    "output_tokens": 55,
+    "api_call_count": 3
+  },
+  "started_at": "2026-10-11T14:42:32.1526816+05:30",
+  "completed_at": "2026-10-11T14:42:32.1610536+05:30"
+}
