@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N7825AMZC0MAKT2XEHX9XJ",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "README.md",
+    "docs/spend-radar.gif",
+    "evidence/build-in-public.md",
+    "evidence/demo-script.md",
+    "evidence/frontend_data.json",
+    "hackathon.md",
+    "site/app.js",
+    "site/data.js"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 40,
+    "cache_creation_tokens": 30163,
+    "cache_read_tokens": 10807435,
+    "output_tokens": 14952,
+    "api_call_count": 20
+  }
+}
