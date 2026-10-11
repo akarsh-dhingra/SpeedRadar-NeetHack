@@ -63,16 +63,48 @@ Copied from Base, with customers arriving 3 months late, only 25% of runs served
 
 Cross-check: `make_cfoai_sheet.py`'s Base scenario, shifted 3 months and recosted with these inputs, matches the cfo.ai export on ending cash and net burn in every month (difference $0.00).
 
+### Fixing the Team tier (round 2)
+
+Two scenarios, each copied from Base and changing one thing:
+
+| Month 24 (Oct 2028) | Base | Team repriced ($495) | Team uncached cap (10 fresh runs) |
+|---|---|---|---|
+| Revenue | $7,950 | $8,910 | $7,950 |
+| COGS | $3,362 | $3,362 | $2,438 |
+| Gross margin | 57.7% | 62.3% | **69.3%** |
+| Ending cash | $20,739 | $30,051 | $29,702 |
+| Team margin per customer | 53.4% | 62.4% (= Starter's) | **76.6%** |
+
+- **$495** is the Team price that matches Starter's 62.4% margin (cost to serve stays $185.94).
+- **Capping fresh competitor-data runs at 10 a month** (the other 30 served from cache) cuts Team's cost to serve from $185.94 to $93.54. Team then keeps 76.6%, more than Starter, **without a price change**, and with 0% caching it still keeps 76.6% because the cap bounds the worst case (Base Team at 0% cached: 7.1%).
+- Recommendation: **the cap**. It needs no price increase, protects the margin when caching underperforms, and matches how the agent already works (competitor data changes slowly; the job-search cache now holds for a week).
+
+### Cost by industry (round 2)
+
+Measured competitor-data cost per uncached run differs by the customer's industry (held-out runs): fintech $6.30, observability and digital health $10.32 (high ends). "Industry mix" assumes 40% fintech / 60% the others: blended $8.71 per uncached run.
+
+| Gross margin per customer | Starter | Team |
+|---|---|---|
+| All fintech customers | 74.3% | 68.1% |
+| Industry mix (40/60) | 64.6% | 56.0% |
+| All observability / digital health | 58.1% | 48.0% |
+
+Industry mix month-24 cash: $22,647 (Base $20,739).
+
+**Cross-check:** for Team repriced, Team uncached cap and Industry mix, an independent Python recompute matches cfo.ai's monthly ending cash and net burn in every month to within $0.004. The full read (every scenario, input, table and the summary page) was taken over cfo.ai's MCP server with read-only tools: [`cfoai/round2/cfoai_mcp_read_2026-10-11.txt`](cfoai/round2/cfoai_mcp_read_2026-10-11.txt).
+
 ## What the plan tells us
 
 1. **Crustdata is about 99% of the cost of serving a customer.** LLM inference is $0.0285 a run. Over 24 months Crustdata costs $33.4k in Base and $55.7k in Growth; founder salary costs $48k.
 2. **Caching competitor data is the business.** Without it, Team keeps 7% of its revenue in Base. The agent already caches Crustdata responses per run. The next step is to share one fetch across customers who track the same competitors, and to measure the real cache hit rate.
-3. **Team is priced wrong.** It gets 5× the runs for 4× the price, so its margin is below Starter's. Options: raise its price, or cap the runs that need fresh competitor data.
+3. **Team is priced wrong, and the fix is a cap, not a price rise.** It gets 5× the runs for 4× the price, so its margin is below Starter's. Raising it to $495 only matches Starter (62.4%); capping fresh competitor-data runs at 10 a month lifts it to 76.6% at $399 and protects it if caching underperforms.
 4. **Base is tight.** The cash low of $7.1k is about 3 months of the $2.1k monthly burn, so customers arriving 2–3 months late would run Base out of cash. The Downside scenario confirms it: with a 3-month delay, a lower cache rate and the highest measured costs, cash runs out in Dec 2027. Starting cash, the cache rate, or the Team price has to change before this plan is safe.
+5. **Who the customer is matters.** Fintech customers cost about 40% less to serve than observability or digital-health ones (competitor data $6.30 vs $10.32 per uncached run), so Team margin ranges from 48% to 68% by industry.
 
 ## Limits
 
 - The salary, tools and starting cash are placeholders, not real figures.
-- The 50% cache rate is an assumption. It has not been measured.
+- The 50% cache rate is an assumption. It has not been measured. The evals found the job-search cache was resetting daily (fixed on 11 Oct to hold for a week), so before that fix the real rate across days was lower.
+- Competitor-data cost by industry comes from 1–3 runs per industry.
 - Customer counts are assumptions, deliberately modest, with no market-size claims.
 - The Crustdata cost assumes each job-search result is billed as one search record.
