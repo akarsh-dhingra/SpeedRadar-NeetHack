@@ -139,3 +139,10 @@ def test_plan_coverage_adds_invoices_the_planner_skipped():
     agent._verify_plan(s, listing, {"competitors": []})
     added = {t.args.get("path") for t in s.queue if t.reason == "added by plan coverage check"}
     assert "invoices/11_ironvault_2026-08_resent.pdf" in added and "invoices/12_beacon_2026-10.pdf" in added
+
+
+def test_job_window_is_stable_within_a_week():
+    from datetime import date
+    week = {agent.job_window_start(365, date(2026, 10, d)) for d in range(5, 12)}  # Mon 5 .. Sun 11 Oct
+    assert week == {"2025-10-05"}
+    assert agent.job_window_start(365, date(2026, 10, 12)) == "2025-10-12"  # next Monday moves it

@@ -304,9 +304,17 @@ JOB_SAMPLES = {  # name -> (days back, job_details.category filter)
 }
 
 
+def job_window_start(days: int, today: date | None = None) -> str:
+    """Start of the job-posting window, anchored to this week's Monday so the request (and its cache key)
+    is identical all week. Anchoring to today changed the key daily: every first run of a new day paid
+    Crustdata again (14–18 credits per company on 11 Oct), against a plan that assumes weekly refreshes."""
+    today = today or date.today()
+    return (today - timedelta(days=today.weekday() + days)).isoformat()
+
+
 def _act_jobs(state: RunState, domain: str, sample: str = "job_search") -> list[Check]:
     days, category = JOB_SAMPLES[sample]
-    since = (date.today() - timedelta(days=days)).isoformat()
+    since = job_window_start(days)
     res = crustdata.crustdata_jobs(domain, since=since, category=category, limit=60)
     state.crustdata_credits = crustdata.BUDGET.spent
     titles = [t["title"] for t in res["titles"] if t["title"]]
