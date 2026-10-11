@@ -3,9 +3,18 @@
  "voice": {
   "engine": "chatterbox",
   "reference": "LibriSpeech dev-clean reader 1673 (CC BY 4.0)",
-  "exaggeration": 0.8,
-  "cfg_weight": 0.35,
-  "tempo": 1.12
+  "exaggeration": 0.65,
+  "cfg_weight": 0.42,
+  "tempo": 1.06,
+  "pauses": {
+   "sentence": 0.42,
+   "question": 0.38,
+   "ellipsis": 0.6,
+   "comma": 0.2,
+   "colon": 0.26,
+   "within_phrase_max": 0.1,
+   "between_lines": 0.32
+  }
  },
  "bpm": 118,
  "scenes": [
@@ -16,24 +25,23 @@
    "lines": [
     {
      "id": "hook1",
-     "say": "Your competitor just doubled their em ell team!",
-     "cap": "Your competitor just doubled their ML team!",
+     "say": "So... your competitor just doubled their em ell team.",
+     "cap": "So… your competitor just doubled their ML team.",
      "big": true,
-     "exag": 0.9
+     "exag": 0.8
     },
     {
      "id": "hook2",
-     "say": "And you'll find out... next quarter.",
-     "cap": "And you'll find out… next quarter.",
-     "big": true,
-     "exag": 0.85
+     "say": "And you? You'll find out next quarter.",
+     "cap": "And you? You'll find out next quarter.",
+     "big": true
     },
     {
      "id": "hook3",
-     "say": "Unless your agent finds out first!",
-     "cap": "Unless your agent finds out first!",
+     "say": "Unless your agent finds out first.",
+     "cap": "Unless your agent finds out first.",
      "big": true,
-     "exag": 0.95
+     "exag": 0.8
     }
    ]
   },
@@ -44,9 +52,8 @@
    "lines": [
     {
      "id": "title1",
-     "say": "Meet Spend Radar! It reads your books, checks the market, and then tries to prove itself wrong.",
-     "cap": "Meet Spend Radar! It reads your books, checks the market — then tries to prove itself wrong.",
-     "exag": 0.9
+     "say": "This is Spend Radar. It reads your books, checks the market, and then, before it tells you anything, it tries to prove itself wrong.",
+     "cap": "This is Spend Radar. It reads your books, checks the market — and before it tells you anything, it tries to prove itself wrong."
     }
    ]
   },
@@ -57,51 +64,48 @@
    "lines": [
     {
      "id": "run1",
-     "say": "Let's watch a real run!",
-     "cap": "Let's watch a real run!",
+     "say": "Let's watch it work, on a real run.",
+     "cap": "Let's watch it work, on a real run.",
      "big": true,
-     "exag": 0.9,
      "src": "runs/1011-777bb7 (data mode: real)"
     },
     {
      "id": "run2",
-     "say": "The model writes the plan. Then it's one tool call at a time.",
-     "cap": "The model writes the plan. Then: one tool call at a time.",
+     "say": "First, the model writes a plan. Then the agent works through it, one tool call at a time.",
+     "cap": "First, the model writes a plan. Then the agent works through it, one tool call at a time.",
      "src": "runs/1011-777bb7/state.json plan_rationale, done (41)"
     },
     {
      "id": "run3",
-     "say": "Budget, invoices, policy, then real headcount from Crust-data.",
-     "cap": "Budget, invoices, policy — then real headcount from Crustdata.",
+     "say": "It reads the budget, the invoices and the policy, then pulls real competitor headcount from Crust-data.",
+     "cap": "It reads the budget, the invoices and the policy, then pulls real competitor headcount from Crustdata.",
      "src": "state.json done; competitors (5)"
     },
     {
      "id": "run4",
-     "say": "Python checks all seventy-one results. Uh oh, a budget row doesn't add up!",
-     "cap": "Python checks all 71 results. Uh-oh — a budget row doesn't add up!",
-     "exag": 0.9,
+     "say": "Python checks every single result. Seventy-one checks in all. And here's one that fails: a budget row that doesn't add up.",
+     "cap": "Python checks every single result — 71 checks in all. And here's one that fails: a budget row that doesn't add up.",
      "src": "state.json checks (71); decisions[t01] 1.45% off"
     },
     {
      "id": "run5",
-     "say": "The rule says, mark it low confidence. The model says, re-read that row!",
-     "cap": "Rule: mark it low confidence. Model: re-read that row!",
-     "exag": 0.9,
+     "say": "The rule says, just mark it low confidence. But the model decides to re-read that exact row instead.",
+     "cap": "The rule says: just mark it low confidence. But the model decides to re-read that exact row instead.",
      "src": "decisions[t01]: default mark_low_confidence, chosen narrow_range"
     },
     {
      "id": "run6",
-     "say": "Scanned PDF? Read it another way. Corrupt PDF? Flag it and move on.",
-     "cap": "Scanned PDF? Read it another way. Corrupt PDF? Flag it, move on.",
+     "say": "A scanned PDF gets read another way. A corrupt one gets flagged, and the run keeps going.",
+     "cap": "A scanned PDF gets read another way. A corrupt one gets flagged, and the run keeps going.",
      "src": "decisions t15 reparse_alt; t16/t16r reparse_alt, skip; not_analysed"
     },
     {
      "id": "run7",
-     "say": "Five of its ten recovery calls beat the rule!",
-     "cap": "5 of its 10 recovery calls beat the rule!",
+     "say": "In this run, five of its ten recovery calls beat the default rule.",
+     "cap": "In this run, 5 of its 10 recovery calls beat the default rule.",
      "big": true,
-     "exag": 0.9,
-     "src": "run 1011-777bb7 metrics recovery_non_default 5 / recovery_decisions 10"
+     "src": "run 1011-777bb7 metrics recovery_non_default 5 / recovery_decisions 10",
+     "exag": 0.8
     }
    ]
   },
@@ -112,27 +116,26 @@
    "lines": [
     {
      "id": "aud1",
-     "say": "And now, the best part.",
-     "cap": "And now… the best part.",
-     "big": true,
-     "exag": 0.85
+     "say": "Now, here's our favourite part.",
+     "cap": "Now, here's our favourite part.",
+     "big": true
     },
     {
      "id": "aud2",
-     "say": "It flagged a five point two eight million dollar gap in Acme's em ell team.",
-     "cap": "It flagged a $5.28M gap in Acme's ML team.",
+     "say": "The agent flagged a gap of up to five point two eight million dollars in Acme's em ell team.",
+     "cap": "The agent flagged a gap of up to $5.28M in Acme's ML team.",
      "src": "run 1011-777bb7 finding f_ml_ai"
     },
     {
      "id": "aud3",
-     "say": "Then it argued with itself, and overturned it!",
-     "cap": "Then it argued with itself — and overturned it!",
-     "exag": 0.95
+     "say": "Then it argued with itself, and overturned its own claim.",
+     "cap": "Then it argued with itself — and overturned its own claim.",
+     "exag": 0.8
     },
     {
      "id": "aud4",
-     "say": "Wrong claims never reach the report.",
-     "cap": "Wrong claims never reach the report.",
+     "say": "So that wrong number never reaches the report.",
+     "cap": "So that wrong number never reaches the report.",
      "big": true
     }
    ]
@@ -144,17 +147,17 @@
    "lines": [
     {
      "id": "gen1",
-     "say": "Seven companies. Six it had never seen before.",
-     "cap": "7 companies. 6 it had never seen before.",
+     "say": "We tested it on seven companies. Six of them, it had never seen before.",
+     "cap": "We tested it on 7 companies. 6 of them, it had never seen before.",
      "src": "summary.companies 7, held_out_companies 6"
     },
     {
      "id": "gen2",
-     "say": "Every planted error, caught. Zero false alarms!",
-     "cap": "Every planted error caught. Zero false alarms!",
+     "say": "Every planted error was caught, with zero false alarms.",
+     "cap": "Every planted error caught — with zero false alarms.",
      "big": true,
-     "exag": 0.9,
-     "src": "summary.latest_runs_all_caught 7, latest_runs_false_alarms 0"
+     "src": "summary.latest_runs_all_caught 7, latest_runs_false_alarms 0",
+     "exag": 0.8
     }
    ]
   },
@@ -165,21 +168,19 @@
    "lines": [
     {
      "id": "nl1",
-     "say": "We debugged all of it in neet logs.",
-     "cap": "We debugged all of it in neatlogs.",
-     "exag": 0.85
+     "say": "We found and fixed our bugs in neet logs.",
+     "cap": "We found and fixed our bugs in neatlogs."
     },
     {
      "id": "nl2",
-     "say": "One trace caught it dumping three of five competitors. The fix kept all five, and cut credits from twenty-six point six to five point four!",
-     "cap": "One trace: 3 of 5 competitors dumped. The fix: all 5 kept, credits 26.6 → 5.4!",
+     "say": "One trace showed the agent throwing away three of its five competitors. After the fix, it kept all five, and the data credits dropped from twenty-six point six to five point four.",
+     "cap": "One trace: the agent threw away 3 of its 5 competitors. After the fix, it kept all 5 — and credits dropped from 26.6 to 5.4.",
      "src": "evidence/case-studies/02-competitor-substitution.md"
     },
     {
      "id": "nl3",
-     "say": "Same data, three different verdicts? Now, just one.",
-     "cap": "Same data, 3 different verdicts? Now: just 1.",
-     "exag": 0.9,
+     "say": "Another showed the same data getting three different verdicts. Now, it gets one, every time.",
+     "cap": "Another: the same data got 3 different verdicts. Now it gets 1, every time.",
      "src": "evidence/case-studies/05-audit-verdict-variance.md"
     }
    ]
@@ -191,22 +192,20 @@
    "lines": [
     {
      "id": "ent1",
-     "say": "Entire gave our coding agent a memory. Sixty-nine checkpoints!",
-     "cap": "Entire gave our coding agent a memory: 69 checkpoints!",
-     "exag": 0.9,
+     "say": "Entire gave our coding agent a memory. Sixty-nine checkpoints, each one linking a commit to its prompt.",
+     "cap": "Entire gave our coding agent a memory: 69 checkpoints, each linking a commit to its prompt.",
      "src": "evidence/frontend_data.json entire.checkpoints = 69"
     },
     {
      "id": "ent2",
-     "say": "Click any trace, and follow it back to the code, the commit, and the prompt that wrote it.",
-     "cap": "Click any trace → the code → the commit → the prompt that wrote it.",
+     "say": "So you can start from any trace, and follow it back to the code, the commit, and the exact prompt that wrote it.",
+     "cap": "Start from any trace, and follow it back to the code, the commit, and the exact prompt that wrote it.",
      "src": "evidence/explain/5fcef2f7f2f8-decide-recovery.md"
     },
     {
      "id": "ent3",
-     "say": "Its review runners even caught two bugs before merge!",
-     "cap": "Its review runners even caught 2 bugs before merge!",
-     "exag": 0.9,
+     "say": "And Entire's review runners caught two real bugs, before we merged.",
+     "cap": "And Entire's review runners caught 2 real bugs before we merged.",
      "src": "frontend_data.json entire.trails findings: a16758f, 62c6b69"
     }
    ]
@@ -218,21 +217,19 @@
    "lines": [
     {
      "id": "cfo1",
-     "say": "And CFO dot AI built the business plan from our real costs.",
-     "cap": "And cfo.ai built the business plan from our real costs.",
-     "exag": 0.85
+     "say": "Then, CFO dot AI turned our measured costs into a business plan.",
+     "cap": "Then cfo.ai turned our measured costs into a business plan."
     },
     {
      "id": "cfo2",
-     "say": "Under three cents of AI per run. Competitor data is ninety-nine percent of the cost.",
-     "cap": "Under 3¢ of AI per run. Competitor data: ~99% of the cost.",
+     "say": "The AI costs under three cents a run. Competitor data is about ninety-nine percent of the cost.",
+     "cap": "The AI costs under 3¢ a run. Competitor data is about 99% of the cost.",
      "src": "cfo.ai Assumptions: LLM cost per run $0.0285; judge summary: Crustdata ~99% of COGS"
     },
     {
      "id": "cfo3",
-     "say": "Six scenarios. Base case: cash-flow positive by January twenty twenty-eight!",
-     "cap": "6 scenarios. Base case: cash-flow positive by Jan 2028!",
-     "exag": 0.9,
+     "say": "Across six scenarios, the base case turns cash-flow positive in January twenty twenty-eight.",
+     "cap": "Across 6 scenarios, the base case turns cash-flow positive in January 2028.",
      "src": "business/cfoai/mcp_export_2026-10-11.json"
     }
    ]
@@ -244,17 +241,16 @@
    "lines": [
     {
      "id": "out1",
-     "say": "Spend Radar. Every number has a source!",
-     "cap": "Spend Radar. Every number has a source!",
-     "big": true,
-     "exag": 0.9
+     "say": "Spend Radar. Every number has a source.",
+     "cap": "Spend Radar. Every number has a source.",
+     "big": true
     },
     {
      "id": "out2",
-     "say": "Team kwep. Hashtag neet hack!",
+     "say": "From team kwep. Hashtag neet hack!",
      "cap": "team qwep · #neatHack",
      "big": true,
-     "exag": 0.95
+     "exag": 0.8
     }
    ]
   }

@@ -303,7 +303,9 @@
   function bigLine(g, line, box, o) {
     o = o || {}; var words = line.cap.split(" "), size = o.size || 96, maxW = box.w;
     var rows = wrapWords(words, size, maxW), rowH = size * 1.06, f = spokenFrac(line, T);
-    var outA = o.hold ? 1 : 1 - prog(T, line.end + (o.linger || .5), .3); if (outA <= 0) return;
+    var idx = TL.lines.indexOf(line), nxt = TL.lines[idx + 1];
+    var outAt = Math.min(line.end + (o.linger || .5), nxt ? nxt.start - .25 : 1e9);
+    var outA = o.hold ? 1 : 1 - prog(T, outAt, .22); if (outA <= 0) return;
     var total = line.cap.replace(/\s/g, "").length, seen = 0;
     g.save(); g.globalAlpha = outA;
     rows.forEach(function (r, ri) {
@@ -509,7 +511,7 @@
         g.save(); g.translate(x + 20, y + 20); g.scale(kk, kk); inkRR(g, -20, -20, 40, 40, 8, p ? C.green : C.red, 3); g.restore();
       });
       var bad = res.filter(function (p, i) { return !p && i < ok; }).length; txt(g, ok + " checks", 1100, 290, 110, { fill: C.ink, stroke: C.cream, sw: 14 }); if (bad) txt(g, bad + " ✗", 1100, 400, 90, { fill: C.red, stroke: C.cream, sw: 12 });
-      var uh = wt("run4", ["uh", "oh"], .6);
+      var uh = wt("run4", ["fails"], .6);
       if (T > uh - .3) {
         var sk = eBack(prog(T, uh - .3, .4)), shk = T < uh + .5 ? (hash(BF) - .5) * 14 : 0;
         g.save(); g.translate(560 + shk, 690); g.rotate(-.04); g.scale(sk, sk);
@@ -524,7 +526,6 @@
       }
       fin(g, 1640, 760, 1.0, { worry: T > uh, sweat: T > uh + .2 });
       caption(g, sc, null);
-      flash(g, uh + .55, .3, ["✗ verify:totals FAILED", "budget:marketing · People!row 10 · " + ((/\(([\d.]+% off)\)/.exec(dec.check || "") || [0, ""])[1])]);
       return;
     }
     if (T < r6.start - .05) { // the decision: the rule's card vs the model's card
@@ -647,7 +648,6 @@
     if (cl && cl.id === "aud1") bigLine(g, cl, { x: 0, y: 360, w: W }, { size: 130, align: "center" });
     else if (cl && cl.id === "aud4") bigLine(g, cl, { x: 60, y: 880, w: W - 120 }, { size: 74, align: "center" });
     else caption(g, sc, null);
-    flash(g, ov - .45, .28, ["audit:f_ml_ai → overturn", "gpt-5-nano: contradictory ml_ai signals"]);
   };
 
   // 05 HELD-OUT — seven company cards (real latest-run scores), "0 FALSE ALARMS"
@@ -693,7 +693,7 @@
         txt(g, s[0], 520, y + 28, 26, { align: "right", font: MONO, weight: 500, fill: s[3] ? C.yellow : "#cfd0e6" });
         inkRR(g, x0, y + 6, Math.max(8, w), 30, 8, s[3] ? C.orange : C.teal2, 3);
       });
-      var three = wt("nl2", ["three", "3"], .2), fix = wt("nl2", ["fix"], .45), cut = wt("nl2", ["cut"], .7);
+      var three = wt("nl2", ["three", "3"], .2), fix = wt("nl2", ["fix"], .45), cut = wt("nl2", ["dropped"], .75);
       if (T > n2.start) {
         var mk = eOut(prog(T, n2.start, .4));
         g.save(); g.globalAlpha = mk; inkCircle(g, 1480, 560, 230, "rgba(20,24,48,.94)", 8);
@@ -728,7 +728,6 @@
       sfxWord(g, "CLICK!", 1650, 300, one, 100, C.yellow, .1);
     }
     caption(g, sc, null);
-    flash(g, wt("nl2", ["three", "3"], .2) - .35, .26, ["decide:recovery → substitute_competitor ×3", "Honeycomb · Arize · Chronosphere dropped"], C.orange);
   };
 
   // 07 ENTIRE — commits fall in with checkpoint stickers; a detective board traces span → code → commit → prompt; runner-bots catch 2 bugs
@@ -820,18 +819,29 @@
     } else {
       var sc6 = (FX.cash || {}).scenarios || {}, names = Object.keys(sc6), all = [];
       names.forEach(function (n) { all = all.concat(sc6[n]); });
-      var hi = Math.max.apply(null, all), lo = Math.min(0, Math.min.apply(null, all)), x0 = 160, y0 = 300, cw = 1300, ch = 520;
+      var hi = Math.max.apply(null, all), lo = Math.min(0, Math.min.apply(null, all)) - 8000, x0 = 230, y0 = 310, cw = 1200, ch = 500;
       var X = function (i) { return x0 + i / 23 * cw; }, Y = function (v) { return y0 + ch - (v - lo) / (hi - lo) * ch; };
       inkLine(g, x0, Y(0), x0 + cw, Y(0), 4, "rgba(42,36,51,.5)"); txt(g, "$0", x0 - 20, Y(0) + 10, 26, { align: "right", fill: "#4b5a48" });
-      var draw = eInOut(prog(T, c3.start + .1, 2.2)), COLS = { "Main Scenario": C.indigoD, "Growth": C.mintD, "Downside": C.red };
-      names.forEach(function (n, si) {
-        var arr = sc6[n], nPts = Math.max(2, Math.floor(draw * 23) + 1), pts = [];
-        for (var i = 0; i < nPts; i++) pts.push([X(i), Y(arr[i])]);
-        inkPath(g, pts, false, null, COLS[n] || "rgba(42,36,51,.35)", COLS[n] ? 8 : 4);
-        if (draw >= 1) txt(g, (n === "Main Scenario" ? "Base" : n) + " " + money(arr[23]), X(23) + 18, Y(arr[23]) + 10 + (n === "Team repriced" ? -22 : n === "Team uncached cap" ? 12 : n === "Industry mix" ? 26 : 0), COLS[n] ? 30 : 20, { fill: COLS[n] || "#4b5a48", weight: 700 });
+      var draw = eInOut(prog(T, c3.start + .1, 2.4)), COLS = { "Main Scenario": C.indigoD, "Growth": C.mintD, "Downside": C.red };
+      var minor = ["Team uncached cap", "Team repriced", "Industry mix"], MCOL = { "Team uncached cap": "#3f8fb0", "Team repriced": "#9a6fc4", "Industry mix": "#8a8f86" };
+      // gridlines
+      [0, 50000, 100000].forEach(function (v) { if (v > hi) return; g.strokeStyle = "rgba(42,36,51,.12)"; g.lineWidth = 2; g.beginPath(); g.moveTo(x0, Y(v)); g.lineTo(x0 + cw, Y(v)); g.stroke(); txt(g, money(v), x0 - 18, Y(v) + 9, 24, { align: "right", fill: "#4b5a48", weight: 600 }); });
+      names.slice().sort(function (a, b) { return (COLS[a] ? 1 : 0) - (COLS[b] ? 1 : 0); }).forEach(function (n) {
+        var arr = sc6[n], upto = draw * 23, col = COLS[n] || MCOL[n] || "#8a8f86";
+        g.save(); g.strokeStyle = col; g.lineWidth = COLS[n] ? 9 : 4; g.lineJoin = "round"; g.lineCap = "round"; g.globalAlpha = COLS[n] ? 1 : .8;
+        g.beginPath();
+        for (var i = 0; i <= Math.floor(upto); i++) { if (i) g.lineTo(X(i), Y(arr[i])); else g.moveTo(X(i), Y(arr[i])); }
+        var fi = Math.floor(upto), fr = upto - fi; if (fi < 23) g.lineTo(lerp(X(fi), X(fi + 1), fr), lerp(Y(arr[fi]), Y(arr[fi + 1]), fr));
+        g.stroke(); g.restore();
+        if (COLS[n] && draw >= 1) { var lk = eOut(prog(T, c3.start + 2.5, .4)); g.save(); g.globalAlpha = lk; txt(g, (n === "Main Scenario" ? "Base" : n) + "  " + money(arr[23]), X(23) + 22, Y(arr[23]) + 11, 32, { fill: col, weight: 700 }); g.restore(); }
       });
+      // legend for the other three scenarios
+      var lgk = eOut(prog(T, c3.start + 2.5, .4));
+      g.save(); g.globalAlpha = lgk;
+      minor.forEach(function (n, i) { if (!sc6[n]) return; var lx = 236 + i * 400; g.fillStyle = MCOL[n]; g.fillRect(lx, 318, 30, 6); txt(g, n + "  " + money(sc6[n][23]), lx + 40, 328, 24, { fill: C.ink, weight: 600 }); });
+      g.restore();
       var jan = wt("cfo3", ["january"], .55), base = sc6["Main Scenario"] || [];
-      if (T > jan - .2 && base.length) { var bi = base.indexOf(Math.min.apply(null, base)); stamp(g, "CASH-FLOW + JAN 2028", X(bi + 1) + 60, Y(base[bi]) - 140, jan, C.indigoD, 46, -.08); }
+      if (T > jan - .2 && base.length) { var bi = base.indexOf(Math.min.apply(null, base)); stamp(g, "CASH-FLOW POSITIVE · JAN 2028", 700, 470, jan, C.indigoD, 40, -.05); }
       txt(g, names.length + " scenarios · ending cash · Nov 2026 → Oct 2028 · from the live cfo.ai workspace", 160, 260, 30, { fill: "#4b5a48", weight: 600 });
       sfxWord(g, "KA-CHING!", 1620, 900, jan + .4, 110, C.yellow, -.08);
     }
@@ -877,7 +887,7 @@
     for (var y = 0; y <= H + 20; y += 30) g.lineTo(x + (hash(seed + y * .07) - .5) * 70 + Math.sin(y * .01) * 60, y);
     g.lineTo(-10, H + 10); g.closePath();
   }
-  var TRANS = .45;
+  var TRANS = .55;
   function frame(t) {
     T = t; BF = Math.floor(t * BOIL); X.setTransform(SC, 0, 0, SC, 0, 0); X.imageSmoothingQuality = "high";
     var i = sceneAt(t), sc = TL.scenes[i];
@@ -909,12 +919,12 @@
     add(wt("hook1", ["doubled"]) + .1, "boom"); add(wt("hook2", ["quarter"]), "tick"); add(wt("hook3", ["first"]), "ping");
     add(wt("title1", ["radar"], .15) - .2, "boom", .8); add(wt("title1", ["wrong"]), "glitch", .7);
     add(L("run1").start + .4, "stamp"); add(wt("run3", ["headcount"], .55), "ping");
-    var r4 = L("run4"); for (var q = 0; q < 8; q++) add(r4.start + .2 + q * .18, "tick", .5); add(wt("run4", ["uh", "oh"], .6), "glitch");
+    var r4 = L("run4"); for (var q = 0; q < 8; q++) add(r4.start + .2 + q * .18, "tick", .5); add(wt("run4", ["fails"], .6), "glitch");
     add(wt("run5", ["reread", "re", "read"], .6), "pop"); add(wt("run5", ["reread", "re", "read"], .6) + .25, "stamp");
     add(wt("run6", ["corrupt"], .5) + .1, "glitch", .8); add(wt("run6", ["corrupt"], .5) + .9, "stamp", .8); add(wt("run7", ["beat"], .7), "ding");
     add(L("aud1").start, "riser", .7); add(wt("aud2", ["million", "528", "5.28"], .45), "boom", .8); add(wt("aud3", ["overturned"], .75), "stamp", 1.2);
     add(wt("gen2", ["caught"], .3), "ding"); add(wt("gen2", ["zero", "0"], .7), "stamp", .8);
-    add(wt("nl2", ["three", "3"], .2) + .4, "glitch", .7); add(wt("nl2", ["fix"], .45) + .2, "ding"); add(wt("nl3", ["one", "1"], .8), "stamp");
+    add(wt("nl2", ["three", "3"], .2) + .4, "glitch", .7); add(wt("nl2", ["dropped"], .75), "pop", .7); add(wt("nl2", ["fix"], .45) + .2, "ding"); add(wt("nl3", ["one", "1"], .8), "stamp");
     add(wt("ent1", ["sixtynine", "sixty", "69"], .7), "boom", .8); add(wt("ent2", ["prompt"], .85) + .2, "ding"); add(wt("ent3", ["bugs", "two", "2"], .6), "pop");
     add(wt("cfo2", ["ninetynine", "ninety", "99"], .7), "boom", .8); add(wt("cfo3", ["january"], .55) + .4, "ding", 1.1);
     add(L("out2").end, "ding");
