@@ -1,0 +1,398 @@
+{
+ "created": "2026-10-11T10:48:04",
+ "variant": "inject-fixed-heldout",
+ "evidence": true,
+ "git_sha": "f325e59-dirty",
+ "n_runs": 2,
+ "n_runs_without_fallback": 2,
+ "planted_total": 5,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 5.5,
+   "min": 5,
+   "max": 6,
+   "n": 2
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "downgraded": {
+   "mean": 1.5,
+   "min": 1,
+   "max": 2,
+   "n": 2
+  },
+  "recovery_decisions": {
+   "mean": 11.5,
+   "min": 6,
+   "max": 17,
+   "n": 2
+  },
+  "llm_calls": {
+   "mean": 31.5,
+   "min": 25,
+   "max": 38,
+   "n": 2
+  },
+  "llm_tokens_in": {
+   "mean": 14835,
+   "min": 12687,
+   "max": 16983,
+   "n": 2
+  },
+  "llm_tokens_out": {
+   "mean": 65573,
+   "min": 53513,
+   "max": 77633,
+   "n": 2
+  },
+  "llm_latency_s": {
+   "mean": 348.3,
+   "min": 278.0,
+   "max": 418.6,
+   "n": 2
+  },
+  "crustdata_credits": {
+   "mean": 2.0,
+   "min": 2.0,
+   "max": 2.0,
+   "n": 2
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 5.5,
+   "min": 5,
+   "max": 6,
+   "n": 2
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "downgraded": {
+   "mean": 1.5,
+   "min": 1,
+   "max": 2,
+   "n": 2
+  },
+  "recovery_decisions": {
+   "mean": 11.5,
+   "min": 6,
+   "max": 17,
+   "n": 2
+  },
+  "llm_calls": {
+   "mean": 31.5,
+   "min": 25,
+   "max": 38,
+   "n": 2
+  },
+  "llm_tokens_in": {
+   "mean": 14835,
+   "min": 12687,
+   "max": 16983,
+   "n": 2
+  },
+  "llm_tokens_out": {
+   "mean": 65573,
+   "min": 53513,
+   "max": 77633,
+   "n": 2
+  },
+  "llm_latency_s": {
+   "mean": 348.3,
+   "min": 278.0,
+   "max": 418.6,
+   "n": 2
+  },
+  "crustdata_credits": {
+   "mean": 2.0,
+   "min": 2.0,
+   "max": 2.0,
+   "n": 2
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1011-3cd178",
+   "trace_id": "ef7cbfa5c43720b57e212318e8d4aba3",
+   "git_sha": "f325e59-dirty",
+   "tags": [
+    "sha:f325e59-dirty",
+    "run:1011-3cd178",
+    "variant:inject-fixed-ledgerly",
+    "evidence",
+    "inject:crustdata:429",
+    "inject:llm:429"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [
+    "crustdata:429",
+    "llm:429"
+   ],
+   "dataset": "ledgerly",
+   "ground_truth": "evals/ground_truth_ledgerly.json",
+   "planted_caught": 5,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_scanned": true,
+    "invoice_total_mismatch": true,
+    "invoice_duplicate": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 52.1,
+    "marketing": 0.0,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.353
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.376
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.435
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 1,
+   "recovery_decisions": 6,
+   "recovery_non_default": 3,
+   "llm_calls": 25,
+   "llm_tokens_in": 12687,
+   "llm_tokens_out": 53513,
+   "llm_latency_s": 278.0,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 22,
+     "cached_calls": 0,
+     "tokens_in": 10767,
+     "tokens_out": 53167,
+     "latency_s": 267.1,
+     "fallback_hops": 0
+    },
+    "gemini-3.1-flash-lite": {
+     "calls": 1,
+     "cached_calls": 0,
+     "tokens_in": 560,
+     "tokens_out": 147,
+     "latency_s": 4.69,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 2,
+     "cached_calls": 0,
+     "tokens_in": 1360,
+     "tokens_out": 199,
+     "latency_s": 6.21,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 2.0
+  },
+  {
+   "run_id": "1011-4d998b",
+   "trace_id": "60b5ee52695e0b117c49c8d44992c52d",
+   "git_sha": "f325e59-dirty",
+   "tags": [
+    "sha:f325e59-dirty",
+    "run:1011-4d998b",
+    "variant:inject-fixed-bastion",
+    "evidence",
+    "inject:crustdata:429",
+    "inject:llm:429"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [
+    "crustdata:429",
+    "llm:429"
+   ],
+   "dataset": "bastion",
+   "ground_truth": "evals/ground_truth_bastion.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised_single_vendor": true,
+    "invoice_total_mismatch": true,
+    "invoice_scanned": true,
+    "invoice_duplicate": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "sales": 100.0,
+    "ml_ai": 0.0,
+    "marketing": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "downgraded",
+     "confidence": 0.119
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.443
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.314
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 2,
+   "recovery_decisions": 17,
+   "recovery_non_default": 8,
+   "llm_calls": 38,
+   "llm_tokens_in": 16983,
+   "llm_tokens_out": 77633,
+   "llm_latency_s": 418.6,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 34,
+     "cached_calls": 0,
+     "tokens_in": 14780,
+     "tokens_out": 77209,
+     "latency_s": 408.9,
+     "fallback_hops": 0
+    },
+    "gemini-3.1-flash-lite": {
+     "calls": 1,
+     "cached_calls": 0,
+     "tokens_in": 560,
+     "tokens_out": 148,
+     "latency_s": 4.25,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 3,
+     "cached_calls": 0,
+     "tokens_in": 1643,
+     "tokens_out": 276,
+     "latency_s": 5.49,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 2.0
+  }
+ ]
+}

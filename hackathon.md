@@ -87,3 +87,11 @@ _TBD_
   - Caveats: n = 1 per side; baseline scorecards say commit 771deef but ran with uncommitted UTF-8 and company-name changes (no effect on what is scored; the `-dirty` marker did not exist yet). The new line-item check adds model calls: LLM cost per run went from $0.023–$0.026 to $0.028–$0.040 (n = 2).
   - Added three more held-out companies, built after the fixes and never used to tune them: Bastion Security (cybersecurity), Parcelwise Commerce (e-commerce logistics), Peoplegraph HR (HR tech). Runs in progress.
   - `python -m spendradar export` writes `evidence/frontend_data.json` for a front end; format in `docs/frontend-data.md`. cfo.ai round-2 prompts in `business/cfoai_prompts_round2.md`; shared cfo.ai page: https://cfo.ai/s/lwDIEZtRrqJOM07Z.
+
+### 2026-10-11 10:49 IST — Entire gap fixed going forward; held-out batch results committed
+- Planned: find why recent commits had no `Entire-Checkpoint` trailer and fix it without rewriting pushed history.
+- Done:
+  - Cause: Claude session `d332d8e0` was opened on the parent folder `neathack/`, so the repo's `.claude/settings.json` (Entire's hooks) never loaded; 14 commits `e867e62`..`983b080` have no trailer. Its transcript had been attached as checkpoint `01M4KERS89ZG64HPC8G9CP34VG` but `entire checkpoint explain` showed it linked to no commit. Commit `871b757` now carries that trailer. Both transcripts were scanned for `.env` values and key formats before pushing (0 hits).
+  - That session finished its runs and handed off; all commits now come from the session opened on the repo folder. Committed its results: Bastion re-runs after the Windows coverage fix 1011-f679dc, 1011-257f61 (6/6, 6/6); fault-injection re-runs with fired-fault recording fixed 1011-3cd178 (Ledgerly 5/5) and 1011-4d998b (Bastion 6/6); case study 04 update; regenerated `evidence/frontend_data.json`.
+  - Open, not fixed: (1) Acme mis-categorised invoice overturned by the gpt-5-nano audit in 1011-4f1f02 after the Acme-specific hint was removed; (2) `evals.run_eval` scores runs whose phase is not `done` and drops their stderr (1011-d2d05c stopped at step 26); (3) `fallback_hops` reads 0 in injected runs despite a gemini-3.1-flash-lite fallback call.
+- Tests run: pytest 63 passed after merging `eccd33f`.

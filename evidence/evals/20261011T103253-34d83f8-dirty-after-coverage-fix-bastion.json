@@ -1,0 +1,371 @@
+{
+ "created": "2026-10-11T10:32:53",
+ "variant": "after-coverage-fix-bastion",
+ "evidence": true,
+ "git_sha": "34d83f8-dirty",
+ "n_runs": 2,
+ "n_runs_without_fallback": 2,
+ "planted_total": 6,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 2
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 0,
+   "max": 2,
+   "n": 2
+  },
+  "recovery_decisions": {
+   "mean": 16,
+   "min": 16,
+   "max": 16,
+   "n": 2
+  },
+  "llm_calls": {
+   "mean": 35,
+   "min": 34,
+   "max": 36,
+   "n": 2
+  },
+  "llm_tokens_in": {
+   "mean": 15938.5,
+   "min": 15304,
+   "max": 16573,
+   "n": 2
+  },
+  "llm_tokens_out": {
+   "mean": 71563.5,
+   "min": 69538,
+   "max": 73589,
+   "n": 2
+  },
+  "llm_latency_s": {
+   "mean": 399.4,
+   "min": 398.9,
+   "max": 399.9,
+   "n": 2
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 2
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 2
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 0,
+   "max": 2,
+   "n": 2
+  },
+  "recovery_decisions": {
+   "mean": 16,
+   "min": 16,
+   "max": 16,
+   "n": 2
+  },
+  "llm_calls": {
+   "mean": 35,
+   "min": 34,
+   "max": 36,
+   "n": 2
+  },
+  "llm_tokens_in": {
+   "mean": 15938.5,
+   "min": 15304,
+   "max": 16573,
+   "n": 2
+  },
+  "llm_tokens_out": {
+   "mean": 71563.5,
+   "min": 69538,
+   "max": 73589,
+   "n": 2
+  },
+  "llm_latency_s": {
+   "mean": 399.4,
+   "min": 398.9,
+   "max": 399.9,
+   "n": 2
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 2
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1011-f679dc",
+   "trace_id": "81b4302db46e25c31d0480d232cb79cc",
+   "git_sha": "34d83f8-dirty",
+   "tags": [
+    "sha:34d83f8-dirty",
+    "run:1011-f679dc",
+    "variant:after-coverage-fix-bastion",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "bastion",
+   "ground_truth": "evals/ground_truth_bastion.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised_single_vendor": true,
+    "invoice_total_mismatch": true,
+    "invoice_scanned": true,
+    "invoice_duplicate": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "sales": 100.0,
+    "ml_ai": 0.0,
+    "marketing": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.239
+    },
+    "f_ml_ai": {
+     "status": "confirmed",
+     "confidence": 0.492
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.443
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.29
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 0,
+   "recovery_decisions": 16,
+   "recovery_non_default": 8,
+   "llm_calls": 34,
+   "llm_tokens_in": 15304,
+   "llm_tokens_out": 73589,
+   "llm_latency_s": 399.9,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 32,
+     "cached_calls": 0,
+     "tokens_in": 14184,
+     "tokens_out": 73297,
+     "latency_s": 393.84,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 2,
+     "cached_calls": 0,
+     "tokens_in": 1120,
+     "tokens_out": 292,
+     "latency_s": 6.08,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1011-257f61",
+   "trace_id": "ded48ea6ad9529088706079bafa3abfe",
+   "git_sha": "f325e59-dirty",
+   "tags": [
+    "sha:f325e59-dirty",
+    "run:1011-257f61",
+    "variant:after-coverage-fix-bastion",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "bastion",
+   "ground_truth": "evals/ground_truth_bastion.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised_single_vendor": true,
+    "invoice_total_mismatch": true,
+    "invoice_scanned": true,
+    "invoice_duplicate": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "sales": 100.0,
+    "ml_ai": 0.0,
+    "marketing": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "downgraded",
+     "confidence": 0.119
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.068
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.443
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.314
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 2,
+   "recovery_decisions": 16,
+   "recovery_non_default": 7,
+   "llm_calls": 36,
+   "llm_tokens_in": 16573,
+   "llm_tokens_out": 69538,
+   "llm_latency_s": 398.9,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 32,
+     "cached_calls": 0,
+     "tokens_in": 14366,
+     "tokens_out": 69115,
+     "latency_s": 388.39,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 4,
+     "cached_calls": 0,
+     "tokens_in": 2207,
+     "tokens_out": 423,
+     "latency_s": 10.54,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  }
+ ]
+}

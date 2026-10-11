@@ -59,3 +59,39 @@ All three: 0 unsupported numbers, 0 fallback hops. Crustdata credits for a first
 - Removing the GPU hint was re-checked on gpt-5-nano only. Case study 03 showed fallback models were weaker auditors on exactly this finding, so a fallback-heavy run may still miss it.
 - The two Acme runs on the Windows laptop read invoice PDFs whose line endings Git had rewritten on checkout (fixed in `d172a62` with `.gitattributes`). Both still scored 5/5.
 - The line-item check adds model calls: LLM cost per run went from $0.023–$0.026 to $0.028–$0.040 (paid-equivalent, n = 2).
+
+## n = 3 after the fixes (11 Oct batch)
+
+Every company was run until it had at least three evidence runs after the fixes (Bastion has five: three in the batch plus two after the coverage fix below). Scored with the path-normalised eval.
+
+| Company | Runs | Planted errors caught per run | False alarms | Runs with a fallback hop | Unsupported numbers |
+|---|---|---|---|---|---|
+| Acme | 3 | 5/5, 4/5, 4/5* | 0 | 0 | 0 |
+| Kestrel | 3 | 6/6, 6/6, 6/6 | 0 | 0 | 0 |
+| Ledgerly | 3 | 5/5, 5/5, 5/5 | 0 | 2 | 0 |
+| Carebridge | 3 | 5/5, 5/5, 5/5 | 0 | 1 | 0 |
+| Bastion | 5 | 6/6, 6/6, 4/6, 6/6, 6/6 | 0 | 1 | 0 |
+| Parcelwise | 3 | 5/5, 5/5, 5/5 | 0 | 0 | 0 |
+| Peoplegraph | 3 | 5/5, 5/5, 5/5 | 0 | 0 | 0 |
+
+**Across 23 runs: 119 of 123 planted errors caught (96.7%), 0 false alarms, 0 unsupported numbers.** \*One of the Acme 4/5 runs (1011-d2d05c) did not finish; see below. Excluding it: 115 of 118 (97.5%) over 22 runs.
+
+## Found during the n = 3 batch
+
+1. **The eval compared path spellings** (run 1010-0cb70b). The planner wrote `invoices\08_ledgerline_2026-06.pdf`; the agent caught everything, but the eval scored it 3/6 with 3 false alarms. Fixed in `b217ef2` (planner paths normalised; eval compares normalised paths). Both scorecards are kept: `…005427…-kestrel.json` (3/6) and `…084358…-rescored-path-fix.json` (6/6).
+2. **The plan-coverage check was silently off on Windows** (run 1011-ae5e18, Bastion 4/6). The planner skipped two invoices (the duplicate and the empty PDF). `list_files` returned `invoices\x.pdf` on Windows, so the coverage check's `invoices/` test never matched and added nothing. This was also where the planner's backslash paths came from. Fixed in `072302e`, with a regression test. Two Bastion runs after the fix: 6/6, 6/6 (1011-f679dc `81b4302db46e25c31d0480d232cb79cc`, 1011-257f61 `ded48ea6ad9529088706079bafa3abfe`); in both the planner happened to include every file, so the fix itself is covered by the unit test, not by these runs.
+3. **The job-search cache reset every day.** The window was "today minus 365 days", so the cache key changed daily and the first run of each company on 11 Oct paid 14–18 credits again. Anchored to the week in `d2e9663`; the two Bastion runs above then used 0 credits.
+4. **Injected faults were never recorded as fired** (runs 1011-13475c, 1011-ac099b): the record ran after the final save. Fixed in `a0a929a`.
+5. **Open: the audit is inconsistent on Acme's mis-categorised invoice without the old hint.** In run 1011-4f1f02 both detectors flagged Tensorforge GPU (vendor billed to two categories, and line items = ML/AI on a Marketing invoice), but gpt-5-nano's audit verdict was "overturn" ("the work categories match the cost centres", which is wrong). The second opinion (gemini-3.5-flash-lite) said confirm, so the finding ended downgraded with no corrected category. In 1010-c2cd0c the same model confirmed it. So removing the Acme-specific hint (fix 3 above) costs consistency on this case: **2 of 3 complete Acme runs catch it**. Not fixed yet.
+6. **Open: the eval scored an unfinished run.** Run 1011-d2d05c (Acme) stopped at step 26 with 11 tasks queued; the eval did not check the run's phase or exit code and scored it 4/5. Its stderr was captured and discarded, so the cause is unknown. The eval should exclude runs whose phase is not `done` and report them.
+
+## Recovery on held-out companies (fault injection, after fix 4)
+
+Both runs injected a Crustdata 429 and an LLM 429 (`--inject crustdata:429 --inject llm:429`). Scorecard: `evidence/evals/*-inject-fixed-heldout.json`.
+
+| Company | Run · trace | Faults fired (recorded) | Caught | False alarms |
+|---|---|---|---|---|
+| Ledgerly Payments | 1011-3cd178 · `ef7cbfa5c43720b57e212318e8d4aba3` | crustdata:429, llm:429 | 5/5 | 0 |
+| Bastion Security | 1011-4d998b · `60b5ee52695e0b117c49c8d44992c52d` | crustdata:429, llm:429 | 6/6 | 0 |
+
+The report header of each now reads "injected faults: crustdata:429, llm:429 (fired: crustdata:429, llm:429)". Each made one call to the fallback model `gemini-3.1-flash-lite`, but its `fallback_hops` counter reads 0, so that counter may not count fallbacks caused by an injected 429 (not investigated).
