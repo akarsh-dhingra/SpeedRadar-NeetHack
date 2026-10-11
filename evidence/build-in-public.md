@@ -90,24 +90,25 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 **Text:**
 
-> #neatHack: I stopped trusting "it looks better" and made Spend Radar score itself against a ground-truth file the agent never reads. Every run's @neatlogs trace id goes into the scorecard.
+> #neatHack: my agent's self-audit gave three different verdicts on the same data.
 >
-> Two commits so far:
+> 5 identical Spend Radar runs, same models, 0 fallbacks. The ML/AI finding came back confirmed once, overturned three times, downgraded once. The @neatlogs traces showed why: the deciding fact (two competitors' signals contradict each other) was already computed in Python, but an LLM was still judging it.
 >
-> 11a5108 → 22f00b0
+> Fix: Python decides what Python can see. The LLM only judges real ambiguity (news, mis-billed invoices).
+>
+> n = 5 per side:
+> distinct verdicts: 3 → 1
+> runs agreeing: 3/5 → 5/5
 > planted errors caught: 5/5 → 5/5
-> unsupported numbers: 0 → 0
-> peers kept: 2/5 → 5/5
-> Crustdata credits: 26.6 → 5.4
-> recovery decisions (non-default): 13 (10) → 10 (7)
+> fixture run: 6/6
 >
-> Honest caveat: n = 1 per side, both runs used fallback models, and the provider mix differs. So it's indicative, not clean. Same-mix n = 3 runs: {{n3_results}}, after the free-tier quota resets.
->
-> Accuracy didn't move. Waste did.
+> Then an @EntireHQ trail runner reviewed the fix and caught a gap I'd missed: news evidence was being skipped. Fixed before merge.
 
-**Image:** the scorecard table from `evidence/evals/README.md`, with the two trace ids visible in the neatlogs dashboard.
+**Image:** the "Same data, three different audit verdicts" card on the site's Before / after page (each run shows its ML/AI verdict), next to trail #2's runner finding.
 
-**Sources:** `evidence/evals/README.md`, `20261010T141541-11a5108-before-fix.json`, `20261010T141541-22f00b0-after-fix-02.json`.
+**Sources:** `evidence/case-studies/05-audit-verdict-variance.md`, scorecard `evidence/evals/20261011T145242-bb2fb2f-cs05-after-deterministic-audit.json`, before runs 1010-767322/bf52d4/4d1835/bd4980/a67b26, Entire trail https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/trails/2.
+
+**Before posting, check:** the @-handle for Entire on X (not verified).
 
 **Posted:** —  
 **Link:** —

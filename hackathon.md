@@ -42,18 +42,6 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - Tests run: pytest 22 passed.
 - **18:1x IST — Secret handling incident (caught before any push).** A new provider key was pasted into the coding-agent chat. Entire's checkpoint transcript stored it unredacted: a 32-hex key scores 4.0 bits of entropy, below Entire's 4.5 threshold, and no built-in pattern matched it. Caught by searching all git objects before pushing. Deleted the local checkpoint ref, added a personal Entire redactor pack (git-ignored), and extended the neatlogs mask and gitleaks rules. Nothing was pushed with the key.
 
-## Demo
-- Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
-- Evidence site: `site/index.html` (static; built from `evidence/frontend_data.json`).
-
-## Limitations
-See README "Limitations (honest)". In short: competitor people cost is an estimate (Crustdata headcount × our loaded cost); people cost only; all company finance data is fictional; ML/AI is the weakest estimate; development ran on free LLM tiers plus hackathon OpenAI credits, with only fictional and public data sent; business costs are paid-equivalent estimates; several before/after comparisons are n = 1 per side.
-
-## Submission
-- Window: Mon 12 Oct 2026, 7:00–11:55 PM IST. Quote-post the official neatlogs submission post on X.
-- Must contain: team qwep, project Spend Radar, repo https://github.com/akarsh-dhingra/SpeedRadar-NeetHack, demo video link.
-- Posted: link to add.
-
 ### 2026-10-10 20:22 IST — corrupt PDF no longer reaches the LLM (neatlogs auto-triage fix 2cd5e9df)
 - Planned: act on the neatlogs triage "Handle corrupt PDF files in read_pdf" (8 linked traces, e.g. 36362eb966cdbb85dcb2fb1b280e1034, the Gemini 400 INVALID_ARGUMENT on invoice 13).
 - Already done earlier (6edff38): the 400 is wrapped as a ToolError and a task error never kills the run.
@@ -135,3 +123,39 @@ See README "Limitations (honest)". In short: competitor people cost is an estima
 - **Done, `spendradar explain`:** neatlogs span → code line → `entire why` (commit, checkpoint, session, prompt) → `entire graph impact`. On the corrupt-PDF bug the chain ends at checkpoint `01M4K4TJ…`, whose prompt is the neatlogs triage task. `evidence/explain/`.
 - **Secret check before the first push to the Entire mirror:** an exact-value scan of every .env value over unpushed objects flagged only `AWS_DEFAULT_REGION` (a public region name, not a secret). A key-format scan of all 1,466 branch and checkpoint objects found 0 matches.
 - **Tests run:** pytest 103 passed; ruff (F, E9) clean.
+
+### 2026-10-11 15:20–15:45 IST — submission readiness pass (logged 2026-10-11 15:44 IST)
+- **Planned:** check the site and README against every judging requirement and fill the gaps.
+- **Done, site:**
+  - New Entire page: checkpoints, trails with runner findings, explain chains.
+  - neatlogs page: detections, evals, the auto-triage fix, every trace linked.
+  - Overview: a three-tool strip and a "for judges" evidence map.
+  - Case study 05 shows each run's ML/AI verdict.
+  - The export keeps original run labels over re-scores (they had been overwritten).
+  - Live on GitHub Pages: https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/
+- **Done, README:**
+  - 20 s GIF (`docs/spend-radar.gif`) and a link to the live site.
+  - Trace for every focus area.
+  - Case study 05 and the final merged-main run in the results.
+  - Limitations updated.
+  - Submission section with Entire checkpoint `01M4K4TJNC7JY16812XTZKSBKA`.
+- **Done, other docs:** demo script updated to current numbers (61 runs, 289 recovery decisions, 69 checkpoints) and to the Entire segment, 410 words. Post 4 redrafted around case study 05.
+- **Checked:**
+  - Headless Chrome screenshots of every page.
+  - Mobile overflow measured: the page width equals the viewport. The earlier "cut off" screenshots were an artefact of headless Chrome's 500 px minimum width.
+  - 32/32 README links return 200 or exist in the repo.
+  - pytest 104 passed; ruff clean.
+- **Left for Akarsh:** demo video and its link (README `{demo link}`); X links for posts 1–3; posting 4–6; the submission quote-post on Mon 12 Oct, 19:00 IST.
+
+## Demo
+- Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
+- Evidence site (live): https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ (deployed from `site/`; built from `evidence/frontend_data.json`).
+
+## Limitations
+See README "Limitations (honest)". In short: competitor people cost is an estimate (Crustdata headcount × our loaded cost); people cost only; all company finance data is fictional; ML/AI is the weakest estimate; development ran on free LLM tiers plus hackathon OpenAI credits, with only fictional and public data sent; business costs are paid-equivalent estimates; several before/after comparisons are n = 1 per side.
+
+## Submission
+- Window: Mon 12 Oct 2026, 7:00–11:55 PM IST. Quote-post the official neatlogs submission post on X.
+- Must contain: team qwep, project Spend Radar, repo https://github.com/akarsh-dhingra/SpeedRadar-NeetHack, demo video link.
+- Entire checkpoint for reviewers: 01M4K4TJNC7JY16812XTZKSBKA, https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/commit/8d11308585870c0d1f39e178660016368e7b7d3c
+- Posted: link to add.
