@@ -72,6 +72,30 @@ BUSINESS_HEADLINES = {
                "Capping fresh competitor-data runs at 10 a month lifts Team to 76.6% without a price change.",
 }
 
+# The live cfo.ai workspace, read over the cfo.ai MCP with read-only tools (list_orgs, inspect_*) on 11 Oct.
+CFOAI_MCP_EXPORT = "business/cfoai/mcp_export_2026-10-11.json"
+
+
+def _cfoai_model(root):
+    """Six scenarios' key metrics and 24-month ending cash from the cfo.ai MCP export, or None if absent."""
+    p = Path(root) / CFOAI_MCP_EXPORT
+    if not p.exists():
+        return None
+    d = json.loads(p.read_text(encoding="utf-8"))
+    ser = d["series"]
+    months = ser[next(k for k in ser if not k.startswith("_"))]["months"]
+    return {
+        "source": CFOAI_MCP_EXPORT, "read_only": True, "months": months,
+        "scenarios": [{"name": "Base" if x["name"] == "Main Scenario" else x["name"],
+                       **{k: x["metrics"].get(k) for k in ("first_cash_flow_positive_month", "lowest_ending_cash", "lowest_ending_cash_month",
+                                                           "ending_cash_month_24", "revenue_month_24", "gross_margin_month_24", "customers_month_24")},
+                       "ending_cash": [round(v) for v in ser[x["name"]]["Ending cash"]]} for x in d["scenarios"]],
+        "pages": [pg.get("title") for pg in d.get("pages", [])],
+        "changelog_entries": d.get("history", {}).get("total_entries"),
+        "canvas_blocks": len(d.get("canvas_blocks", [])),
+    }
+
+
 # Scorecards that only re-score runs already scored elsewhere (to publish them to neatlogs or collect
 # history). They must not replace a run's original scorecard, or the run would show their variant label.
 RESCORE_VARIANTS = {"history-all-acme-runs", "before-fix-misses", "gpt5nano-evidence-rescore", "fixture-rescore"}
@@ -293,7 +317,8 @@ def build() -> Path:
             "featured": FEATURED, "comparisons": COMPARISONS,
             "companies": comps,
             "business": {"plan": "business/cfoai_plan.md", "unit_costs": "business/unit_costs.md",
-                         "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES},
+                         "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES,
+                         "cfoai_model": _cfoai_model(".")},
             "neatlogs": {"detections": DETECTIONS, "triage": TRIAGE, "prompts": _prompt_versions(),
                          "eval_traces": sorted(eval_traces, key=lambda e: e["scorecard"]),
                          "docs": {"coverage": "evidence/neatlogs/coverage.md",

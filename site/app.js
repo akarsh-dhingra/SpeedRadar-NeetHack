@@ -534,6 +534,37 @@
     var tiers = '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Tier</th><th>Price</th><th>Includes</th><th class="ac-r">Margin, half the runs cached</th><th class="ac-r">Margin, nothing cached</th><th class="ac-r">With a 10 fresh-run cap</th></tr></thead><tbody>' +
       b.tiers.map(function (t) { return '<tr><td class="ac-li-name" style="font-size:15px">' + esc(t.name) + "</td><td>" + esc(t.price) + " / month</td><td>" + esc(t.runs) + '</td><td class="ac-r ac-up">' + esc(t.margin_base_50pct_cached) + '</td><td class="ac-r ac-down">' + esc(t.margin_base_uncached) + '</td><td class="ac-r">' + (t.margin_with_cap ? '<span class="ac-up">' + esc(t.margin_with_cap) + "</span>" : '<span class="sr-muted">—</span>') + "</td></tr>"; }).join("") +
       "</tbody></table></div>";
+    // The live cfo.ai workspace (read over its MCP, read-only): six scenarios, 24 months of ending cash each.
+    var M = D.business.cfoai_model, live = "";
+    if (M && M.scenarios) {
+      var money = function (v) { return (v < 0 ? "−$" : "$") + Math.round(Math.abs(v)).toLocaleString("en-US"); };
+      var COLS = { "Base": "var(--accent)", "Growth": "var(--up)", "Downside": "var(--down)", "Team uncached cap": "#6fb6d6", "Team repriced": "#c9a3e8", "Industry mix": "var(--text-tertiary)" };
+      var all = []; M.scenarios.forEach(function (x) { all = all.concat(x.ending_cash); });
+      var hi = Math.max.apply(null, all), lo = Math.min(0, Math.min.apply(null, all)), W = 920, H = 260;
+      var X = function (i) { return (i / 23) * W; }, Y = function (v) { return H - ((v - lo) / (hi - lo)) * H; };
+      var lines = M.scenarios.map(function (x) {
+        var d = x.ending_cash.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1); }).join(" ");
+        var major = x.name === "Base" || x.name === "Growth" || x.name === "Downside";
+        return '<path d="' + d + '" fill="none" stroke="' + (COLS[x.name] || "currentColor") + '" stroke-width="' + (major ? 3 : 1.75) + '" opacity="' + (major ? 1 : 0.75) + '"/>';
+      }).join("");
+      var chart = '<div class="ac-scroll"><svg viewBox="-60 -10 ' + (W + 80) + " " + (H + 40) + '" style="width:100%;min-width:560px;height:auto;display:block" role="img" aria-label="Ending cash by scenario, 24 months">' +
+        '<line x1="0" x2="' + W + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="var(--border-control)" stroke-dasharray="4 4"/>' +
+        '<text x="-10" y="' + (Y(0) + 4) + '" text-anchor="end" font-size="12" fill="var(--text-tertiary)">$0</text>' +
+        '<text x="-10" y="' + (Y(hi) + 4) + '" text-anchor="end" font-size="12" fill="var(--text-tertiary)">' + money(hi) + "</text>" + lines +
+        '<text x="0" y="' + (H + 26) + '" font-size="12" fill="var(--text-tertiary)">' + esc(M.months[0]) + '</text><text x="' + W + '" y="' + (H + 26) + '" text-anchor="end" font-size="12" fill="var(--text-tertiary)">' + esc(M.months[23]) + "</text></svg></div>";
+      var rows = M.scenarios.map(function (x) {
+        return '<tr><td class="ac-li-name" style="font-size:15px"><span style="display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:8px;vertical-align:middle;background:' + (COLS[x.name] || "currentColor") + '"></span>' + esc(x.name) + "</td>" +
+          "<td>" + esc(x.first_cash_flow_positive_month || "not within 24 months") + "</td>" +
+          '<td class="ac-r">' + money(x.lowest_ending_cash) + ' <span class="ac-muted">' + esc(x.lowest_ending_cash_month) + "</span></td>" +
+          '<td class="ac-r">' + money(x.revenue_month_24) + "</td>" +
+          '<td class="ac-r">' + (x.gross_margin_month_24 * 100).toFixed(1) + "%</td>" +
+          '<td class="ac-r ' + (x.ending_cash_month_24 < 0 ? "ac-down" : "ac-up") + '">' + money(x.ending_cash_month_24) + "</td></tr>";
+      }).join("");
+      live = '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">The live cfo.ai model · ' + M.scenarios.length + ' scenarios</h3>' +
+        '<span class="ac-card-meta">read over the cfo.ai MCP, read-only · ' + esc(String(M.changelog_entries)) + " model changes · " + esc(String(M.canvas_blocks)) + " canvas blocks</span></div>" + chart +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Scenario</th><th>First cash-flow-positive month</th><th class="ac-r">Lowest cash</th><th class="ac-r">Revenue, month 24</th><th class="ac-r">Gross margin, month 24</th><th class="ac-r">Cash, month 24</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+        '<p class="ac-muted" style="margin:10px 0 0">Pages: ' + M.pages.map(esc).join(" · ") + '. Export: <a class="ac-link" href="' + BLOB + esc(M.source) + '" target="_blank" rel="noopener">' + esc(M.source) + "</a></p></section>";
+    }
     return enter(
       '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">cfo.ai business plan</h1><p class="ac-subtitle">Built in cfo.ai from measured costs: tokens per run from neatlogs traces at the same models\' published paid prices, plus Crustdata usage at its published prices. Development ran on free tiers.</p></div>' +
         '<a class="ac-btn ac-btn--ghost" href="' + BLOB + esc(b.source) + '" target="_blank" rel="noopener">' + icon("file") + "Full plan</a></div>" +
@@ -542,7 +573,7 @@
         stat("LLM cost per run", esc(b.llm_cost_per_run), "measured, paid-equivalent") +
         stat("Competitor data per uncached run", esc(b.crustdata_cost_per_uncached_run), "Crustdata, published prices") +
       "</div>" +
-      '<div class="sr-biz sr-section">' + scen + "</div>" +
+      '<div class="sr-biz sr-section">' + scen + "</div>" + live +
       '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Pricing tiers</h3><span class="ac-card-meta">Base scenario, gross margin per customer</span></div>' + tiers + "</section>"
     );
   }
