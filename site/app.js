@@ -12,6 +12,7 @@
   var WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 
   var VIEWS = [
+    { id: "story", label: "How it works", icon: "play", group: "Start here" },
     { id: "overview", label: "Overview", icon: "grid", group: "Evidence" },
     { id: "run", label: "Run detail", icon: "file", group: "Evidence" },
     { id: "disproved", label: "Disproved itself", icon: "shield", group: "Evidence" },
@@ -86,7 +87,8 @@
     metric: "caught",
     disproved: "overturned",
     recovery: "overrides",
-    recoveryShown: 30
+    recoveryShown: 30,
+    story: 0
   };
   if (!company(S.company)) S.company = D.companies[0].key;
 
@@ -348,6 +350,138 @@
       toolsStrip() + judgeChecklist() +
       '<div class="sr-section-title" data-enter><h2>Run history</h2><p>Each column is one scored run. Pick a company to see its runs.</p></div>' +
       '<div class="ac-grid-2 sr-scroll" data-enter style="margin-top:0">' + heroCard(company(S.company) || bastion, latest(company(S.company) || bastion), false) + companyList(S.company) + "</div>"
+    );
+  }
+
+  // ── "How it works": one real run told in six plain steps ─────────
+  // Everything shown is read from the run's exported tasks, recovery decisions and findings.
+  var TOOL_WORDS = {
+    read_budget: ["Read the budget spreadsheet", "spreadsheet"],
+    read_invoice: ["Read an invoice PDF", "invoice"],
+    read_policy: ["Read the spend policy", "policy"],
+    read_salary_table: ["Read the salary table", "salary table"],
+    fetch_competitor: ["Look up a competitor's headcount (Crustdata)", "competitor"],
+    fetch_jobs: ["Fetch a competitor's job posts (Crustdata)", "job posts"],
+    classify_titles: ["Sort job titles into teams (LLM)", "job titles"]
+  };
+  var ACTION_WORDS = {
+    narrow_range: "Re-read only the row that looked wrong",
+    reparse_alt: "Try a different way to read the file",
+    fetch_more_signal: "Go and get more evidence",
+    mark_low_confidence: "Keep it, but mark it as shaky",
+    substitute_competitor: "Swap in a similar company",
+    skip: "Leave it out and say so in the report"
+  };
+  function plain(t) { return String(t).replace(/ml_ai/g, "ML/AI").replace(/infra_cloud/g, "infra/cloud"); }
+  function toolWord(t, i) { return (TOOL_WORDS[t] || [t, t])[i || 0]; }
+  function storyRun() {
+    var c = company(D.featured.company) || D.companies[0];
+    var ok = c.runs.filter(function (r) { return r.tasks.length && r.findings.length && r.recovery.length && r.data_mode === "real" && !(r.injected_faults || []).length && r.phase === "done"; });
+    return ok.length ? { c: c, r: ok[ok.length - 1] } : null;
+  }
+  function viewStory() {
+    var sr = storyRun();
+    if (!sr) return '<p class="sr-empty">No exported run has a full step log yet.</p>';
+    var c = sr.c, r = sr.r, m = r.metrics;
+    var top = r.tasks.filter(function (t) { return !t.parent; });
+    var kids = {}; r.tasks.forEach(function (t) { if (t.parent) (kids[t.parent] = kids[t.parent] || []).push(t); });
+    function outcome(t) {
+      if (t.status !== "failed") return "ok";
+      var k = kids[t.id] || [];
+      return k.length && k[k.length - 1].status === "done" ? "fixed" : "flagged";
+    }
+    var counts = { ok: 0, fixed: 0, flagged: 0 }; top.forEach(function (t) { counts[outcome(t)]++; });
+
+    // 1. inputs
+    var files = top.filter(function (t) { return /^read_/.test(t.tool); });
+    var ch1 = '<div class="sr-st-cols"><div><h4>' + n(files.length) + ' finance files</h4><div class="sr-st-chips">' +
+      files.map(function (t) { return '<span class="sr-st-chip">' + icon("file") + esc(t.target.replace(/^invoices\//, "")) + "</span>"; }).join("") +
+      '</div><p class="sr-st-note">Acme\'s books are fictional. ' + word(m.planted_total).replace(/^./, function (x) { return x.toUpperCase(); }) + ' mistakes are planted in them; the agent is not told which or where.</p></div>' +
+      '<div><h4>' + n(c.competitors.length) + ' real competitors</h4><div class="sr-st-chips">' +
+      c.competitors.map(function (x) { return '<span class="sr-st-chip sr-st-chip--real">' + esc(x.name) + "</span>"; }).join("") +
+      '</div><p class="sr-st-note">Their headcount and job posts come live from Crustdata.</p></div></div>' +
+      '<div class="sr-st-q"><b>The question it has to answer</b>Where does Acme spend more or less on people than its competitors, does that break Acme\'s own spend policy, and is anything wrong in Acme\'s own books?</div>';
+
+    // 2. plan
+    var groups = []; top.forEach(function (t) { var g = groups[groups.length - 1]; if (g && g.tool === t.tool) g.n++; else groups.push({ tool: t.tool, n: 1 }); });
+    var ch2 = (r.plan_rationale ? '<div class="sr-plan"><b>The plan, in the agent\'s own words</b>' + esc(r.plan_rationale) + "</div>" : "") +
+      '<ol class="sr-st-plan">' + groups.map(function (g, i) {
+        return '<li style="--i:' + i + '"><span class="sr-st-num">' + (i + 1) + "</span>" + esc(toolWord(g.tool)) + (g.n > 1 ? ' <span class="sr-st-times">× ' + g.n + "</span>" : "") + "</li>";
+      }).join("") + "</ol>" +
+      '<p class="sr-st-note">The LLM wrote this as a typed list of ' + n(top.length) + ' tasks. Python checked it against a schema and would have added any file the plan forgot.</p>';
+
+    // 3. act
+    var LBL = { ok: "worked first time", fixed: "a check failed, then it recovered", flagged: "a check failed; kept with a warning or left out" };
+    var ch3 = '<div class="sr-st-legend">' + ["ok", "fixed", "flagged"].map(function (k) { return '<span><i class="sr-st-dot sr-st-dot--' + k + '"></i>' + n(counts[k]) + " " + LBL[k] + "</span>"; }).join("") + "</div>" +
+      '<div class="sr-st-grid">' + top.map(function (t, i) {
+        var o = outcome(t);
+        return '<div class="sr-st-task sr-st-task--' + o + '" style="--i:' + i + '" title="' + esc(t.reason) + '"><span class="sr-mono">' + esc(t.id) + "</span><b>" + esc(toolWord(t.tool, 1)) + "</b><small>" + esc((t.target || "").replace(/^invoices\//, "")) + "</small></div>";
+      }).join("") + "</div>" +
+      '<p class="sr-st-note">Each tile is one tool call. After each one, Python runs a fixed check: do the line items add up to the total? Are there at least two independent signals? Is there a source for every number? Hover a tile for why the agent ran it.</p>';
+
+    // 4. recover: one example per action it chose against the rule, then the rest of the actions it used
+    var seen = {}, picks = [];
+    r.recovery.forEach(function (d) { if (d.chosen !== d.rule_default && !seen[d.chosen]) { seen[d.chosen] = 1; picks.push(d); } });
+    r.recovery.forEach(function (d) { if (!seen[d.chosen] && d.chosen !== "mark_low_confidence") { seen[d.chosen] = 1; picks.push(d); } });
+    var byId = {}; r.tasks.forEach(function (t) { byId[t.id] = t; });
+    function lastKid(d) { var k = kids[d.task_id] || []; return k[k.length - 1]; }
+    picks.sort(function (a, b) { var x = lastKid(a), y = lastKid(b); return ((y && y.status === "done") ? 1 : 0) - ((x && x.status === "done") ? 1 : 0); });
+    function reported(t) { var f = (t.target || "").split("/").pop(); return f && r.findings.some(function (x) { return x.kind !== "policy" && x.statement.indexOf(f) >= 0; }); }
+    var ch4 = '<div class="sr-st-cases">' + picks.slice(0, 3).map(function (d) {
+      var t = byId[d.task_id] || {}, after = (kids[d.task_id] || []), last = after[after.length - 1];
+      var override = d.chosen !== d.rule_default;
+      return '<div class="ac-card sr-st-case"><div class="sr-st-case-what"><span class="ac-tag">' + esc(toolWord(t.tool, 1)) + "</span> " + esc((t.target || "").replace(/^invoices\//, "")) + "</div>" +
+        '<div class="sr-st-case-row"><span class="sr-st-k">What went wrong</span><span class="sr-decision-check">' + esc(String(d.failed_check || "").replace(/^(tool_error: )+/, "").split("\n")[0]) + "</span></div>" +
+        '<div class="sr-st-case-row"><span class="sr-st-k">Options it was given</span><div class="sr-opts">' + (d.options || []).map(function (o) { return '<span class="sr-opt' + (o === d.chosen ? " sr-opt--chosen" : "") + '">' + esc(ACTION_WORDS[o] || o) + "</span>"; }).join("") + "</div></div>" +
+        '<div class="sr-st-case-row"><span class="sr-st-k">A fixed rule would</span><span>' + esc(ACTION_WORDS[d.rule_default] || d.rule_default) + "</span></div>" +
+        '<div class="sr-st-case-row"><span class="sr-st-k">The agent chose</span><span><b class="' + (override ? "ac-accent" : "") + '">' + esc(ACTION_WORDS[d.chosen] || d.chosen) + "</b>" + (override ? ' <span class="ac-badge ac-badge--accent">differs from the rule</span>' : "") + '</span></div>' +
+        '<div class="sr-st-case-row"><span class="sr-st-k">Why (' + esc(d.model || "rule") + ')</span><span class="sr-st-why">' + esc(firstSentence(d.reason || "—")) + "</span></div>" +
+        (last ? '<div class="sr-st-case-row"><span class="sr-st-k">What happened next</span><span>' + (last.status === "done" ? '<b class="ac-up">✓ It worked, and the run carried on</b>' : reported(t) ? '<b class="ac-warn">The numbers really do not add up. That is a real problem in the file, so it goes into the report (step 6).</b>' : '<b class="ac-warn">Still failed, so it was kept with a warning or left out, and the report says so.</b>') + "</span></div>" : "") +
+        "</div>";
+    }).join("") + "</div>" +
+      '<p class="sr-st-note">' + n(m.recovery_decisions) + " decisions in this run; " + n(m.recovery_non_default) + ' differed from the fixed rule. The LLM only picks from the menu. Retry limits and credit limits are enforced in Python.</p>';
+
+    // 5. audit
+    var ST = { confirmed: ["ac-badge--up", "Survived"], downgraded: ["ac-badge--warn", "Weakened"], overturned: ["ac-badge--down", "Thrown out"] };
+    var fs = r.findings.slice().sort(function (a, b) { return (a.status === "confirmed") - (b.status === "confirmed"); });
+    var ch5 = '<div class="sr-st-audit">' + fs.map(function (f) {
+      var s = ST[f.status] || ["ac-badge--neutral", f.status], note = (f.audit_notes || [])[0] || "";
+      var cat = f.category === "ml_ai" ? "ML/AI" : f.category === "infra_cloud" ? "Infra/cloud" : f.category.charAt(0).toUpperCase() + f.category.slice(1);
+      return '<div class="sr-st-find' + (f.status !== "confirmed" ? " sr-st-find--hit" : "") + '"><span class="ac-badge ' + s[0] + '">' + s[1] + '</span><span class="sr-st-cat">' + esc(cat) + "</span><span>" + esc(plain(f.statement.split(". Matching")[0].split("; ")[0])) + "</span>" +
+        (f.status !== "confirmed" ? '<span class="sr-st-auditnote">Why: ' + esc(plain(note.replace(/^[^:]+:\s*/, ""))) + "</span>" : "") + "</div>";
+    }).join("") + "</div>" +
+      '<p class="sr-st-note">For every finding, the audit recomputes the number, re-checks the sources and looks for contradicting evidence. Confidence comes from a formula: checks passed × signal agreement × data freshness.</p>';
+
+    // 6. answer
+    var pol = r.findings.filter(function (f) { return f.kind === "policy"; }), inner = r.findings.filter(function (f) { return f.kind !== "policy"; });
+    var ch6 = '<div class="sr-st-cols"><div><h4>People spend vs competitors</h4><ul class="sr-st-ans">' + pol.map(function (f) {
+      var cat = f.category === "ml_ai" ? "ML/AI" : f.category.charAt(0).toUpperCase() + f.category.slice(1);
+      var pct = /is ([\d.]+%) of headcount vs competitor median ([\d.]+%[^\s(]*)/.exec(f.statement);
+      return '<li class="sr-st-ans3"><span class="' + (f.policy_violated ? "ac-down" : "ac-up") + '">' + (f.policy_violated ? "✗" : "✓") + "</span><span><b>" + esc(cat) + "</b> " + (pct ? "Acme " + esc(pct[1]) + " vs peers " + esc(pct[2]) : "") + '</span><small>' + (f.policy_violated ? "breaks policy" : "within policy") + (f.status !== "confirmed" ? " · " + esc(f.status) : "") + "</small></li>";
+    }).join("") + '</ul></div><div><h4>Problems in Acme\'s own books</h4><ul class="sr-st-ans">' + inner.map(function (f) {
+      return '<li><span class="ac-down">!</span><span>' + esc(plain(f.statement.split(";")[0].split(": line items")[0])) + "</span></li>";
+    }).join("") + "</ul></div></div>" +
+      '<div class="sr-st-score"><div><b class="ac-up">' + score(m) + '</b><span>planted mistakes caught</span></div><div><b>' + n(m.unsupported_numbers_in_report) + '</b><span>numbers without a source</span></div><div><b>' + n(m.llm_calls) + '</b><span>LLM calls</span></div><div><b>' + n(m.crustdata_credits) + '</b><span>Crustdata credits (cached)</span></div></div>' +
+      '<p class="sr-st-note">The report itself cites a file and row, a PDF page, or a Crustdata request for every number. <a class="ac-link" href="#run" data-open-run="' + r.run_id + '" data-company="' + c.key + '">Open this run\'s full detail ' + icon("arrow") + "</a></p>";
+
+    var CH = [
+      ["What it was given", "A folder of finance files and a list of competitors. No other help.", ch1],
+      ["It made a plan", "The LLM reads the folder and writes its own to-do list.", ch2],
+      ["It did the work, one tool at a time", "Python runs each task and checks the result straight away.", ch3],
+      ["When a check failed, it chose what to do", "The LLM picks a fix from a fixed menu and gives a reason.", ch4],
+      ["It tried to prove itself wrong", "Before reporting, every finding is attacked. Weak ones are cut down.", ch5],
+      ["The answer", "What the finance team gets.", ch6]
+    ];
+    var k = Math.max(0, Math.min(CH.length - 1, S.story));
+    var steps = '<ol class="sr-st-steps" role="tablist">' + CH.map(function (x, i) {
+      return '<li><button type="button" role="tab" data-story="' + i + '" aria-selected="' + (i === k) + '" class="' + (i < k ? "is-done" : "") + '"><span>' + (i + 1) + "</span>" + esc(x[0]) + "</button></li>";
+    }).join("") + "</ol>";
+    return enter(
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">How Spend Radar works, in one real run</h1><p class="ac-subtitle">' + esc(c.name) + " (fictional) · run <span class=\"sr-mono\">" + r.run_id + "</span> · " + esc((m.models || []).join(", ")) + ". Every value below is read from this run's saved log, not typed in. Use ← → to step.</p></div></div>" +
+      '<div data-enter>' + steps + "</div>" +
+      '<section class="ac-card sr-st-panel" data-enter role="tabpanel"><div class="sr-st-head"><span class="sr-st-big">' + (k + 1) + '</span><div><h2>' + esc(CH[k][0]) + "</h2><p>" + esc(CH[k][1]) + "</p></div></div>" + CH[k][2] +
+        '<div class="sr-st-nav"><button type="button" class="ac-btn ac-btn--ghost" data-story="' + (k - 1) + '"' + (k === 0 ? " disabled" : "") + ">← Back</button>" +
+        (k < CH.length - 1 ? '<button type="button" class="ac-btn" data-story="' + (k + 1) + '">Next: ' + esc(CH[k + 1][0]) + " →</button>" : '<a class="ac-btn" href="#overview" data-view="overview">See every run →</a>') + "</div></section>"
     );
   }
 
@@ -655,7 +789,7 @@
     );
   }
 
-  var RENDER = { overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
+  var RENDER = { story: viewStory, overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
 
   // ── render + routing ─────────────────────────────────────────────
   function render(opts) {
@@ -670,7 +804,7 @@
     var pill = document.getElementById("modepill");
     var r = v === "run" ? ((S.runId && runOf(company(S.company), S.runId)) || latest(company(S.company))) : null;
     if (r && r.data_mode === "fixture") { pill.className = "ac-pill ac-pill--fixture"; pill.textContent = "Fixture data"; } else { pill.className = "ac-pill"; pill.textContent = "Real data"; }
-    document.title = (v === "overview" ? "Spend Radar" : label + " · Spend Radar");
+    document.title = (v === "story" ? "Spend Radar" : label + " · Spend Radar");
 
     var swap = function () {
       main.innerHTML = '<div class="sr-enter' + (opts.play ? " sr-play" : "") + '">' + RENDER[v]() + "</div>";
@@ -723,8 +857,12 @@
     if (t.matches("[data-more]")) { S.recoveryShown += 30; render({ keepScroll: true }); return; }
     if (t.matches("[data-replay-chain]")) { var ch = main.querySelector("#featured .ac-card"); ch.classList.remove("sr-chain-play"); void ch.offsetWidth; ch.classList.add("sr-chain-play"); return; }
     if (t.matches("[data-replay-run]")) { replayRun(t); return; }
+    if (t.matches("[data-story]")) { S.story = +t.getAttribute("data-story"); render({ keepScroll: true }); return; }
   });
   document.addEventListener("keydown", function (e) {
+    if (S.view === "story" && (e.key === "ArrowRight" || e.key === "ArrowLeft") && !e.target.matches("input, select, textarea")) {
+      var nx = S.story + (e.key === "ArrowRight" ? 1 : -1); if (nx >= 0 && nx <= 5) { S.story = nx; render({ keepScroll: true }); } return;
+    }
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("[role=button]")) { e.preventDefault(); e.target.click(); }
   });
   document.addEventListener("change", function (e) { if (e.target.id === "runselect") { S.runId = e.target.value; render({ transition: true, keepScroll: true }); } });
@@ -756,6 +894,6 @@
 
   // ── boot ─────────────────────────────────────────────────────────
   var first = location.hash.slice(1);
-  S.view = RENDER[first] ? first : "overview";
+  S.view = RENDER[first] ? first : "story";
   FX.intro(D, function () { render({ play: true }); });
 })();
