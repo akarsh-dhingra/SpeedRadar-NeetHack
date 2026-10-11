@@ -554,8 +554,8 @@
     var N = D.neatlogs || {}, t = N.triage || {};
     var rows = [];
     D.companies.forEach(function (c) { c.runs.forEach(function (r) { rows.push({ c: c, r: r }); }); });
-    function t(r) { var v = Date.parse(r.started_at || r.scored_at); return isNaN(v) ? 0 : v; }
-    rows.sort(function (a, b) { return t(b.r) - t(a.r); });  // newest first; timestamps come in mixed formats
+    function runTime(r) { var v = Date.parse(r.started_at || r.scored_at); return isNaN(v) ? 0 : v; }
+    rows.sort(function (a, b) { return runTime(b.r) - runTime(a.r); });  // newest first; timestamps come in mixed formats
     var evals = (N.eval_traces || []).slice().reverse();
     return enter(
       '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">neatlogs</h1><p class="ac-subtitle">The debugger, the eval board and the alarm system. Every run is one trace: each LLM call (with its versioned prompt template), tool call, retry, recovery decision, fallback hop and audit verdict is a span with its input and output.</p></div>' +
