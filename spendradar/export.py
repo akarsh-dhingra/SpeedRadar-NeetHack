@@ -265,6 +265,17 @@ def _run(r: dict, card: dict, path: Path) -> dict:
     return out
 
 
+def _real_invoices() -> dict | None:
+    """The latest real-invoice scorecard (evals/real_invoices.py), shown as exported."""
+    cards = sorted(Path("evidence/real-invoices").glob("2026*.json"))
+    if not cards:
+        return None
+    card = json.loads(cards[-1].read_text(encoding="utf-8"))
+    return {"scorecard": cards[-1].as_posix(), **{k: card.get(k) for k in (
+        "created", "git_sha", "neatlogs_trace_id", "source", "license", "n_invoices", "read_ok", "total_correct",
+        "agent_totals_check_passed", "invoices")}}
+
+
 def build() -> Path:
     companies: dict[str, dict] = {}
     latest: dict[str, tuple[dict, dict, Path]] = {}
@@ -314,7 +325,7 @@ def build() -> Path:
                                    "planted_total": r["metrics"]["planted_total"]}
                                   for c in comps for r in c["runs"] if r["injected_faults"]],
             },
-            "featured": FEATURED, "comparisons": COMPARISONS,
+            "featured": FEATURED, "comparisons": COMPARISONS, "real_invoices": _real_invoices(),
             "companies": comps,
             "business": {"plan": "business/cfoai_plan.md", "unit_costs": "business/unit_costs.md",
                          "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES,
