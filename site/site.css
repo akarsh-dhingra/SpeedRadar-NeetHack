@@ -331,3 +331,23 @@ button.sr-lift, a.sr-lift { text-align: left; font: inherit; color: inherit; tex
 @keyframes sr-recede { to { opacity: 0; transform: scale(.94); filter: blur(4px); } }
 @keyframes sr-iris { from { clip-path: circle(0 at var(--wx, 50%) var(--wy, 0)); } to { clip-path: circle(150% at var(--wx, 50%) var(--wy, 0)); } }
 
+
+/* Entire page: trail findings and the explain chain */
+.sr-findings { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.sr-finding { font-size: 14px; line-height: 20px; color: var(--text-secondary); }
+.sr-chain { list-style: none; margin: var(--space-3) 0 0; padding: 0 0 0 var(--space-4); border-left: 2px solid var(--accent-soft); display: grid; gap: var(--space-2); }
+.sr-chain li { position: relative; font-size: 14px; line-height: 20px; color: var(--text-secondary); overflow-wrap: anywhere; }
+.sr-chain li::before { content: ""; position: absolute; left: calc(-1 * var(--space-4) - 5px); top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.sr-chain li b { color: var(--text); font-weight: 500; margin-right: 6px; }
+.sr-chain + .sr-chain { margin-top: var(--space-5); }
+.sr-ba-verdict { margin-top: var(--space-2); font-size: 13px; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+
+/* Overview: the three tools, and where each piece of judge evidence is */
+.sr-tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.sr-tool { display: block; color: inherit; text-decoration: none; }
+.sr-tool .ac-card-head .ac-icon { color: var(--text-tertiary); }
+.sr-tool:hover .ac-card-head .ac-icon { color: var(--text); }
+.sr-tool-lines { margin: var(--space-4) 0 0; padding: 0; list-style: none; display: grid; gap: var(--space-2); }
+.sr-tool-lines li { font-size: 14px; line-height: 20px; color: var(--text-secondary); padding-left: 14px; position: relative; }
+.sr-tool-lines li::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+@media (max-width: 900px) { .sr-tools { grid-template-columns: 1fr; } }
