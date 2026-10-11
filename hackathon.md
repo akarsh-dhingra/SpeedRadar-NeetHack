@@ -124,6 +124,29 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **Secret check before the first push to the Entire mirror:** an exact-value scan of every .env value over unpushed objects flagged only `AWS_DEFAULT_REGION` (a public region name, not a secret). A key-format scan of all 1,466 branch and checkpoint objects found 0 matches.
 - **Tests run:** pytest 103 passed; ruff (F, E9) clean.
 
+### 2026-10-11 15:20–15:45 IST — submission readiness pass (logged 2026-10-11 15:44 IST)
+- **Planned:** check the site and README against every judging requirement and fill the gaps.
+- **Done, site:**
+  - New Entire page: checkpoints, trails with runner findings, explain chains.
+  - neatlogs page: detections, evals, the auto-triage fix, every trace linked.
+  - Overview: a three-tool strip and a "for judges" evidence map.
+  - Case study 05 shows each run's ML/AI verdict.
+  - The export keeps original run labels over re-scores (they had been overwritten).
+  - Live on GitHub Pages: https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/
+- **Done, README:**
+  - 20 s GIF (`docs/spend-radar.gif`) and a link to the live site.
+  - Trace for every focus area.
+  - Case study 05 and the final merged-main run in the results.
+  - Limitations updated.
+  - Submission section with Entire checkpoint `01M4K4TJNC7JY16812XTZKSBKA`.
+- **Done, other docs:** demo script updated to current numbers (61 runs, 289 recovery decisions, 69 checkpoints) and to the Entire segment, 410 words. Post 4 redrafted around case study 05.
+- **Checked:**
+  - Headless Chrome screenshots of every page.
+  - Mobile overflow measured: the page width equals the viewport. The earlier "cut off" screenshots were an artefact of headless Chrome's 500 px minimum width.
+  - 32/32 README links return 200 or exist in the repo.
+  - pytest 104 passed; ruff clean.
+- **Left for Akarsh:** demo video and its link (README `{demo link}`); X links for posts 1–3; posting 4–6; the submission quote-post on Mon 12 Oct, 19:00 IST.
+
 ## Demo
 - Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
 - Evidence site (live): https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ (deployed from `site/`; built from `evidence/frontend_data.json`).
