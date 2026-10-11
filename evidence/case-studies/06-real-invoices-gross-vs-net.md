@@ -22,6 +22,10 @@ Scorecards: `evidence/real-invoices/*.json`, one per pass, each with its neatlog
 - tuned on, v1: `816e23b211567d77b025872e1bb0d8a6`; v2: `36f7827e6ac6c02ca5c95f2188f45da8`
 - held out, v1: `2b6af65f4e8cbad311d58e955c8900c3`; v2: `28cbcce7f2808041468d0f67e65f3b03`
 
+## No regression on the fictional companies
+
+Prompt v2 also reads Acme's scanned invoice (the `reparse_alt` path). Three Acme evidence runs on `3608007` (prompt v2): **5/5 planted errors in all 3**, 0 false alarms, 0 unsupported numbers, 0 fallback hops; the scanned invoice was re-read by the LLM in each. Scorecard `evidence/evals/20261011T223817-3608007-acme-after-prompt-v2.json`, neatlogs eval trace `58bba2c35e6f8f4578ed6a541f6393bb`; run traces `32e614c6c50e2047e74e754a33f0675b`, `b7eb3be7e6dcb102bb5cb3b00ef8dca8`, `7cc53718a707e08091ed5b9e0e210039`.
+
 ## Caveats, stated plainly
 
 - **The fix trades silent errors for review flags.** On the held-out set, 7 of 12 correct totals are still flagged, because many of these invoices print line items that add up to the *net* amount (invoice `08e2649c`: lines sum to 15,563.32, which is its Net Amount Due; the gross is 22,466.00). That is the safe direction (a human looks), but it is noisy. A next step would be to extract the commission and the net amount too, and accept line items that match either.

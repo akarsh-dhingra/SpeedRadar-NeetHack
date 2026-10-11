@@ -147,6 +147,19 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - pytest 104 passed; ruff clean.
 - **Left for Akarsh:** demo video and its link (README `{demo link}`); X links for posts 1–3; posting 4–6; the submission quote-post on Mon 12 Oct, 19:00 IST.
 
+### 2026-10-11 21:15–22:40 IST — plain-English site, case study 02 at n = 5, real invoices (case study 06) (logged 2026-10-11 22:40 IST)
+- **Planned:** make the site understandable to a first-time reviewer; raise case study 02 from n = 1 to n = 5 per side; test on real invoices.
+- **Done, site:**
+  - New landing page "How it works": one real run told in six steps (inputs, plan, tool calls, recovery choices vs the fixed rule, self-audit, answer), every value read from the run's exported log.
+  - Overview intro ("What is Spend Radar?"), a glossary, and a "what you are looking at / why it matters / how to read it" box on every page; jargon relabelled.
+  - Build-in-public row removed from the judge checklist (Akarsh's request).
+  - New "Real invoices" page; before/after cards show peers kept per run.
+  - Export keeps per-run details from the previous export when a run folder is not on this machine (`runs/` is git-ignored), so history no longer drops between machines: 74 runs, all with step logs.
+- **Done, case study 02 rerun:** the old before-commit only supports Gemini/OpenRouter, so "before" = current code with only the fix reverted (`ablation/cs02-fix-reverted`, `d311fb5`, not for merge). n = 5 per side, same models and cache, 0 fallback hops: peers kept 2/5 → 5/5 in every run; substitutions 3 → 0 per run; planted 5/5 everywhere.
+- **Done, case study 06 (real invoices):** 24 real FCC broadcast-ad invoices (amazon/ConfBench, public records, CC BY-NC 4.0, evaluation use; PDFs not committed). Found: the LLM reader copied Net Amount Due instead of the gross total. Prompt `read_pdf_llm` v2 fixed it: wrong-and-unflagged totals 2/pass → 0 (12 invoices used to write the fix) and 4/pass → 0 (12 held-out invoices), n = 3 passes per side. Cost: 7 of 12 held-out invoices now flagged for review with a correct total. Acme with prompt v2: 5/5 in 3 of 3 runs.
+- **Not done:** Entire trails not refreshed (the `entire` CLI is not logged in on this machine; `entire login` needed). cfo.ai model unchanged since the site snapshot (latest change-log entry 279211, read-only check).
+- **Checked:** pytest 104 passed; ruff clean on changed files (other findings pre-date this session); headless Chrome on every page at 1440 and 390 px, no page errors, no horizontal overflow.
+
 ## Demo
 - Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
 - Evidence site (live): https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ (deployed from `site/`; built from `evidence/frontend_data.json`).

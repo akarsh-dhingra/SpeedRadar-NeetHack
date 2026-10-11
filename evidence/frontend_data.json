@@ -1,8 +1,8 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-11T22:23:05",
+ "generated_at": "2026-10-11T22:39:38",
  "summary": {
-  "runs_scored": 71,
+  "runs_scored": 74,
   "runs_unfinished": 3,
   "companies": 7,
   "held_out_companies": 6,
@@ -16,10 +16,10 @@
   ],
   "latest_runs_all_caught": 7,
   "latest_runs_false_alarms": 0,
-  "recovery_decisions": 777,
-  "recovery_overrides": 409,
+  "recovery_decisions": 807,
+  "recovery_overrides": 424,
   "findings_overturned": 16,
-  "findings_downgraded": 67,
+  "findings_downgraded": 70,
   "injected_runs": [
    {
     "company": "acme",
@@ -32997,9 +32997,2166 @@
        "attempts": 1
       }
      ]
+    },
+    {
+     "run_id": "1011-0cf64b",
+     "variant": "acme-after-prompt-v2",
+     "scored_at": "2026-10-11T22:38:17",
+     "started_at": "2026-10-11T16:49:05+00:00",
+     "phase": "done",
+     "exit_code": 0,
+     "git_sha": "3608007",
+     "neatlogs_trace_id": "32e614c6c50e2047e74e754a33f0675b",
+     "scorecard": "evidence/evals/20261011T223817-3608007-acme-after-prompt-v2.json",
+     "code": {
+      "commit": "3608007d23dcd5f172c2f8f245f986d397897d71",
+      "dirty": false,
+      "checkpoint": "01M4NTXRYJXVYDQDYX2RKE39TJ",
+      "checkpoint_commit": "0d8b35ce139b3c258ef013e6a263b2fdcad0c676",
+      "entire_url": "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/commit/0d8b35ce139b3c258ef013e6a263b2fdcad0c676",
+      "github_url": "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack/commit/3608007d23dcd5f172c2f8f245f986d397897d71"
+     },
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 26,
+      "llm_tokens_in": 11940,
+      "llm_tokens_out": 62141,
+      "llm_latency_s": 324.4,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1011-0cf64b/report.md",
+      "html": "runs/1011-0cf64b/report.html",
+      "available_locally": true
+     },
+     "findings": [
+      {
+       "id": "f_engineering",
+       "category": "engineering",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.484,
+       "confidence_inputs": {
+        "checks": "11/11",
+        "checks_score": 1.0,
+        "n_signals": 2,
+        "agreement": 0.899,
+        "signals_score": 0.899,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_ml_ai",
+       "category": "ml_ai",
+       "kind": "policy",
+       "status": "downgraded",
+       "confidence": 0.0,
+       "confidence_inputs": {
+        "checks": "6/9",
+        "checks_score": 0.667,
+        "n_signals": 2,
+        "agreement": 0.0,
+        "signals_score": 0.0,
+        "oldest_input_days": 1,
+        "freshness_score": 1.0
+       },
+       "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic: competitor signals disagree for Honeycomb, Sentry, Arize (agreement < 0.6); the comparison cannot be confirmed, so it is downgraded"
+       ]
+      },
+      {
+       "id": "f_sales",
+       "category": "sales",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.498,
+       "confidence_inputs": {
+        "checks": "11/11",
+        "checks_score": 1.0,
+        "n_signals": 2,
+        "agreement": 0.926,
+        "signals_score": 0.926,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_marketing",
+       "category": "marketing",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.422,
+       "confidence_inputs": {
+        "checks": "10/12",
+        "checks_score": 0.833,
+        "n_signals": 2,
+        "agreement": 0.941,
+        "signals_score": 0.941,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_4",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic"
+       },
+       "statement": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_5",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic"
+       },
+       "statement": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_cat_6",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "needs audit"
+       },
+       "statement": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+       "policy_violated": null,
+       "audit_notes": [
+        "gpt-5-nano: confirm — Line-item check shows a mismatch: INV-202608-008 has cost centre 'Marketing' but line items are ml_ai (A-class GPU hours (training); Inference endpoints). Since the work category should be determined by the line items, the invoice is miscategorized. INV-202605-007 is ml_ai-aligned, but the misalignment in INV-202608-008 confirms the flag.",
+        "corrected category: ml_ai"
+       ]
+      },
+      {
+       "id": "f_infra_cloud",
+       "category": "infra_cloud",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic, internal data"
+       },
+       "statement": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      }
+     ],
+     "recovery": [
+      {
+       "task_id": "t01",
+       "chosen": "narrow_range",
+       "rule_default": "mark_low_confidence",
+       "reason": "Re-read failing range People!row 10 in budget_fy27.xlsx to rule out parse slip in totals verification.",
+       "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+       "options": [
+        "narrow_range",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t01n",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals mismatch in budget_fy27.xlsx: Acme FY27 Budget, row 10 shows line items sum 3,262,500.00 vs stated total 3,310,500.00 (1.45% off). Previous action 'narrow_range' has been tried; escalating for manual, sourced verification to recover a correct number.",
+       "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+       "options": [
+        "narrow_range",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t05",
+       "chosen": "reparse_alt",
+       "rule_default": "mark_low_confidence",
+       "reason": "Attempt alternative parser for Nimbus Jul 2026 (04) invoice to resolve totals discrepancy (line items sum 89,435.00 vs stated 96,935.00; 7.74% off)",
+       "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+       "options": [
+        "reparse_alt",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t05r",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals verification mismatch persists; previous recovery action reparse_alt already attempted; marking data as low confidence and flagging for manual reconciliation or alternate data source.",
+       "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+       "options": [
+        "reparse_alt",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t13",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "Alternate parser pass: previous read_invoice failed due to no text layer in the scanned PDF. Attempt to extract data using the alternate (LLM-based) reader that handles images or embedded OCR.",
+       "failed_check": "tool_error: tool_error: no text layer (likely a scanned image)",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t14",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "PDF parsing failed with 'No /Root object' error; retry using the alternate text/LLM reader for the same file to extract invoice data.",
+       "failed_check": "tool_error: tool_error: pdfplumber could not open file: PdfminerException: No /Root object! - Is this really a PDF?",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t14r",
+       "chosen": "skip",
+       "rule_default": "skip",
+       "reason": "Corrupt PDF: 'No /Root object' error; reparse_alt already attempted and failed. Skipping this document for now to avoid repeating a failed approach.",
+       "failed_check": "tool_error: tool_error: corrupt PDF, not sent to the LLM reader: PdfminerException: No /Root object! - Is this really a PDF?",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t27",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Retry with additional independent signal due to verify:signals failure for Honeycomb ml_ai signals; aim to obtain a sourced number.",
+       "failed_check": "verify:signals failed: Honeycomb:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t29",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need additional independent signal to validate Arize ML/AI signals for title classification.",
+       "failed_check": "verify:signals failed: Arize:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t30",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need an additional independent signal to supplement Chronosphere.ml_ai for title classification and to derive a sourced number.",
+       "failed_check": "verify:signals failed: Chronosphere:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      }
+     ],
+     "plan_rationale": "Load Acme's FY27 budget, invoices, and policy; verify data integrity, then gather competitor data and recent job postings, and classify competitor job titles to estimate ML/AI share. All figures will be backed by the specified source files in data/acme and the competitors list.",
+     "tasks": [
+      {
+       "id": "t01",
+       "tool": "read_budget",
+       "status": "failed",
+       "target": "budget_fy27.xlsx",
+       "reason": "Load FY27 budget and verify each month's sum equals the FY total.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t01n",
+       "tool": "read_budget",
+       "status": "failed",
+       "target": "budget_fy27.xlsx",
+       "reason": "recovery: narrow_range",
+       "parent": "t01",
+       "attempts": 2
+      },
+      {
+       "id": "t02",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/01_nimbus_2026-04.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus Apr 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t03",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/02_nimbus_2026-05.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus May 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t04",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/03_nimbus_2026-06.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus Jun 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t05",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/04_nimbus_2026-07.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus Jul 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t05r",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/04_nimbus_2026-07.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t05",
+       "attempts": 2
+      },
+      {
+       "id": "t06",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/05_nimbus_2026-08.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus Aug 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t07",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/06_nimbus_2026-09.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus Sep 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t08",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/07_tensorforge_2026-05.pdf",
+       "reason": "Verify line-item sums match invoice total for TensorForge May 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t09",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/08_tensorforge_2026-08.pdf",
+       "reason": "Verify line-item sums match invoice total for TensorForge Aug 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t10",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/09_brightloop_2026-06.pdf",
+       "reason": "Verify line-item sums match invoice total for BrightLoop Jun 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t11",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/10_brightloop_2026-09.pdf",
+       "reason": "Verify line-item sums match invoice total for BrightLoop Sep 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t12",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/11_pipewise_2026-07.pdf",
+       "reason": "Verify line-item sums match invoice total for Pipewise Jul 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t13",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/12_nimbus_2026-10.pdf",
+       "reason": "Verify line-item sums match invoice total for Nimbus Oct 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t13r",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/12_nimbus_2026-10.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t13",
+       "attempts": 2
+      },
+      {
+       "id": "t14",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/13_brightloop_2026-10.pdf",
+       "reason": "Verify line-item sums match invoice total for BrightLoop Oct 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t14r",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/13_brightloop_2026-10.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t14",
+       "attempts": 2
+      },
+      {
+       "id": "t15",
+       "tool": "read_policy",
+       "status": "done",
+       "target": "policy.yaml",
+       "reason": "Load spend policy to apply rules to invoices and budget.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t16",
+       "tool": "read_salary_table",
+       "status": "done",
+       "target": "salary_table.csv",
+       "reason": "Load salary table for headcount cost references.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t17",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "Enrich Honeycomb data: headcount by role, funding, and news.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t18",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Enrich Sentry data: headcount by role, funding, and news.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t19",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "Enrich Arize data: headcount by role, funding, and news.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t20",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "Enrich Chronosphere data: headcount by role, funding, and news.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t21",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Enrich Grafana Labs data: headcount by role, funding, and news.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t22",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "Fetch job postings from last 12 months (titles only) to gauge ML/AI hiring emphasis.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t23",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Fetch job postings from last 12 months (titles only) to gauge ML/AI hiring emphasis.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t24",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "Fetch job postings from last 12 months (titles only) to gauge ML/AI hiring emphasis.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t25",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "Fetch job postings from last 12 months (titles only) to gauge ML/AI hiring emphasis.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t26",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Fetch job postings from last 12 months (titles only) to gauge ML/AI hiring emphasis.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t27",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "honeycomb.io",
+       "reason": "Estimate ML/AI share based on competitor's job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t27m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t27",
+       "attempts": 2
+      },
+      {
+       "id": "t27mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t27",
+       "attempts": 2
+      },
+      {
+       "id": "t28",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Estimate ML/AI share based on competitor's job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t29",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "arize.com",
+       "reason": "Estimate ML/AI share based on competitor's job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t29m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t29",
+       "attempts": 2
+      },
+      {
+       "id": "t29mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t29",
+       "attempts": 2
+      },
+      {
+       "id": "t30",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "chronosphere.io",
+       "reason": "Estimate ML/AI share based on competitor's job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t30m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t30",
+       "attempts": 2
+      },
+      {
+       "id": "t30mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t30",
+       "attempts": 2
+      },
+      {
+       "id": "t31",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Estimate ML/AI share based on competitor's job titles.",
+       "parent": null,
+       "attempts": 1
+      }
+     ]
+    },
+    {
+     "run_id": "1011-a44c83",
+     "variant": "acme-after-prompt-v2",
+     "scored_at": "2026-10-11T22:38:17",
+     "started_at": "2026-10-11T16:55:12+00:00",
+     "phase": "done",
+     "exit_code": 0,
+     "git_sha": "3608007",
+     "neatlogs_trace_id": "b7eb3be7e6dcb102bb5cb3b00ef8dca8",
+     "scorecard": "evidence/evals/20261011T223817-3608007-acme-after-prompt-v2.json",
+     "code": {
+      "commit": "3608007d23dcd5f172c2f8f245f986d397897d71",
+      "dirty": false,
+      "checkpoint": "01M4NTXRYJXVYDQDYX2RKE39TJ",
+      "checkpoint_commit": "0d8b35ce139b3c258ef013e6a263b2fdcad0c676",
+      "entire_url": "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/commit/0d8b35ce139b3c258ef013e6a263b2fdcad0c676",
+      "github_url": "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack/commit/3608007d23dcd5f172c2f8f245f986d397897d71"
+     },
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 26,
+      "llm_tokens_in": 11930,
+      "llm_tokens_out": 57625,
+      "llm_latency_s": 312.0,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1011-a44c83/report.md",
+      "html": "runs/1011-a44c83/report.html",
+      "available_locally": true
+     },
+     "findings": [
+      {
+       "id": "f_engineering",
+       "category": "engineering",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.484,
+       "confidence_inputs": {
+        "checks": "11/11",
+        "checks_score": 1.0,
+        "n_signals": 2,
+        "agreement": 0.899,
+        "signals_score": 0.899,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_ml_ai",
+       "category": "ml_ai",
+       "kind": "policy",
+       "status": "downgraded",
+       "confidence": 0.0,
+       "confidence_inputs": {
+        "checks": "6/9",
+        "checks_score": 0.667,
+        "n_signals": 2,
+        "agreement": 0.0,
+        "signals_score": 0.0,
+        "oldest_input_days": 1,
+        "freshness_score": 1.0
+       },
+       "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic: competitor signals disagree for Sentry (agreement < 0.6); the comparison cannot be confirmed, so it is downgraded"
+       ]
+      },
+      {
+       "id": "f_sales",
+       "category": "sales",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.498,
+       "confidence_inputs": {
+        "checks": "11/11",
+        "checks_score": 1.0,
+        "n_signals": 2,
+        "agreement": 0.926,
+        "signals_score": 0.926,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_marketing",
+       "category": "marketing",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.422,
+       "confidence_inputs": {
+        "checks": "10/12",
+        "checks_score": 0.833,
+        "n_signals": 2,
+        "agreement": 0.941,
+        "signals_score": 0.941,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_4",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic"
+       },
+       "statement": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_5",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic"
+       },
+       "statement": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_cat_6",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "needs audit"
+       },
+       "statement": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+       "policy_violated": null,
+       "audit_notes": [
+        "gpt-5-nano: confirm — LINE ITEMS show mismatch for INV-202608-008: cost centre is Marketing but line items are ml_ai (A-class GPU hours - training; Inference endpoints). This indicates a miscategorised invoice. The corrected category should be ml_ai. INV-202605-007 aligns with ml_ai, but does not negate the miscategorisation found.",
+        "corrected category: ml_ai"
+       ]
+      },
+      {
+       "id": "f_infra_cloud",
+       "category": "infra_cloud",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic, internal data"
+       },
+       "statement": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      }
+     ],
+     "recovery": [
+      {
+       "task_id": "t01",
+       "chosen": "narrow_range",
+       "rule_default": "mark_low_confidence",
+       "reason": "Re-read the failing range: budget_fy27.xlsx, Budget FY27, budget:marketing, People sheet row 10, to confirm parsing of line item values and totals and rule out a parse slip.",
+       "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+       "options": [
+        "narrow_range",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t01n",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals mismatch on Budget FY27 row 10: line items sum 3,262,500.00 vs stated 3,310,500.00; prior recovery action (narrow_range) failed; mark as low confidence pending source verification.",
+       "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+       "options": [
+        "narrow_range",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t05",
+       "chosen": "reparse_alt",
+       "rule_default": "mark_low_confidence",
+       "reason": "Attempt alternate parser for Nimbus 2026-07 to recompute totals and reconcile line items",
+       "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+       "options": [
+        "reparse_alt",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t05r",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals verification failed (line items sum 89,435.00 vs stated 96,935.00; 7.74% off) for Nimbus 2026-07). Reparse_alt already attempted; flag for manual verification and data provenance review to derive a correct sourced total.",
+       "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+       "options": [
+        "reparse_alt",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t13",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "Alternate parsing attempt for scanned invoice image Nimbus 2026-10; the PDF has no text layer; use OCR/alternate parser to extract text.",
+       "failed_check": "tool_error: tool_error: no text layer (likely a scanned image)",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t14",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "PDF parsing failed with PdfminerException: No /Root object. Attempt alternate parser (text↔LLM reader) for the invoice read.",
+       "failed_check": "tool_error: tool_error: pdfplumber could not open file: PdfminerException: No /Root object! - Is this really a PDF?",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t14r",
+       "chosen": "skip",
+       "rule_default": "skip",
+       "reason": "PDF corrupt: No /Root object; cannot parse invoices/13_brightloop_2026-10.pdf. Previous parser attempt 'reparse_alt' already failed. Skipping this input (Not analysed).",
+       "failed_check": "tool_error: tool_error: corrupt PDF, not sent to the LLM reader: PdfminerException: No /Root object! - Is this really a PDF?",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t19",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Requesting an extra independent ML/AI signal for Honeycomb to obtain a sourced number after verify:signals failed (ml_ai).",
+       "failed_check": "verify:signals failed: Honeycomb:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t25",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "verify:signals failed for Arize/ml_ai; fetch additional independent signal data (ML/AI signals) for Arize to improve classification accuracy.",
+       "failed_check": "verify:signals failed: Arize:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t28",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Requesting an additional independent ML/AI signal for Chronosphere to corroborate classification; previous verify:signals step failed.",
+       "failed_check": "verify:signals failed: Chronosphere:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      }
+     ],
+     "plan_rationale": "Plan to load all Acme spend inputs, validate internal spend data against policy, and gather competitor headcount and ML/AI hiring signals to identify where competitors out-invest Acme in people. Each input is processed before dependent tasks, and every result is tied to a source for traceability.",
+     "tasks": [
+      {
+       "id": "t01",
+       "tool": "read_budget",
+       "status": "failed",
+       "target": "budget_fy27.xlsx",
+       "reason": "Load FY27 budget and verify that each month's sum matches the FY total; prerequisite for spend policy application and variance checks.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t01n",
+       "tool": "read_budget",
+       "status": "failed",
+       "target": "budget_fy27.xlsx",
+       "reason": "recovery: narrow_range",
+       "parent": "t01",
+       "attempts": 2
+      },
+      {
+       "id": "t02",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/01_nimbus_2026-04.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus April 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t03",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/02_nimbus_2026-05.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus May 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t04",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/03_nimbus_2026-06.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus June 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t05",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/04_nimbus_2026-07.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus July 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t05r",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/04_nimbus_2026-07.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t05",
+       "attempts": 2
+      },
+      {
+       "id": "t06",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/05_nimbus_2026-08.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus August 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t07",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/06_nimbus_2026-09.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus September 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t08",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/07_tensorforge_2026-05.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for TensorForge May 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t09",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/08_tensorforge_2026-08.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for TensorForge August 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t10",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/09_brightloop_2026-06.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for BrightLoop June 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t11",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/10_brightloop_2026-09.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for BrightLoop September 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t12",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/11_pipewise_2026-07.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Pipewise July 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t13",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/12_nimbus_2026-10.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for Nimbus October 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t13r",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/12_nimbus_2026-10.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t13",
+       "attempts": 2
+      },
+      {
+       "id": "t14",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/13_brightloop_2026-10.pdf",
+       "reason": "Verify line items sum to the invoice total; establish a traceable source for BrightLoop October 2026 expenditure.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t14r",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/13_brightloop_2026-10.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t14",
+       "attempts": 2
+      },
+      {
+       "id": "t15",
+       "tool": "read_policy",
+       "status": "done",
+       "target": "policy.yaml",
+       "reason": "Load spend policy to apply to spend data and enforce compliance across the budget and invoices.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t16",
+       "tool": "read_salary_table",
+       "status": "done",
+       "target": "salary_table.csv",
+       "reason": "Load salary table for benchmarking staffing costs and validating headcount spend against market data.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t17",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "Enrich with headcount by role, funding, and news to quantify own spend relative to Honeycomb.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t18",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "Obtain last 12 months of job postings (titles only) to estimate hiring velocity and ML/AI headcount signal.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t19",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "honeycomb.io",
+       "reason": "Classify job titles to estimate ML/AI share and compare with Acme's ML/AI hiring.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t19m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t19",
+       "attempts": 2
+      },
+      {
+       "id": "t19mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t19",
+       "attempts": 2
+      },
+      {
+       "id": "t20",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Enrich with headcount by role, funding, and news to quantify own spend relative to Sentry.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t21",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Obtain last 12 months of job postings (titles only) to estimate hiring velocity and ML/AI headcount signal.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t22",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Classify job titles to estimate ML/AI share and compare with Acme's ML/AI hiring.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t23",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "Enrich with headcount by role, funding, and news to quantify own spend relative to Arize.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t24",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "Obtain last 12 months of job postings (titles only) to estimate hiring velocity and ML/AI headcount signal.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t25",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "arize.com",
+       "reason": "Classify job titles to estimate ML/AI share and compare with Acme's ML/AI hiring.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t25m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t25",
+       "attempts": 2
+      },
+      {
+       "id": "t25mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t25",
+       "attempts": 2
+      },
+      {
+       "id": "t26",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "Enrich with headcount by role, funding, and news to quantify own spend relative to Chronosphere.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t27",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "Obtain last 12 months of job postings (titles only) to estimate hiring velocity and ML/AI headcount signal.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t28",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "chronosphere.io",
+       "reason": "Classify job titles to estimate ML/AI share and compare with Acme's ML/AI hiring.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t28m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t28",
+       "attempts": 2
+      },
+      {
+       "id": "t28mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t28",
+       "attempts": 2
+      },
+      {
+       "id": "t29",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Enrich with headcount by role, funding, and news to quantify own spend relative to Grafana Labs.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t30",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Obtain last 12 months of job postings (titles only) to estimate hiring velocity and ML/AI headcount signal.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t31",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Classify job titles to estimate ML/AI share and compare with Acme's ML/AI hiring.",
+       "parent": null,
+       "attempts": 1
+      }
+     ]
+    },
+    {
+     "run_id": "1011-142099",
+     "variant": "acme-after-prompt-v2",
+     "scored_at": "2026-10-11T22:38:17",
+     "started_at": "2026-10-11T17:01:38+00:00",
+     "phase": "done",
+     "exit_code": 0,
+     "git_sha": "3608007",
+     "neatlogs_trace_id": "7cc53718a707e08091ed5b9e0e210039",
+     "scorecard": "evidence/evals/20261011T223817-3608007-acme-after-prompt-v2.json",
+     "code": {
+      "commit": "3608007d23dcd5f172c2f8f245f986d397897d71",
+      "dirty": false,
+      "checkpoint": "01M4NTXRYJXVYDQDYX2RKE39TJ",
+      "checkpoint_commit": "0d8b35ce139b3c258ef013e6a263b2fdcad0c676",
+      "entire_url": "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/commit/0d8b35ce139b3c258ef013e6a263b2fdcad0c676",
+      "github_url": "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack/commit/3608007d23dcd5f172c2f8f245f986d397897d71"
+     },
+     "data_mode": "real",
+     "injected_faults": [],
+     "metrics": {
+      "planted_caught": 5,
+      "planted_total": 5,
+      "false_alarms": 0,
+      "unsupported_numbers_in_report": 0,
+      "findings_overturned": 0,
+      "findings_downgraded": 1,
+      "recovery_decisions": 10,
+      "recovery_non_default": 5,
+      "llm_calls": 26,
+      "llm_tokens_in": 11766,
+      "llm_tokens_out": 56908,
+      "llm_latency_s": 358.7,
+      "fallback_hops": 0,
+      "crustdata_credits": 0.0,
+      "models": [
+       "gemini-3.5-flash-lite",
+       "gpt-5-nano"
+      ]
+     },
+     "planted": [
+      {
+       "id": "budget_total_mismatch",
+       "label": "Budget row total does not equal the sum of its months",
+       "caught": true
+      },
+      {
+       "id": "invoice_total_mismatch",
+       "label": "Invoice line items do not add up to the stated total",
+       "caught": true
+      },
+      {
+       "id": "invoice_miscategorised",
+       "label": "Invoice billed to the wrong cost centre",
+       "caught": true
+      },
+      {
+       "id": "invoice_scanned",
+       "label": "Scanned invoice with no text layer",
+       "caught": true
+      },
+      {
+       "id": "invoice_corrupt",
+       "label": "Corrupt or empty PDF",
+       "caught": true
+      }
+     ],
+     "false_alarm_detail": [],
+     "report": {
+      "markdown": "runs/1011-142099/report.md",
+      "html": "runs/1011-142099/report.html",
+      "available_locally": true
+     },
+     "findings": [
+      {
+       "id": "f_engineering",
+       "category": "engineering",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.484,
+       "confidence_inputs": {
+        "checks": "11/11",
+        "checks_score": 1.0,
+        "n_signals": 2,
+        "agreement": 0.899,
+        "signals_score": 0.899,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_ml_ai",
+       "category": "ml_ai",
+       "kind": "policy",
+       "status": "downgraded",
+       "confidence": 0.0,
+       "confidence_inputs": {
+        "checks": "6/9",
+        "checks_score": 0.667,
+        "n_signals": 2,
+        "agreement": 0.0,
+        "signals_score": 0.0,
+        "oldest_input_days": 1,
+        "freshness_score": 1.0
+       },
+       "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic: competitor signals disagree for Honeycomb, Sentry (agreement < 0.6); the comparison cannot be confirmed, so it is downgraded"
+       ]
+      },
+      {
+       "id": "f_sales",
+       "category": "sales",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.498,
+       "confidence_inputs": {
+        "checks": "11/11",
+        "checks_score": 1.0,
+        "n_signals": 2,
+        "agreement": 0.926,
+        "signals_score": 0.926,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_marketing",
+       "category": "marketing",
+       "kind": "policy",
+       "status": "confirmed",
+       "confidence": 0.422,
+       "confidence_inputs": {
+        "checks": "10/12",
+        "checks_score": 0.833,
+        "n_signals": 2,
+        "agreement": 0.941,
+        "signals_score": 0.941,
+        "oldest_input_days": 344,
+        "freshness_score": 0.538
+       },
+       "statement": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+       "policy_violated": false,
+       "audit_notes": [
+        "deterministic policy finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_4",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic"
+       },
+       "statement": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_totals_5",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic"
+       },
+       "statement": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+       "policy_violated": null,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      },
+      {
+       "id": "f_cat_6",
+       "category": "internal",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "needs audit"
+       },
+       "statement": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+       "policy_violated": null,
+       "audit_notes": [
+        "gpt-5-nano: confirm — At least one invoice (INV-202608-008) shows cost centre Marketing while line items are ml_ai (A-class GPU hours training; Inference endpoints). The work category should align with the line items (ml_ai) rather than the payer, so this constitutes mis-categorisation. The line-item mismatch supports the flag.",
+        "corrected category: ml_ai"
+       ]
+      },
+      {
+       "id": "f_infra_cloud",
+       "category": "infra_cloud",
+       "kind": "internal",
+       "status": "confirmed",
+       "confidence": 1.0,
+       "confidence_inputs": {
+        "checks": "deterministic, internal data"
+       },
+       "statement": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+       "policy_violated": true,
+       "audit_notes": [
+        "deterministic internal finding; no contradicting evidence"
+       ]
+      }
+     ],
+     "recovery": [
+      {
+       "task_id": "t01",
+       "chosen": "narrow_range",
+       "rule_default": "mark_low_confidence",
+       "reason": "Re-read failing range to rule out parse slip: budget_fy27.xlsx, People sheet, row 10; totals mismatch: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45%).",
+       "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+       "options": [
+        "narrow_range",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t01n",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals mismatch: sum of line items is 3,262,500.00 vs stated total 3,310,500.00 (1.45% off) for budget_fy27.xlsx People!row 10; previous action 'narrow_range' failed; flag for review and lower confidence in downstream usage.",
+       "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+       "options": [
+        "narrow_range",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t07",
+       "chosen": "reparse_alt",
+       "rule_default": "mark_low_confidence",
+       "reason": "Attempt alternative text extraction parser to re-read Nimbus 04 Jul 2026 invoice for corrected totals (04_nimbus_2026-07.pdf).",
+       "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+       "options": [
+        "reparse_alt",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t07r",
+       "chosen": "mark_low_confidence",
+       "rule_default": "mark_low_confidence",
+       "reason": "Totals verification failed for Nimbus 04 Jul 2026; line items sum 89,435.00 vs stated 96,935.00 (7.74% off); previous attempt reparse_alt did not resolve; marking data as low confidence and routing for manual sourcing.",
+       "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+       "options": [
+        "reparse_alt",
+        "mark_low_confidence",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t15",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "OCR on scanned invoice: previous text extraction failed due to no text layer; switch to alternative parser (OCR) to extract numbers.",
+       "failed_check": "tool_error: tool_error: no text layer (likely a scanned image)",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t16",
+       "chosen": "reparse_alt",
+       "rule_default": "reparse_alt",
+       "reason": "PDF unreadable by pdfplumber; attempting alternate parser (text ↔ LLM reader) to extract data from invoices/13_brightloop_2026-10.pdf",
+       "failed_check": "tool_error: tool_error: pdfplumber could not open file: PdfminerException: No /Root object! - Is this really a PDF?",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t16r",
+       "chosen": "skip",
+       "rule_default": "skip",
+       "reason": "Previous reparse_alt attempt failed with corrupt PDF; proceeding by skipping this input to Not analysed for now.",
+       "failed_check": "tool_error: tool_error: corrupt PDF, not sent to the LLM reader: PdfminerException: No /Root object! - Is this really a PDF?",
+       "options": [
+        "reparse_alt",
+        "skip"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t27",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need an extra independent signal for Honeycomb (ml_ai) to recover from verify:signals failure and produce a sourced number.",
+       "failed_check": "verify:signals failed: Honeycomb:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t29",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Retry: verify:signals failure for Arize; fetch additional independent ML/AI signals (Arize competitor) to improve classification.",
+       "failed_check": "verify:signals failed: Arize:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      },
+      {
+       "task_id": "t30",
+       "chosen": "fetch_more_signal",
+       "rule_default": "mark_low_confidence",
+       "reason": "Need an additional independent signal source (e.g., external ML/AI indicators or job postings) to corroborate Chronosphere's ML/AI signal for the classification task.",
+       "failed_check": "verify:signals failed: Chronosphere:ml_ai: 1 ML/AI signals",
+       "options": [
+        "fetch_more_signal",
+        "mark_low_confidence"
+       ],
+       "model": "gpt-5-nano"
+      }
+     ],
+     "plan_rationale": "Plan to identify where competitors out-invest Acme in people (engineering, ML/AI, sales, marketing) by pulling in competitor data and job signals, verify Acme’s own spend files for errors, apply the spend policy, and back every number with a source. Tasks are ordered so that inputs exist before they’re needed and each action targets a single file or competitor action.",
+     "tasks": [
+      {
+       "id": "t01",
+       "tool": "read_budget",
+       "status": "failed",
+       "target": "budget_fy27.xlsx",
+       "reason": "Load Acme's FY27 budget to validate totals and prepare spend comparisons.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t01n",
+       "tool": "read_budget",
+       "status": "failed",
+       "target": "budget_fy27.xlsx",
+       "reason": "recovery: narrow_range",
+       "parent": "t01",
+       "attempts": 2
+      },
+      {
+       "id": "t02",
+       "tool": "read_policy",
+       "status": "done",
+       "target": "policy.yaml",
+       "reason": "Load the spend policy to apply rules to detected variances.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t03",
+       "tool": "read_salary_table",
+       "status": "done",
+       "target": "salary_table.csv",
+       "reason": "Load salary table to help validate payroll-related spend and headcount-related allocations.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t04",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/01_nimbus_2026-04.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus April 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t05",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/02_nimbus_2026-05.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus May 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t06",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/03_nimbus_2026-06.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus Jun 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t07",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/04_nimbus_2026-07.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus Jul 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t07r",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/04_nimbus_2026-07.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t07",
+       "attempts": 2
+      },
+      {
+       "id": "t08",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/05_nimbus_2026-08.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus Aug 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t09",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/06_nimbus_2026-09.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus Sep 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t10",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/07_tensorforge_2026-05.pdf",
+       "reason": "Verify invoice line items and totals against records for TensorForge May 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t11",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/08_tensorforge_2026-08.pdf",
+       "reason": "Verify invoice line items and totals against records for TensorForge Aug 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t12",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/09_brightloop_2026-06.pdf",
+       "reason": "Verify invoice line items and totals against records for BrightLoop Jun 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t13",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/10_brightloop_2026-09.pdf",
+       "reason": "Verify invoice line items and totals against records for BrightLoop Sep 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t14",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/11_pipewise_2026-07.pdf",
+       "reason": "Verify invoice line items and totals against records for PipeWise Jul 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t15",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/12_nimbus_2026-10.pdf",
+       "reason": "Verify invoice line items and totals against records for Nimbus Oct 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t15r",
+       "tool": "read_invoice",
+       "status": "done",
+       "target": "invoices/12_nimbus_2026-10.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t15",
+       "attempts": 2
+      },
+      {
+       "id": "t16",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/13_brightloop_2026-10.pdf",
+       "reason": "Verify invoice line items and totals against records for BrightLoop Oct 2026.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t16r",
+       "tool": "read_invoice",
+       "status": "failed",
+       "target": "invoices/13_brightloop_2026-10.pdf",
+       "reason": "recovery: reparse_alt",
+       "parent": "t16",
+       "attempts": 2
+      },
+      {
+       "id": "t17",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t18",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t19",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t20",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t21",
+       "tool": "fetch_competitor",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t22",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t23",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t24",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t25",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t26",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t27",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "honeycomb.io",
+       "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t27m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t27",
+       "attempts": 2
+      },
+      {
+       "id": "t27mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "honeycomb.io",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t27",
+       "attempts": 2
+      },
+      {
+       "id": "t28",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "sentry.io",
+       "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t29",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "arize.com",
+       "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t29m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t29",
+       "attempts": 2
+      },
+      {
+       "id": "t29mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "arize.com",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t29",
+       "attempts": 2
+      },
+      {
+       "id": "t30",
+       "tool": "classify_titles",
+       "status": "failed",
+       "target": "chronosphere.io",
+       "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+       "parent": null,
+       "attempts": 1
+      },
+      {
+       "id": "t30m",
+       "tool": "fetch_jobs",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+       "parent": "t30",
+       "attempts": 2
+      },
+      {
+       "id": "t30mc",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "chronosphere.io",
+       "reason": "recovery: re-estimate after extra signal",
+       "parent": "t30",
+       "attempts": 2
+      },
+      {
+       "id": "t31",
+       "tool": "classify_titles",
+       "status": "done",
+       "target": "grafana.com",
+       "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+       "parent": null,
+       "attempts": 1
+      }
+     ]
     }
    ],
-   "latest_run_id": "1011-09fd9f"
+   "latest_run_id": "1011-142099"
   },
   {
    "key": "bastion",
@@ -52353,6 +54510,13 @@
     "scorecard": "evidence/evals/20261011T221740-d311fb5-cs02-before-n5.json",
     "runs": 5,
     "passed": 5
+   },
+   {
+    "trace_id": "58bba2c35e6f8f4578ed6a541f6393bb",
+    "variant": "acme-after-prompt-v2",
+    "scorecard": "evidence/evals/20261011T223817-3608007-acme-after-prompt-v2.json",
+    "runs": 3,
+    "passed": 3
    }
   ],
   "docs": {
