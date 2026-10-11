@@ -287,7 +287,6 @@
       ["Used cfo.ai", "Pricing, costs, revenue and runway from measured costs", "#business", "cfo.ai plan"],
       ["Recovers from failure", "Every recovery decision with the menu, the choice and the rule default", "#recovery", "Recovery log"],
       ["Checks its own work", "Findings the self-audit overturned or downgraded, with reasons", "#disproved", "Disproved itself"],
-      ["Built in public", "#neatHack posts with timestamps", BLOB + "evidence/build-in-public.md", "Posts"],
       ["Code written during the hackathon", "Dated commits from 10 Oct 12:30 IST, each with an Entire checkpoint", REPO + "/commits/main", "Commits"]
     ];
     return '<div class="sr-section-title" data-enter><h2>For judges: where each piece of evidence is</h2><p>Every number on this site comes from a saved scorecard or trace.</p></div>' +
@@ -327,11 +326,30 @@
       return '<div class="sr-node' + (s[2] === "LLM" ? " sr-node--llm" : "") + '"><span class="sr-node-dot" style="--n:' + i + '">' + icon(s[0]) + "</span><h4>" + s[1] + '</h4><span class="ac-tag sr-who">' + s[2] + "</span><p>" + s[3] + "</p></div>";
     }).join("");
     var bastion = company(sm.injected_runs.length ? sm.injected_runs[sm.injected_runs.length - 1].company : D.companies[1].key) || D.companies[1];
+    var GLOSS = [
+      ["Planted mistake", "An error we hid on purpose in a fictional company's files, so we can check whether the agent finds it."],
+      ["Held-out company", "A company created after the agent was built. The agent was never adjusted to fit it."],
+      ["Finding", "One conclusion in the report, for example \"Acme's ML team is a bigger share of staff than at its competitors\"."],
+      ["Self-audit", "A step where the agent tries to prove its own finding wrong before reporting it."],
+      ["Overturned / downgraded", "Thrown out of the report, or kept with lower confidence."],
+      ["Confidence", "A score from 0 to 1 computed by a formula: checks passed × how far the sources agree × how fresh the data is. Never typed in."],
+      ["Fixed rule vs agent's own call", "When a check fails, a simple rule would always pick the same fix. The AI may choose differently and must give a reason."],
+      ["Fallback hop", "The AI model was busy or failed, so the agent switched to another model."],
+      ["Fixture", "A test run with one competitor number changed on purpose. Labelled everywhere; never used for real reports."],
+      ["Trace (neatlogs)", "The complete step-by-step recording of one run."],
+      ["Checkpoint (Entire)", "A link from a commit to the AI coding session that wrote it."]
+    ];
+    var intro = '<section class="sr-intro-box" data-enter><div class="sr-intro-main"><span class="ac-overline-inline">What is Spend Radar?</span>' +
+      '<h1>An AI agent that tells a finance team where competitors spend more, or less, on people than they do, and shows its work.</h1>' +
+      '<p>You give it your budget, invoices and spending policy. It looks up real competitors\' team sizes and hiring, compares team by team, checks your own books for mistakes, and then tries to <b>disprove its own findings</b> before writing a report where every number links to its source.</p>' +
+      '<div class="sr-intro-cta"><a class="ac-btn" href="#story" data-view="story">' + icon("play") + 'See how it works, step by step</a><a class="ac-btn ac-btn--ghost" href="#run" data-view="run">Open a full run</a></div></div>' +
+      '<details class="sr-gloss"><summary>Words used on this site</summary><dl>' + GLOSS.map(function (g) { return "<dt>" + esc(g[0]) + "</dt><dd>" + esc(g[1]) + "</dd>"; }).join("") + "</dl></details></section>";
     return enter(
+      intro + helpBox("overview").replace("<section ", "<section data-enter ") +
       '<section class="ac-verdict" data-enter id="verdict"><div class="ac-verdict-grid"><div>' +
-        '<span class="ac-overline-inline">Generalisation · latest finished run per company</span>' +
+        '<span class="ac-overline-inline">Does it work? · latest finished run per company</span>' +
         '<h1 class="ac-hero-xl">' + headWords + "</h1>" +
-        '<p class="ac-lede">' + word(held).replace(/^./, function (s) { return s.toUpperCase(); }) + " of them were never used to tune the agent. Acme is the one it was built against; the others were created later, across " + word(sm.industries.length) + " industries. All " + word(nC) + " are fictional. Each square is one error planted in that company's books.</p>" +
+        '<p class="ac-lede">' + word(held).replace(/^./, function (s) { return s.toUpperCase(); }) + " of them were never used to tune the agent. Acme is the one it was built against; the others were created later, across " + word(sm.industries.length) + " industries. All " + word(nC) + " are fictional. Each square is one mistake we hid in that company's books; green means the agent found it.</p>" +
         '<div class="ac-figures">' +
           '<div class="ac-figure"><b>' + n(sm.runs_scored) + "</b><span>scored runs behind this page</span></div>" +
           '<div class="ac-figure"><b class="' + (sm.latest_runs_false_alarms === 0 ? "ac-up" : "ac-down") + '">' + n(sm.latest_runs_false_alarms) + "</b><span>false alarms across the latest runs</span></div>" +
@@ -539,7 +557,7 @@
           '<div class="sr-opts">' + (d.options || [d.chosen]).map(function (o) {
             return '<span class="sr-opt' + (o === d.chosen ? " sr-opt--chosen" + (override ? "" : " is-rule") : "") + '">' + esc(o) + (o === d.rule_default ? " <small>rule</small>" : "") + "</span>";
           }).join("") + "</div>" +
-          '<div class="sr-decision-why"><b>' + (override ? '<span class="ac-accent">Override</span> by ' : "Chosen by ") + esc(d.model || "rule") + ":</b> " + esc(d.reason || "—") + "</div></div>";
+          '<div class="sr-decision-why"><b>' + (override ? '<span class="ac-accent">Agent\'s own call</span> (not the fixed rule) by ' : "Same as the fixed rule, chosen by ") + esc(d.model || "rule") + ":</b> " + esc(d.reason || "—") + "</div></div>";
       }).join("");
       return '<div class="sr-tl-row' + (failed ? " sr-tl-row--failed" : "") + (child ? " sr-tl-row--child" : "") + '"><span class="sr-tl-dot"></span><div>' +
         '<div class="sr-tl-head"><span class="sr-mono sr-muted">' + esc(t.id) + '</span><span class="ac-tag">' + esc(t.tool) + "</span>" + (t.target ? '<span class="sr-tl-target">' + esc(t.target) + "</span>" : "") + (failed ? '<span class="ac-badge ac-badge--down">✗ check failed</span>' : "") + "</div>" +
@@ -560,7 +578,7 @@
         return '<div class="ac-note"><div class="ac-note-who"><span>' + esc(x.who || "deterministic") + (x.second ? " · second opinion" : "") + "</span>" + (x.verdict ? '<span class="' + VERDICT_CLASS[x.verdict] + '">' + esc(x.verdict) + "</span>" : "") + "</div>" + esc(x.text) + "</div>";
       }).join("");
       var pct = Math.round(Math.max(0, Math.min(1, f.confidence)) * 100);
-      return '<details class="sr-finding"><summary>' + statusBadge(f.status) + '<span class="sr-finding-text">' + esc(f.statement) + '</span><span class="sr-finding-conf">conf ' + esc(f.confidence) + '<span class="ac-meter"><i style="width:' + pct + '%"></i></span></span></summary>' +
+      return '<details class="sr-finding"><summary>' + statusBadge(f.status) + '<span class="sr-finding-text">' + esc(f.statement) + '</span><span class="sr-finding-conf">confidence ' + esc(f.confidence) + '<span class="ac-meter"><i style="width:' + pct + '%"></i></span></span></summary>' +
         (notes ? '<div class="ac-notes">' + notes + "</div>" : "") + "</details>";
     }).join("");
     return '<section class="ac-card"><div class="ac-card-head"><h3 class="ac-card-title">Findings and audit</h3><span class="ac-card-meta">open one for the auditors\' notes</span></div><div class="sr-findings">' + list + "</div></section>";
@@ -569,10 +587,10 @@
   function recoveryCard(r) {
     var head = '<div class="ac-card-head"><h3 class="ac-card-title">Recovery log</h3><div class="ac-row">' + (r.injected_faults || []).map(function (f) { return '<span class="ac-badge ac-badge--accent">Injected · ' + esc(f) + "</span>"; }).join("") + "</div></div>";
     if (!r.recovery.length) return '<section class="ac-card">' + head + '<p class="sr-empty">' + (r.findings.length ? "No check failed in this run, so no recovery was needed." : "Recovery decisions were not exported for this run.") + "</p></section>";
-    return '<section class="ac-card">' + head + '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Decision</th><th>Task</th><th>Chosen</th><th>Rule default</th><th>Reason</th></tr></thead><tbody>' +
+    return '<section class="ac-card">' + head + '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Who decided</th><th>Step</th><th>What it did</th><th>Fixed rule would do</th><th>Reason given</th></tr></thead><tbody>' +
       r.recovery.map(function (d) {
         var o = d.chosen !== d.rule_default;
-        return "<tr><td>" + (o ? '<span class="ac-badge ac-badge--accent">Override</span>' : '<span class="ac-badge ac-badge--neutral">Rule</span>') + '</td><td class="ac-code">' + esc(d.task_id) + '</td><td class="ac-code">' + esc(d.chosen) + '</td><td class="ac-code ac-muted">' + esc(d.rule_default) + '</td><td class="sr-wrap">' + esc(d.reason || "—") + "</td></tr>";
+        return "<tr><td>" + (o ? '<span class="ac-badge ac-badge--accent">Agent\'s own call</span>' : '<span class="ac-badge ac-badge--neutral">Same as rule</span>') + '</td><td class="ac-code">' + esc(d.task_id) + '</td><td class="ac-code">' + esc(d.chosen) + '</td><td class="ac-code ac-muted">' + esc(d.rule_default) + '</td><td class="sr-wrap">' + esc(d.reason || "—") + "</td></tr>";
       }).join("") + "</tbody></table></div></section>";
   }
 
@@ -603,7 +621,7 @@
     D.companies.forEach(function (c) { c.runs.forEach(function (r) { r.recovery.forEach(function (d) { rows.push({ c: c, r: r, d: d }); }); }); });
     rows.reverse();
     var shown = rows.filter(function (x) { return S.recovery === "all" || x.d.chosen !== x.d.rule_default; });
-    var seg = [["overrides", "Overrides only"], ["all", "All decisions"]].map(function (s) { return '<button type="button" data-recovery="' + s[0] + '" aria-pressed="' + (S.recovery === s[0]) + '">' + s[1] + "</button>"; }).join("");
+    var seg = [["overrides", "Only the agent's own calls"], ["all", "All decisions"]].map(function (s) { return '<button type="button" data-recovery="' + s[0] + '" aria-pressed="' + (S.recovery === s[0]) + '">' + s[1] + "</button>"; }).join("");
     var inj = D.summary.injected_runs.map(function (x) {
       var c = company(x.company);
       return '<button type="button" class="ac-card sr-tilt" data-open-run="' + x.run_id + '" data-company="' + x.company + '"><div class="ac-row">' + avatar(c) + '<div><div class="ac-li-name">' + esc(c.name) + '</div><div class="ac-li-sub sr-mono">' + x.run_id + "</div></div></div>" +
@@ -621,10 +639,10 @@
       }).join("") + "</tbody></table></div>" +
       (shown.length > S.recoveryShown ? '<div class="sr-more"><button class="ac-btn ac-btn--ghost" type="button" data-more>Show 30 more · ' + n(shown.length - S.recoveryShown) + " left</button></div>" : "");
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Recovery log</h1><p class="ac-subtitle">When a check fails, the LLM picks one action from a fixed menu. Python enforces retry caps and budgets. An override is a choice that differs from the rule\'s default.</p></div></div>' +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Recovery log</h1><p class="ac-subtitle">When a check fails, the LLM picks one action from a fixed menu. Python enforces retry caps and budgets. "Agent\'s own call" marks a choice that differs from what the fixed rule would pick.</p></div></div>' +
       '<div class="ac-stats" data-enter>' +
         stat("Recovery decisions", n(D.summary.recovery_decisions), "across runs with exported logs") +
-        stat("Overrides of the rule", '<span class="ac-accent">' + n(D.summary.recovery_overrides) + "</span>", "the LLM chose something else") +
+        stat("Agent's own calls", '<span class="ac-accent">' + n(D.summary.recovery_overrides) + "</span>", "the AI chose differently from the fixed rule") +
         stat("Runs with injected failures", n(D.summary.injected_runs.length), "Crustdata 429 and LLM 429") +
       "</div>" +
       '<div class="sr-section-title" data-enter><h2>Failures injected on purpose</h2><p>Each run below was started with a forced Crustdata 429 and LLM 429. Open one to see what it did next.</p></div>' +
@@ -789,6 +807,38 @@
     );
   }
 
+  // Plain-English header for each evidence page: what it is, why it matters, how to read it.
+  var HELP = {
+    overview: ["The scoreboard. We built seven fictional companies, hid mistakes in their finance files (wrong totals, a corrupt PDF, an invoice billed to the wrong team) and checked whether the agent finds them.",
+      "If the agent finds every hidden mistake, and makes none up, you can start to trust what it says about competitors too.",
+      "Each green square is one hidden mistake the agent found. Six of the seven companies were made after the agent was built, so it could not have been tuned to them."],
+    run: ["One run of the agent from start to finish: what it was given, every step it took, what went wrong, and what it concluded.",
+      "This is the raw record behind every claim on this site.",
+      "Pick a company and a run at the top. Scroll down for the step-by-step log, the findings and the decisions it made when something failed."],
+    disproved: ["Findings the agent itself threw out or weakened before reporting them.",
+      "Most AI tools report whatever they first conclude. This agent attacks each finding first, so weak claims do not reach the finance team.",
+      "Overturned means the claim was removed from the report. Downgraded means it stayed in with lower confidence. Each card quotes the reason."],
+    recovery: ["Every time a check failed (a total did not add up, a file would not open, a competitor had too little data) and what the agent chose to do about it.",
+      "Things go wrong in real data. The agent does not crash or guess; it picks a fix from a fixed menu and says why.",
+      "\"Fixed rule\" is what a simple if/else would have done. \"Agent's own call\" marks the times the AI chose something different, with its reason."],
+    compare: ["Bugs we found by reading the agent's traces, and the same test run again after the fix.",
+      "This is the proof the agent got better during the hackathon, with numbers, not claims.",
+      "Before is on the left, after on the right. n is how many runs sit on each side."],
+    business: ["The business plan, built in cfo.ai from what a run actually costs.",
+      "It shows whether Spend Radar could be a real business: pricing, costs, revenue and how long the cash lasts.",
+      "Costs are measured from real runs at the published paid prices of the same models. During the hackathon the actual spend was $0."],
+    traces: ["neatlogs records every step of every run: each AI call, each tool call, each retry and each decision.",
+      "It is how we debugged the agent. Every fix on the Before / after page started from one of these traces.",
+      "Each row is one run. The trace ID opens the full step-by-step record in neatlogs."],
+    entire: ["Entire records which AI coding session wrote each piece of code, and reviewed changes before they were merged.",
+      "When a step fails in a trace, we can follow it to the exact line of code and the conversation that produced it.",
+      "Checkpoints link commits to coding sessions. Trails are reviewed changes. The explain chain goes from a failed step to the code to the session."]
+  };
+  function helpBox(v) {
+    var h = HELP[v]; if (!h) return "";
+    return '<section class="sr-help" aria-label="About this page"><div><b>What you are looking at</b>' + h[0] + "</div><div><b>Why it matters</b>" + h[1] + "</div><div><b>How to read it</b>" + h[2] + "</div></section>";
+  }
+
   var RENDER = { story: viewStory, overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
 
   // ── render + routing ─────────────────────────────────────────────
@@ -807,7 +857,8 @@
     document.title = (v === "story" ? "Spend Radar" : label + " · Spend Radar");
 
     var swap = function () {
-      main.innerHTML = '<div class="sr-enter' + (opts.play ? " sr-play" : "") + '">' + RENDER[v]() + "</div>";
+      main.innerHTML = '<div class="sr-enter' + (opts.play ? " sr-play" : "") + '">' + (v === "overview" || v === "story" ? "" : helpBox(v)) + RENDER[v]() + "</div>";
+      var ph = main.querySelector(".ac-pagehead"), hb = main.querySelector(".sr-help"); if (ph && hb) ph.parentNode.insertBefore(hb, ph.nextSibling);
       var chain = main.querySelector("#featured .ac-card");
       if (chain && opts.play) chain.classList.add("sr-chain-play");
       if (!opts.keepScroll) window.scrollTo(0, 0);
