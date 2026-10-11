@@ -87,9 +87,12 @@ def main(argv: list[str] | None = None) -> None:
         if not args.no_neatlogs:
             from spendradar import neatlogs_evals
 
-            card["neatlogs_eval_trace_id"] = neatlogs_evals.publish(card, path)
-            path.write_text(json.dumps(card, indent=1), encoding="utf-8")
-            print(f"neatlogs eval trace: {card['neatlogs_eval_trace_id']}")
+            try:
+                card["neatlogs_eval_trace_id"] = neatlogs_evals.publish(card, path)
+                path.write_text(json.dumps(card, indent=1), encoding="utf-8")
+                print(f"neatlogs eval trace: {card['neatlogs_eval_trace_id']}")
+            except Exception as e:  # the scorecard is already saved; publishing is best effort
+                print(f"warning: eval not published to neatlogs ({type(e).__name__}: {e})", file=sys.stderr)
         print(f"scorecard: {path}")
         print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_incomplete", "n_runs_without_fallback", "planted_total",
                                                 "summary_all_runs")}, indent=1))

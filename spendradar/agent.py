@@ -21,7 +21,7 @@ import yaml
 from pydantic import BaseModel
 
 from spendradar import analysis, audit, faults, llm, report, verify
-from spendradar.tracing import set_io
+from spendradar.tracing import record_error, set_io
 from spendradar.models import Check, Figure, Finding, RecoveryDecision, RunState, Source, Task
 from spendradar.tools import classify, crustdata, files
 from spendradar.tools.files import ToolError
@@ -84,7 +84,20 @@ def save(state: RunState) -> None:
 
 
 def load(run_id: str) -> RunState:
-    return RunState.model_validate_json(state_path(run_id).read_text(encoding="utf-8"))
+    from pydantic import ValidationError
+
+    from spendradar.tools import crustdata
+
+    path = state_path(run_id)
+    if not path.exists():
+        raise SystemExit(f"no saved state for run {run_id!r} at {path}")
+    try:
+        state = RunState.model_validate_json(path.read_text(encoding="utf-8"))
+    except (ValidationError, ValueError) as e:
+        raise SystemExit(f"cannot resume {run_id}: state.json is corrupt or from an incompatible version "
+                         f"({type(e).__name__}: {str(e)[:200]})") from e
+    crustdata.BUDGET.spent = state.crustdata_credits  # the per-run credit cap survives a resume
+    return state
 
 
 def new_run_id() -> str:
@@ -634,42 +647,57 @@ def _line_item_check(state: RunState) -> None:
 
 def build_findings(state: RunState) -> None:
     ours_all = analysis.our_position(state.budget)
+    if not ours_all["_total"]:
+        state.notes.append("No verified budget headcount, so no competitor comparison was possible (see Not analysed).")
+        record_error("verify:budget_headcount", "no usable headcount in the verified budget",
+                     budget_keys=sorted(state.budget))
     profiles = list(state.competitors.values())
-    rules = {r["category"]: r for r in state.policy.get("rules", [])}
+    rules = {r["category"]: r for r in state.policy.get("rules", []) if isinstance(r, dict) and "category" in r}
+    if not rules:
+        state.notes.append("No usable policy rules, so no policy findings (check policy.yaml).")
     state.findings = []
     for cat in ("engineering", "ml_ai", "sales", "marketing"):
-        rule = rules.get(cat)
-        shares = analysis.competitor_shares(profiles, cat)
-        if not rule or cat not in ours_all:
-            continue
-        res = analysis.compare({**ours_all[cat], "_total": ours_all["_total"]}, shares, rule, state.salary.get(cat, 0))
-        if res["status"] != "ok":
-            state.notes.append(f"{cat}: no competitor data for comparison")
-            continue
-        n_sig = [s["signals"] for s in shares]
-        agreements = [a for p in profiles if (a := analysis.signal_agreement(p, cat)) is not None]
-        ages = [analysis.days_old(s.as_of) for p in profiles for s in p.signals if s.category == cat]
-        rel = [c for c in state.checks if c.target.endswith(f":{cat}") or c.target == f"budget:{cat}"]
-        conf, inputs = verify.confidence(sum(c.passed for c in rel), len(rel), min(n_sig),
-                                         min(agreements) if agreements else None, max(ages) if ages else 0)
-        fid = f"f_{cat}"
-        state.figures[f"{fid}_median"] = Figure(
-            id=f"{fid}_median", label=f"Competitor median {cat} share of headcount", unit="share",
-            value=res["median_mid"], category=cat, estimate=True,
-            sources=[s.source for p in profiles for s in p.signals if s.category == cat])
-        g0, g1 = res["gap_usd"]
-        verdict = "violates" if res["violated"] else "meets"
-        state.findings.append(Finding(
-            id=fid, category=cat, kind="policy",
-            statement=(f"{state.company} {cat} is {res['our_share']:.1%} of headcount vs competitor median "
-                       f"{res['median_low']:.1%}–{res['median_high']:.1%} ({res['n_competitors']} companies); "
-                       f"{verdict} policy '{rule['text']}'. "
-                       f"{_gap_sentence(res['gap_heads'], (g0, g1), state.company)}"),
-            ours=ours_all[cat]["share"], theirs_low=res["median_low"], theirs_high=res["median_high"],
-            policy_violated=res["violated"], figure_ids=[f"hc_{cat}", f"cost_{cat}", f"{fid}_median"],
-            confidence=conf, confidence_inputs=inputs))
+        try:
+            _policy_finding(state, cat, ours_all, profiles, rules.get(cat))
+        except Exception as e:  # one bad rule/date/signal must not lose the other categories or the report
+            state.notes.append(f"{cat}: finding not built ({type(e).__name__}: {str(e)[:120]})")
+            record_error(f"finding:{cat}", f"{type(e).__name__}: {e}", category=cat, rule=rules.get(cat))
     _internal_findings(state)
     save(state)
+
+
+def _policy_finding(state: RunState, cat: str, ours_all: dict, profiles: list, rule: dict | None) -> None:
+    shares = analysis.competitor_shares(profiles, cat)
+    if not rule or cat not in ours_all:
+        return
+    if cat not in state.salary:
+        state.notes.append(f"{cat}: no loaded salary in salary_table.csv, so the USD gap shows $0 (heads gap still valid)")
+    res = analysis.compare({**ours_all[cat], "_total": ours_all["_total"]}, shares, rule, state.salary.get(cat, 0))
+    if res["status"] != "ok":
+        state.notes.append(f"{cat}: no competitor data for comparison")
+        return
+    n_sig = [s["signals"] for s in shares]
+    agreements = [a for p in profiles if (a := analysis.signal_agreement(p, cat)) is not None]
+    ages = [analysis.days_old(s.as_of) for p in profiles for s in p.signals if s.category == cat]
+    rel = [c for c in state.checks if c.target.endswith(f":{cat}") or c.target == f"budget:{cat}"]
+    conf, inputs = verify.confidence(sum(c.passed for c in rel), len(rel), min(n_sig),
+                                     min(agreements) if agreements else None, max(ages) if ages else 0)
+    fid = f"f_{cat}"
+    state.figures[f"{fid}_median"] = Figure(
+        id=f"{fid}_median", label=f"Competitor median {cat} share of headcount", unit="share",
+        value=res["median_mid"], category=cat, estimate=True,
+        sources=[s.source for p in profiles for s in p.signals if s.category == cat])
+    g0, g1 = res["gap_usd"]
+    verdict = "violates" if res["violated"] else "meets"
+    state.findings.append(Finding(
+        id=fid, category=cat, kind="policy",
+        statement=(f"{state.company} {cat} is {res['our_share']:.1%} of headcount vs competitor median "
+                   f"{res['median_low']:.1%}–{res['median_high']:.1%} ({res['n_competitors']} companies); "
+                   f"{verdict} policy '{rule['text']}'. "
+                   f"{_gap_sentence(res['gap_heads'], (g0, g1), state.company)}"),
+        ours=ours_all[cat]["share"], theirs_low=res["median_low"], theirs_high=res["median_high"],
+        policy_violated=res["violated"], figure_ids=[f"hc_{cat}", f"cost_{cat}", f"{fid}_median"],
+        confidence=conf, confidence_inputs=inputs))
 
 
 def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float], company: str = "Our company") -> str:

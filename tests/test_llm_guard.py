@@ -95,3 +95,68 @@ def test_missing_key_drops_provider(monkeypatch):
     assert all(p != "openai" for p, _ in llm._chain("reason"))
     monkeypatch.setenv("OPENAI_API_KEY", "x")
     assert llm._chain("reason")[0] == ("openai", "gpt-5-nano")
+
+
+def _chain_env(tmp_path, monkeypatch):
+    ledger = llm.Ledger(tmp_path / "ledger.json")
+    monkeypatch.setattr(llm, "LEDGER", ledger)
+    monkeypatch.setattr(llm, "cache_enabled", lambda: False)
+    monkeypatch.setattr(ledger, "wait_turn", lambda m: None)
+    monkeypatch.setattr(llm.time, "sleep", lambda s: None)
+    return ledger
+
+
+def test_malformed_provider_response_moves_to_next_model(tmp_path, monkeypatch):
+    _chain_env(tmp_path, monkeypatch)
+    first = llm._chain("reason")[0][1]
+
+    def fake(model, *a, **k):
+        if model == first:
+            raise IndexError("list index out of range")  # e.g. empty `choices`
+        return "ok", None, 1, 1
+
+    monkeypatch.setattr(llm, "_call_gemini", fake)
+    monkeypatch.setattr(llm, "_call_openrouter", fake)
+    res = llm._run_chain("reason", "p", None, None, None)
+    assert res.model != first
+
+
+def test_retired_model_404_moves_on_without_marking_quota(tmp_path, monkeypatch):
+    ledger = _chain_env(tmp_path, monkeypatch)
+    first = llm._chain("reason")[0][1]
+
+    def fake(model, *a, **k):
+        if model == first:
+            raise llm._Retryable("model", "404 NOT_FOUND")
+        return "ok", None, 1, 1
+
+    monkeypatch.setattr(llm, "_call_gemini", fake)
+    monkeypatch.setattr(llm, "_call_openrouter", fake)
+    assert llm._run_chain("reason", "p", None, None, None).model != first
+    assert ledger.remaining(first) > 0
+
+
+def test_input_specific_400_still_stops_the_chain(tmp_path, monkeypatch):
+    _chain_env(tmp_path, monkeypatch)
+    used = []
+
+    def fake(model, *a, **k):
+        used.append(model)
+        raise llm.LLMError(f"{model}: non-retryable: 400 INVALID_ARGUMENT")
+
+    monkeypatch.setattr(llm, "_call_gemini", fake)
+    monkeypatch.setattr(llm, "_call_openrouter", fake)
+    with pytest.raises(llm.LLMError):
+        llm._run_chain("extract", "p", None, None, None)
+    assert len(used) == 1
+
+
+def test_gemini_connection_and_404_errors_are_per_model():
+    import httpx
+    from google.genai import errors
+
+    assert llm._classify_gemini_error(httpx.ConnectError("down")).kind == "server"
+    e404 = errors.ClientError(404, {"error": {"message": "model not found", "status": "NOT_FOUND"}})
+    assert llm._classify_gemini_error(e404).kind == "model"
+    e400 = errors.ClientError(400, {"error": {"message": "bad pdf", "status": "INVALID_ARGUMENT"}})
+    assert llm._classify_gemini_error(e400) is None

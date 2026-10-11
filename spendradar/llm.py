@@ -49,7 +49,7 @@ class NotFreeModelError(ValueError):
 class _Retryable(Exception):
     def __init__(self, kind: str, msg: str, retry_after: float | None = None):
         super().__init__(msg)
-        self.kind = kind  # "minute" | "day" | "server" | "timeout" | "injected"
+        self.kind = kind  # "minute" | "day" | "server" | "timeout" | "injected" | "model" (this model only)
         self.retry_after = retry_after
 
 
@@ -168,6 +168,10 @@ def _classify_gemini_error(e: Exception) -> _Retryable | None:
 
     if isinstance(e, httpx.TimeoutException):
         return _Retryable("timeout", f"no response within {CONFIG['gemini_timeout_s']}s")
+    if isinstance(e, httpx.TransportError):  # dropped connection: transient, retry then move on
+        return _Retryable("server", f"{type(e).__name__}: {str(e)[:200]}")
+    if isinstance(e, errors.ClientError) and e.code in (403, 404):  # this model only (retired, no access)
+        return _Retryable("model", str(e)[:300])
     if isinstance(e, errors.ServerError):
         return _Retryable("server", str(e)[:300])
     if isinstance(e, errors.ClientError) and e.code == 429:
@@ -276,6 +280,8 @@ def _call_openai(model: str, prompt: str, system: str | None, schema: type[BaseM
     except openai.APIConnectionError as e:
         raise _Retryable("server", str(e)[:300]) from e
     except openai.APIStatusError as e:
+        if e.status_code in (401, 403, 404):  # key/model access problem: this provider only, try the next
+            raise _Retryable("model", f"{e.status_code}: {str(e)[:200]}") from e
         raise LLMError(f"{model}: non-retryable {e.status_code}: {str(e)[:200]}") from e
     msg = r.choices[0].message
     u = r.usage
@@ -389,13 +395,15 @@ def _run_chain(role: str, prompt: str, system: str | None, schema: type[BaseMode
                 if e.kind == "day":
                     LEDGER.mark_exhausted(model)
                     break
-                if e.kind in ("injected", "timeout"):  # move on; never pollute the real quota ledger
+                if e.kind in ("injected", "timeout", "model"):  # move on; never pollute the real quota ledger
                     break
                 if attempt < CONFIG["retries_per_model"]:
                     time.sleep(min(30.0, (2 ** attempt) * 2 + random.random()))
                     continue
                 break
-            except (httpx.HTTPError, ValueError) as e:
+            except LLMError:
+                raise  # non-retryable for this input (e.g. 400 on a corrupt PDF): every model would fail
+            except Exception as e:  # malformed provider response (empty choices, bad JSON, SDK quirk)
                 if isinstance(e, NotFreeModelError):
                     raise
                 errors.append(f"{model}: {type(e).__name__}: {str(e)[:120]}")
