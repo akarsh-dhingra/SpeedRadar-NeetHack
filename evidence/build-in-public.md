@@ -61,7 +61,7 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 ## Post 3 — a bug the traces caught (Sun morning)
 
-**Status:** draft — not posted
+**Status:** posted (Akarsh confirmed 2026-10-11 10:12 IST; link to add)
 
 **Text:**
 
