@@ -209,7 +209,7 @@
    "lines": [
     {
      "id": "cfo1",
-     "say": "And see eff oh dot ay eye turned our measured costs into a real plan.",
+     "say": "And CFO dot AI turned our measured costs into a real plan.",
      "cap": "And cfo.ai turned our measured costs into a real plan."
     },
     {
@@ -220,7 +220,7 @@
     },
     {
      "id": "cfo3",
-     "say": "Base case: cash-flow positive by January twenty twenty-eight. Next move: test the Team plan at four ninety-five.",
+     "say": "Base case: cash-flow positive by January twenty twenty-eight. Next move: test the Team plan at four hundred ninety-five dollars.",
      "cap": "Base case: cash-flow positive Jan 2028. Next: test Team at $495.",
      "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt"
     }

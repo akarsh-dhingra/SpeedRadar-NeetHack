@@ -79,3 +79,9 @@ for l in mine:
     (OUT / f"{l['id']}.json").write_text(json.dumps(best, indent=1))
     if best["score"] < GOOD:
         print(f"  WARNING {l['id']}: best take only {best['score']:.3f}")
+
+# Upload only this shard's lines: restored copies of other shards' lines would overwrite their fresh takes on merge.
+own = {l["id"] for l in mine}
+for f in OUT.iterdir():
+    if f.stem.split(".")[0] not in own:
+        f.unlink()

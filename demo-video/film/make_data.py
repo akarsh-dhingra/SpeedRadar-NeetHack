@@ -36,7 +36,7 @@ run = {
     "_source": f"runs/{RUN}/state.json and report.md (real data mode), exported by demo-video/film/make_data.py",
     "run_id": RUN, "company": s["company"], "trace": s["trace_id"], "sha": s["git_sha"], "data_mode": s["data_mode"],
     "goal": s["goal"], "plan": s["plan_rationale"], "tasks": tasks, "decisions": decisions,
-    "checks_total": len(checks), "checks_failed": sum(1 for c in checks if not c["passed"]),
+    "checks_total": len(checks), "check_results": [bool(c["passed"]) for c in checks], "checks_failed": sum(1 for c in checks if not c["passed"]),
     "failed_checks": [{"name": c["name"], "target": c["target"], "detail": short(c["detail"], 110)} for c in checks if not c["passed"]][:9],
     "not_analysed": s["not_analysed"], "findings": findings, "competitors": comps,
     "llm": {m: {"calls": u["calls"], "tokens_out": u["tokens_out"], "latency_s": u["latency_s"], "fallback_hops": u["fallback_hops"]} for m, u in usage.items()},

@@ -31,6 +31,22 @@ const SPEC = [
   S("title1.files", "title1", ["files"], "tick"),
   S("title1.data", "title1", ["data"], "tick"),
   S("title1.wrong", "title1", ["wrong"], "glitch"),
+  S("run1.real", "run1", ["real"], "ping"),
+  S("run2.plan", "run2", ["plan"], "tick"),
+  S("run2.tool", "run2", ["tool"], "tick"),
+  S("run3.budget", "run3", ["budget"], "tick", { frac: 0.05 }),
+  S("run3.invoices", "run3", ["invoices"], "tick", { frac: 0.3 }),
+  S("run3.competitors", "run3", ["competitors"], "ping", { frac: 0.7 }),
+  S("run4.checks", "run4", ["seventyone", "seventy", "71"], "pop", { frac: 0.35 }),
+  S("run4.off", "run4", ["off"], "glitch", { frac: 0.75 }),
+  S("run5.rule", "run5", ["rule"], "tick"),
+  S("run5.reread", "run5", ["reread", "re", "read"], "stamp", { frac: 0.7 }),
+  S("run6.scanned", "run6", ["scanned"], "tick"),
+  S("run6.corrupt", "run6", ["corrupt"], "glitch", { frac: 0.4 }),
+  S("run6.analysed", "run6", ["analysed", "analyzed"], "pop", { frac: 0.9 }),
+  S("run7.half", "run7", ["half"], "tick", { frac: 0.05 }),
+  S("run7.beat", "run7", ["beat"], "ding", { frac: 0.7 }),
+  S("aud5.source", "aud5", ["source"], "ping", { frac: 0.9 }),
   S("how1.plans", "how1", ["plans"], "tick"),
   S("how1.budget", "how1", ["budget"], "tick"),
   S("how1.invoices", "how1", ["invoices"], "tick"),
@@ -85,6 +101,7 @@ export function beats(tl) {
   const lines = Object.fromEntries(tl.lines.map((l) => [l.id, l]));
   const out = {};
   for (const s of SPEC) {
+    if (!lines[s.line]) continue; // line not in this cut of the script
     const t = wordT(lines[s.line], s.needles, s) + (s.shift || 0);
     out[s.id] = { t: Math.max(0, t), sfx: s.sfx, gain: s.gain ?? 1 };
   }
