@@ -51,9 +51,9 @@ for l in mine:
     old = OUT / f"{l['id']}.json"
     if old.exists() and (OUT / f"{l['id']}.wav").exists():  # reuse a cached take if it is for this exact line
         prev = json.loads(old.read_text())
-        same = prev.get("say", l["say"]) == l["say"] and prev.get("exag", exag) == exag
-        need = 0.85 if "say" in prev else 0.95  # older takes didn't record their text: demand a near-exact match
-        if same and difflib.SequenceMatcher(None, norm(l["say"]), norm(prev["heard"])).ratio() >= need:
+        # reuse only a take that recorded this exact text and expressiveness (older takes didn't record it: re-speak them)
+        same = prev.get("say") == l["say"] and prev.get("exag") == exag
+        if same and difflib.SequenceMatcher(None, norm(l["say"]), norm(prev["heard"])).ratio() >= 0.85:
             print(f"  {l['id']}: cached take (seed {prev['seed']})")
             continue
     best = None

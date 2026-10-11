@@ -103,3 +103,70 @@ jobs:
             demo-video/build/voice.wav
             demo-video/build/cues.json
           retention-days: 3
+
+  # ── the evidence site, captured fresh (screenshots + cut-out cards) ──
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults: { run: { working-directory: demo-video } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: npm ci --no-audit --no-fund
+      - name: Capture the site
+        run: SKIP_CLIPS=1 node capture.mjs
+      - uses: actions/upload-artifact@v4
+        with: { name: shots, path: demo-video/film/public/shots, retention-days: 3 }
+
+  # ── Remotion render, 8 shards in parallel ──
+  render:
+    needs: [prep, capture]
+    if: always() && needs.prep.result == 'success' && needs.capture.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: true
+      matrix: { shard: [0, 1, 2, 3, 4, 5, 6, 7] }
+    defaults: { run: { working-directory: demo-video/film } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: npm ci --no-audit --no-fund
+      - uses: actions/download-artifact@v4
+        with: { name: prep, path: demo-video/build }
+      - uses: actions/download-artifact@v4
+        with: { name: shots, path: demo-video/film/public/shots }
+      - run: cp ../build/timeline.json src/data/timeline.json
+      - run: npx remotion browser ensure
+      - name: Render shard ${{ matrix.shard }}
+        run: |
+          RANGE=$(node -e "const t=require('../build/timeline.json');const n=Math.ceil(t.duration*30),p=Math.ceil(n/${SHARDS});const a=${{ matrix.shard }}*p,b=Math.min(n,a+p)-1;console.log(a+'-'+b)")
+          echo "frames $RANGE"
+          npx remotion render src/index.ts Film ../build/seg_${{ matrix.shard }}.mp4 --frames=$RANGE --muted --codec=h264 --crf=18 --concurrency=4 --log=warn
+      - uses: actions/upload-artifact@v4
+        with: { name: "seg-${{ matrix.shard }}", path: "demo-video/build/seg_${{ matrix.shard }}.mp4", retention-days: 3 }
+
+  assemble:
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - uses: actions/download-artifact@v4
+        with: { name: prep, path: build }
+      - uses: actions/download-artifact@v4
+        with: { pattern: seg-*, path: segs, merge-multiple: true }
+      - name: Join, add the mix, contact sheet, a smaller copy for X
+        run: |
+          for i in $(seq 0 $((SHARDS-1))); do echo "file 'segs/seg_$i.mp4'" >> list.txt; done
+          ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy video.mp4
+          mkdir -p out
+          ffmpeg -y -loglevel error -i video.mp4 -i build/audio.wav -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart out/spend-radar-demo.mp4
+          ffmpeg -y -loglevel error -i out/spend-radar-demo.mp4 -c:v libx264 -preset slow -crf 26 -c:a aac -b:a 128k -movflags +faststart out/spend-radar-demo-small.mp4
+          ffmpeg -y -loglevel error -i out/spend-radar-demo.mp4 -vf "fps=1/4,scale=480:-1,tile=6x7" -frames:v 1 out/contact-sheet.png
+          ffprobe -v error -show_entries format=duration,size:stream=codec_name,width,height -of compact out/spend-radar-demo.mp4 | tee out/probe.txt
+          cp build/timeline.json build/cues.json out/
+      - uses: actions/upload-artifact@v4
+        with: { name: spend-radar-film, path: out, retention-days: 14 }

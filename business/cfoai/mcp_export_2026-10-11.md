@@ -1,0 +1,668 @@
+# cfo.ai read-only export — Spend Radar financial model
+
+Exported 2026-10-11. Read-only: only `list_orgs` and `inspect_*` tools were called. No `edit_*`, `notify_user`, `call_connected_api` or `validate_*` tool was invoked.
+
+Snapshot: `as_of` changelog id **279211** (the latest entry) for every read below.
+
+## Discrepancies vs the request
+
+Three things do not match what the request assumed. Everything else was readable.
+
+1. **Org name.** The workspace at id `103087` is named **`init`** (slug `init-3beae0f3`), not "Spend Radar Financial Model". It is the only workspace this account belongs to, and its contents are the Spend Radar model, so it is the right workspace under a different name.
+2. **Six scenarios, not ~five.** There is an extra scenario, **Team uncached cap**, alongside Main/Growth/Downside/Team repriced/Industry mix.
+3. **Overrides are not exposed as a list.** `inspect_scenarios` has no "overrides" section — its `subtree` action returns only the scenario tree (parent/child), and `list` returns metadata. The overrides below were reconstructed by reading each Assumptions table with a six-scenario side-by-side comparison, which shows the effective value per scenario. That is the same information, derived rather than declared.
+
+Two smaller gaps:
+
+- **Formulas on the Assumptions, Unit economics, Cache sensitivity and Gross margin by industry tables could not be read.** Every row on those tables returned `{"unavailable":"Selected formula is unavailable or unreadable"}`. Values read fine. Formulas on the Monthly P&L table did read, and are reproduced below.
+- **Chat history is not available through this MCP.** `inspect_history` exposes the *changelog* (model edit history), not a conversation transcript. The changelog is in §7; there is no chat log to export.
+
+---
+
+## 1. Org
+
+[source: `list_orgs` {}]
+
+| field | value |
+|---|---|
+| org_id | 103087 |
+| name | init |
+| slug | init-3beae0f3 |
+| role | admin |
+
+[source: `inspect_scenarios` {org_id:103087, list:{}}]
+
+| field | value |
+|---|---|
+| calendar granularity | MONTH |
+| last_close | 2026-09-30 |
+| calendar range | 2026-01-01 → 2027-12-31 |
+| model month 1 | 2026-11 |
+| model month 24 | 2028-10 |
+| created_at | 2026-10-10T06:03:37.681819Z |
+| created_by | workspace owner (user) |
+
+Note the calendar range ends 2027-12-31 while the Monthly P&L table's window runs to 2028-10-31; the table carries an absolute window beyond the configured calendar range.
+
+---
+
+## 2. Scenarios
+
+[source: `inspect_scenarios` {org_id:103087, list:{}}] and [source: `inspect_scenarios` {org_id:103087, subtree:{target:"Main Scenario"}}]
+
+All five non-Main scenarios have Main Scenario as their direct parent; none are drafts; none are locked snapshots (`lockedAtChangeLogId` absent on all).
+
+| name | ref | layer_id | created_at | parent |
+|---|---|---|---|---|
+| Main Scenario | `Main Scenario#52f` | `default_layer` | 2026-10-10T06:03:37.681819Z | — |
+| Growth | `Growth#1a1` | `1a10b83a-80a7-43c3-8199-2ce4e6b83655` | 2026-10-10T16:31:59.482754Z | Main Scenario#52f |
+| Downside | `Downside#5a0` | `5a05ea50-2e4c-4cab-929d-44b0501863e0` | 2026-10-10T17:41:34.870327Z | Main Scenario#52f |
+| Team uncached cap | `Team uncached cap#85a` | `85ac407c-2065-43f7-bea4-67a55485b815` | 2026-10-10T17:50:46.310833Z | Main Scenario#52f |
+| Team repriced | `Team repriced#fac` | `facd78ec-88a5-4ed3-b88c-ed248b0021a7` | 2026-10-10T17:50:46.748428Z | Main Scenario#52f |
+| Industry mix | `Industry mix#642` | `6425be67-801c-483e-bc1b-0cd42472d2b6` | 2026-10-10T17:53:38.462298Z | Main Scenario#52f |
+
+No scenario carries a stored description field in the tool output — descriptions exist only as prose in the Summary and Judge Summary text blocks (§3.1, §3.5).
+
+### 2.1 Overrides per scenario
+
+Derived from the three Assumptions tables read side by side. Column order in every comparison read: **Main, Growth, Downside, Team uncached cap, Team repriced, Industry mix**.
+
+**Growth** — 9 overrides:
+
+| assumption | Main | Growth |
+|---|---|---|
+| Enrich price per record | 1.2 | 0.6 |
+| Crustdata cost per uncached run | 9.24 | 6.24 |
+| Embedded monthly churn (info only) | 0.03 | 0.02 |
+| Starter / Customers by month 6 | 5 | 10 |
+| Starter / Customers by month 12 | 15 | 35 |
+| Starter / Customers by month 24 | 40 | 100 |
+| Team / Customers by month 6 | 1 | 2 |
+| Team / Customers by month 12 | 3 | 8 |
+| Team / Customers by month 24 | 10 | 25 |
+| *(derived)* Blended cost per run | 4.6485 | 3.1485000000000003 |
+
+**Downside** — 4 overrides:
+
+| assumption | Main | Downside |
+|---|---|---|
+| LLM cost per run | 0.0285 | 0.04 |
+| Crustdata cost per uncached run | 9.24 | 10.32 |
+| Cache hit rate | 0.5 | 0.25 |
+| Milestone delay months | 0 | 3 |
+| *(derived)* Blended cost per run | 4.6485 | 7.78 |
+
+**Team uncached cap** — 1 override:
+
+| assumption | Main | Team uncached cap |
+|---|---|---|
+| Team / Max uncached runs per customer | 40 | 10 |
+
+**Team repriced** — 1 override:
+
+| assumption | Main | Team repriced |
+|---|---|---|
+| Team / Price per month | 399 | 495 |
+
+**Industry mix** — 1 override:
+
+| assumption | Main | Industry mix |
+|---|---|---|
+| Crustdata cost per uncached run | 9.24 | 8.712 |
+| *(derived)* Blended cost per run | 4.6485 | 4.3845 |
+
+`Blended cost per run` and `Weighted Crustdata cost per uncached run` are calculated variables (blended = LLM cost per run + (1 − Cache hit rate) × Crustdata cost per uncached run), so their differences follow from the overrides above rather than being set independently. `8.712` in Industry mix = 0.4 × 6.3 + 0.6 × 10.32 = 2.52 + 6.192, matching the Industry assumptions table.
+
+### 2.2 Headline metrics per scenario
+
+Read off the Monthly P&L table per scenario (§4).
+
+| scenario | 1st cash-flow + month | lowest ending cash (month) | cash @ m24 (2028-10) | revenue @ m24 | gross margin @ m24 | customers @ m24 |
+|---|---|---|---|---|---|---|
+| Main (Base) | 2028-01 (m15) | 7148.711999999998 (2027-12) | 20739.435999999998 | 7950 | 0.5770918238993711 | 50 |
+| Growth | 2027-06 (m8) | 14614.627999999995 (2027-05) | 115485.772 | 19875 | 0.7140880503144654 | 125 |
+| Downside | none within 24 months | −8531.560000000001 (2028-10) | −8531.560000000001 | 6558 | 0.29537053979871913 | 42 |
+| Team uncached cap | 2027-11 (m13) | 8835.399999999998 (2027-10) | 29702.236 | 7950 | 0.6933182389937107 | 50 |
+| Team repriced | 2027-11 (m13) | 8889.399999999998 (2027-10) | 30051.436 | 8910 | 0.6226576879910214 | 50 |
+| Industry mix | 2028-01 (m15) | 7626.024000000001 (2027-12) | 22646.572 | 7950 | 0.6010012578616354 | 50 |
+
+Downside is the only scenario where cash goes negative: ending cash is **20.319999999995844** at 2027-11 (m13) and **−1353.6000000000045** at 2027-12 (m14).
+
+---
+
+## 3. Pages
+
+[source: `inspect_pages` {org_id:103087, list:{limit:100}}] — 5 pages, 13 blocks total, `page_audiences_enabled: false`.
+
+| # | page | ref | blocks | created | updated |
+|---|---|---|---|---|---|
+| 1 | Summary | `Summary#bf1` | 4 (TEXT, CANVAS, TABLE, CANVAS) | 2026-10-10 16:33:15 GMT | 2026-10-10 17:44:05 GMT |
+| 2 | Assumptions | `Assumptions#c0c` | 3 TABLE | 2026-10-10 16:31:59 GMT | 2026-10-10 17:53:39 GMT |
+| 3 | Monthly P&L & Cash | `Monthly P&L & Cash#ee4` | 1 TABLE | 2026-10-10 16:32:45 GMT | 2026-10-10 16:32:45 GMT |
+| 4 | Unit Economics | `Unit Economics#e10` | 4 TABLE | 2026-10-10 16:32:44 GMT | 2026-10-10 17:53:39 GMT |
+| 5 | Spend Radar — Judge Summary | `Spend Radar — Judge Summary#184` | 1 TEXT | 2026-10-11 04:35:02 GMT | 2026-10-11 04:35:02 GMT |
+
+### 3.1 Summary — text block, verbatim
+
+[source: `inspect_pages` {org_id:103087, read:{target:["Summary","Spend Radar — Judge Summary"], include_text:true}}] — block `Spend Radar: the short version#3b0`, created 2026-10-10T16:35:38.997394Z, updated 2026-10-10T17:43:48.722795Z.
+
+> ## Spend Radar: the short version
+>
+> *Main Scenario =* ***Base****.* ***Growth*** *changes only the Crustdata enrich price ($0.60) and the customer milestones.* ***Downside*** *starts from Base and changes four things: milestones arrive 3 months late, cache hit rate is 25%, Crustdata costs $10.32 per uncached run, and LLM costs $0.040 per run. Model month 1 = Nov 2026.*
+>
+> **First cash-flow positive month**
+>
+> - Base: **Jan 2028** (month 15)
+> - Growth: **Jun 2027** (month 8)
+> - Downside: **not within 24 months** (still burning $163 in Oct 2028)
+>
+> **Lowest cash balance**
+>
+> - Base: **$7,149** in Dec 2027
+> - Growth: **$14,615** in May 2027
+> - Downside: **-$8,532** in Oct 2028
+>
+> **Cash at month 24 (Oct 2028):** Base $20,739 · Growth $115,486 · Downside -$8,532
+>
+> **Cash hits zero:** only in Downside, in **Dec 2027** (month 14). It has $20 left at the end of Nov 2027.
+>
+> **Gross margin at month 24:** Base 57.7% · Growth 71.4% · Downside 29.5% (blended cost per run $4.65 / $3.15 / $7.78)
+>
+> **Biggest cost driver: Crustdata competitor data.** It's about 99% of COGS in every scenario. In Downside, with no caching, a Team customer costs more to serve than they pay (-3.9% margin).
+
+### 3.2 Summary — table block `Base vs Growth vs Downside: key metrics#e87`
+
+Layout: rows Customers, Revenue, Gross margin, Net burn, Ending cash, Months of runway; columns by `[Date.Month]`; comparison in ROWS against `Growth#1a1` and `Downside#5a0` with measures VALUE and DELTA; window 2026-11-01 → 2028-10-31 MONTH. Signature status `partial (formula axis)`.
+
+Every row sources from the Monthly P&L table (`home: Monthly P&L, cash and runway`) and is read-only (`comparison rows are generated from their baseline source`). Full monthly values therefore appear in §4; below is the boundary read.
+
+[source: `inspect_table_blocks` {read:{target:"Base vs Growth vs Downside: key metrics", scenario:"Main Scenario", depth:"all", comparison:"saved", periods:"boundaries"}}]
+
+| row | 2026-11 base | 2026-11 Growth (Δ) | 2026-11 Downside (Δ) | 2028-10 base | 2028-10 Growth (Δ) | 2028-10 Downside (Δ) |
+|---|---|---|---|---|---|---|
+| Customers | 0 | 0 (0) | 0 (0) | 50 | 125 (75) | 42 (−8) |
+| Revenue | 0 | 0 (0) | 0 (0) | 7950 | 19875 (11925) | 6558 (−1392) |
+| Gross margin | null | null | null | 0.5770918238993711 | 0.7140880503144654 (0.13699622641509435) | 0.29537053979871913 (−0.28172128410065195) |
+| Net burn | 2115.2 | 2115.2 (0) | 2115.2 (0) | −2487.88 | −12092.5 (−9604.619999999999) | 162.96000000000004 (2650.84) |
+| Ending cash | 22884.8 | 22884.8 (0) | 22884.8 (0) | 20739.435999999998 | 115485.772 (94746.336) | −8531.560000000001 (−29270.996) |
+| Months of runway | 10.819213313161876 | 10.819213313161876 (0) | 10.819213313161876 (0) | null | null | −52.35370643102601 |
+
+### 3.3 Assumptions page
+
+#### Company assumptions (`Company assumptions#90c`) — 18 rows, all six scenarios
+
+[source: `inspect_table_blocks` {read:{target:"Company assumptions", scenario:"Main Scenario", depth:"all", comparison:{scenarios:["Growth","Downside","Team uncached cap","Team repriced","Industry mix"], measures:["VALUE"]}}}] — grain `NO_GRANULARITY`, 18×6, 108 non-empty cells, 0 formula errors.
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| LLM cost per run | 0.0285 | 0.0285 | 0.04 | 0.0285 | 0.0285 | 0.0285 |
+| Enrich calls per run | 5 | 5 | 5 | 5 | 5 | 5 |
+| Enrich price per record | 1.2 | 0.6 | 1.2 | 1.2 | 1.2 | 1.2 |
+| Search results per run | 360 | 360 | 360 | 360 | 360 | 360 |
+| Search price per 1000 results | 9 | 9 | 9 | 9 | 9 | 9 |
+| Crustdata cost per uncached run | 9.24 | 6.24 | 10.32 | 9.24 | 9.24 | 8.712 |
+| Cache hit rate | 0.5 | 0.5 | 0.25 | 0.5 | 0.5 | 0.5 |
+| Blended cost per run | 4.6485 | 3.1485000000000003 | 7.78 | 4.6485 | 4.6485 | 4.3845 |
+| Allowance utilization | 1 | 1 | 1 | 1 | 1 | 1 |
+| Hosting per month | 15.2 | 15.2 | 15.2 | 15.2 | 15.2 | 15.2 |
+| Founder salary per month | 2000 | 2000 | 2000 | 2000 | 2000 | 2000 |
+| Tools and SaaS per month | 100 | 100 | 100 | 100 | 100 | 100 |
+| Onboarding hours per new customer | 2 | 2 | 2 | 2 | 2 | 2 |
+| Starting cash | 25000 | 25000 | 25000 | 25000 | 25000 | 25000 |
+| Sensitivity cache rate low | 0 | 0 | 0 | 0 | 0 | 0 |
+| Sensitivity cache rate high | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 | 0.5 |
+| Embedded monthly churn (info only) | 0.03 | 0.02 | 0.03 | 0.03 | 0.03 | 0.03 |
+| Milestone delay months | 0 | 0 | 3 | 0 | 0 | 0 |
+
+#### Tier assumptions (`Tier assumptions#00c`) — 2 rows × 7 variables × 6 scenarios
+
+[source: `inspect_table_blocks` {read:{target:"Tier assumptions", scenario:"Main Scenario", depth:"all", comparison:{scenarios:["Growth","Downside","Team uncached cap","Team repriced","Industry mix"], measures:["VALUE"]}}}] — 2×42, 84 non-empty cells, dimension `Plan Tier#b6a` (members Starter, Team).
+
+**Starter:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| Price per month | 99 | 99 | 99 | 99 | 99 | 99 |
+| Included runs per month | 8 | 8 | 8 | 8 | 8 | 8 |
+| Customers by month 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Customers by month 6 | 5 | 10 | 5 | 5 | 5 | 5 |
+| Customers by month 12 | 15 | 35 | 15 | 15 | 15 | 15 |
+| Customers by month 24 | 40 | 100 | 40 | 40 | 40 | 40 |
+| Max uncached runs per customer | 8 | 8 | 8 | 8 | 8 | 8 |
+
+**Team:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| Price per month | 399 | 399 | 399 | 399 | **495** | 399 |
+| Included runs per month | 40 | 40 | 40 | 40 | 40 | 40 |
+| Customers by month 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Customers by month 6 | 1 | 2 | 1 | 1 | 1 | 1 |
+| Customers by month 12 | 3 | 8 | 3 | 3 | 3 | 3 |
+| Customers by month 24 | 10 | 25 | 10 | 10 | 10 | 10 |
+| Max uncached runs per customer | 40 | 40 | 40 | **10** | 40 | 40 |
+
+#### Industry assumptions (`Industry assumptions#2e2`) — identical in all six scenarios
+
+[source: `inspect_table_blocks` {read:{target:"Industry assumptions", scenario:"Main Scenario", depth:"all", comparison:{scenarios:[...5...], measures:["VALUE"]}}}] — 2×18, 36 non-empty cells, dimension `Industry#b2c`.
+
+| Industry | Industry mix share | Crustdata cost per uncached run by industry (USD) | Weighted Crustdata cost per uncached run (USD) |
+|---|---|---|---|
+| Fintech | 0.4 | 6.3 | 2.52 |
+| Observability and digital health | 0.6 | 10.32 | 6.192 |
+
+### 3.4 Unit Economics page
+
+#### Unit economics per customer (`Unit economics per customer#6b6`)
+
+[source: `inspect_table_blocks` {read:{target:"Unit economics per customer", scenario:"Main Scenario", depth:"all", comparison:{scenarios:[...5...], measures:["VALUE"]}}}] — 2×48, 96 non-empty cells.
+
+**Starter:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| Revenue per customer (USD) | 99 | 99 | 99 | 99 | 99 | 99 |
+| Runs per customer | 8 | 8 | 8 | 8 | 8 | 8 |
+| Uncached runs per customer | 4 | 4 | 6 | 4 | 4 | 4 |
+| LLM cost per customer (USD) | 0.228 | 0.228 | 0.32 | 0.228 | 0.228 | 0.228 |
+| Crustdata cost per customer (USD) | 36.96 | 24.96 | 61.92 | 36.96 | 36.96 | 34.848 |
+| Variable COGS per customer (USD) | 37.188 | 25.188000000000002 | 62.24 | 37.188 | 37.188 | 35.076 |
+| Gross profit per customer (USD) | 61.812 | 73.812 | 36.76 | 61.812 | 61.812 | 63.924 |
+| Gross margin per customer | 0.6243636363636363 | 0.7455757575757576 | 0.3713131313131313 | 0.6243636363636363 | 0.6243636363636363 | 0.6456969696969697 |
+
+**Team:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| Revenue per customer (USD) | 399 | 399 | 399 | 399 | 495 | 399 |
+| Runs per customer | 40 | 40 | 40 | 40 | 40 | 40 |
+| Uncached runs per customer | 20 | 20 | 30 | 10 | 20 | 20 |
+| LLM cost per customer (USD) | 1.1400000000000001 | 1.1400000000000001 | 1.6 | 1.1400000000000001 | 1.1400000000000001 | 1.1400000000000001 |
+| Crustdata cost per customer (USD) | 184.8 | 124.80000000000001 | 309.6 | 92.4 | 184.8 | 174.24 |
+| Variable COGS per customer (USD) | 185.94 | 125.94000000000001 | 311.20000000000005 | 93.54 | 185.94 | 175.38 |
+| Gross profit per customer (USD) | 213.06 | 273.06 | 87.79999999999995 | 305.46 | 309.06 | 223.62 |
+| Gross margin per customer | 0.533984962406015 | 0.6843609022556391 | 0.2200501253132831 | 0.765563909774436 | 0.6243636363636363 | 0.5604511278195489 |
+
+#### Cache sensitivity (`Cache sensitivity#c67`)
+
+[source: `inspect_table_blocks` {read:{target:"Cache sensitivity", scenario:"Main Scenario", depth:"all", comparison:{scenarios:[...5...], measures:["VALUE"]}}}] — 2×24, 48 non-empty cells.
+
+**Starter:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| COGS per customer at 0% cached (USD) | 74.148 | 50.148 | 82.88 | 74.148 | 74.148 | 69.92399999999999 |
+| Gross margin at 0% cached | 0.25103030303030305 | 0.4934545454545454 | 0.16282828282828288 | 0.25103030303030305 | 0.25103030303030305 | 0.2936969696969698 |
+| COGS per customer at 50% cached (USD) | 37.188 | 25.188000000000002 | 41.6 | 37.188 | 37.188 | 35.076 |
+| Gross margin at 50% cached | 0.6243636363636363 | 0.7455757575757576 | 0.5797979797979798 | 0.6243636363636363 | 0.6243636363636363 | 0.6456969696969697 |
+
+**Team:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| COGS per customer at 0% cached (USD) | 370.74 | 250.74 | 414.40000000000003 | 93.54 | 370.74 | 349.62 |
+| Gross margin at 0% cached | 0.0708270676691729 | 0.371578947368421 | **−0.03859649122807026** | 0.765563909774436 | 0.251030303030303 | 0.1237593984962406 |
+| COGS per customer at 50% cached (USD) | 185.94 | 125.94000000000001 | 208 | 93.54 | 185.94 | 175.38 |
+| Gross margin at 50% cached | 0.533984962406015 | 0.6843609022556391 | 0.47869674185463656 | 0.765563909774436 | 0.6243636363636363 | 0.5604511278195489 |
+
+The −3.9% figure in the Summary text is this cell: Downside Team at 0% cached, −0.03859649122807026.
+
+#### Team options vs Base: month 24 (`Team options vs Base: month 24#1bd`)
+
+[source: `inspect_table_blocks` {read:{target:"Team options vs Base: month 24", scenario:"Main Scenario", depth:"all", comparison:"saved"}}] — window 2028-10-01 → 2028-10-31, comparison ROWS vs `Team repriced#fac` and `Team uncached cap#85a`, measures VALUE + DELTA. All rows read-only, sourced from Monthly P&L.
+
+| row | Base | Team repriced | Δ vs Base | Team uncached cap | Δ vs Base |
+|---|---|---|---|---|---|
+| Revenue | 7950 | 8910 | 960 | 7950 | 0 |
+| COGS | 3362.12 | 3362.12 | 0 | 2438.12 | −924 |
+| Gross margin | 0.5770918238993711 | 0.6226576879910214 | 0.04556586409165031 | 0.6933182389937107 | 0.11622641509433962 |
+| Ending cash | 20739.435999999998 | 30051.436 | 9312.000000000004 | 29702.236 | 8962.800000000003 |
+
+#### Gross margin by industry (`Gross margin by industry#ecb`)
+
+[source: `inspect_table_blocks` {read:{target:"Gross margin by industry", scenario:"Main Scenario", depth:"all", comparison:{scenarios:[...5...], measures:["VALUE"]}}}] — 2×12, 24 non-empty cells.
+
+**Starter:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| Gross margin if all fintech | 0.7431515151515152 | 0.7431515151515152 | 0.614949494949495 | 0.7431515151515152 | 0.7431515151515152 | 0.7431515151515152 |
+| Gross margin if all observability | 0.5807272727272728 | 0.5807272727272728 | 0.3713131313131314 | 0.5807272727272728 | 0.5807272727272728 | 0.5807272727272728 |
+
+**Team:**
+
+| variable | Main | Growth | Downside | Team uncached cap | Team repriced | Industry mix |
+|---|---|---|---|---|---|---|
+| Gross margin if all fintech | 0.6813533834586466 | 0.6813533834586466 | 0.5223057644110275 | 0.8392481203007519 | 0.7431515151515152 | 0.6813533834586466 |
+| Gross margin if all observability | 0.4798496240601504 | 0.4798496240601504 | 0.2200501253132831 | 0.7384962406015039 | 0.5807272727272728 | 0.4798496240601504 |
+
+### 3.5 Spend Radar — Judge Summary — text block, verbatim
+
+[source: `inspect_pages` {org_id:103087, read:{target:["Summary","Spend Radar — Judge Summary"], include_text:true}}] — block `Spend Radar | 24-month launch plan#6e2`, created and updated 2026-10-11T04:35:02.266608Z. Page icon: `content-file-document`, blue.
+
+> # Spend Radar | 24-month launch plan
+>
+> **Product:** AI people-spend benchmarking for finance teams. Pre-revenue, solo founder; Nov 2026–Oct 2028. Starting cash: **$25,000**.
+>
+> **Pricing:** Starter **$99/month, 8 runs**; Team **$399/month, 40 runs**. Team repriced tests **$495/month** with unchanged customer demand.
+>
+> **Monthly cost to serve, Starter / Team; month-24 recurring revenue; cash outlook:**
+>
+> - **Base:** $37.19 / $185.94; **$7,950 revenue**. Cash-flow positive **Jan 2028**; lowest cash **$7,149, Dec 2027**.
+> - **Growth:** $25.19 / $125.94; **$19,875 revenue**. Cash-flow positive **Jun 2027**; lowest cash **$14,615, May 2027**.
+> - **Downside:** $62.24 / $311.20; **$6,558 revenue**. **Not cash-flow positive within 24 months**; lowest cash **−$8,532, Oct 2028**. Cash runs out **Dec 2027**.
+> - **Team repriced:** $37.19 / $185.94; **$8,910 revenue**. Cash-flow positive **Nov 2027**; lowest cash **$8,889, Oct 2027**.
+> - **Industry mix:** $35.08 / $175.38; **$7,950 revenue**. Cash-flow positive **Jan 2028**; lowest cash **$7,626, Dec 2027**.
+>
+> **Cost driver:** Crustdata competitor data—about **99% of COGS**. Fixed costs: **$15.20 hosting + $2,100 salary/tools monthly**; hosting is excluded from per-customer costs above. Caching is 50%, except Downside at 25%; Downside also delays customers three months. Industry mix is 60% observability/digital health, 40% fintech.
+>
+> **Decision:** Test **Team at $495** before committing to $399: it matches Starter's **62.4% customer margin** and adds **$9,312** to month-24 cash versus Base, assuming unchanged signups. Validate willingness to pay before treating that uplift as a forecast.
+
+Note: the Judge Summary omits the **Team uncached cap** scenario, which is the sixth scenario in the model.
+
+---
+
+## 4. Monthly P&L, cash and runway — all 31 rows × 24 months, per scenario
+
+Table `Monthly P&L, cash and runway#2eb`, page Monthly P&L & Cash. Window 2026-11-01 → 2028-10-31, grain MONTH, all 24 columns in the `forecast` range (`forecast` resolves to "after 2026-09-30"; there are no actuals columns in the window). 31 rows, 24 columns per scenario; coverage `complete` for every read; 0 formula errors.
+
+Month index: m1=2026-11 … m24=2028-10.
+
+### 4.1 Formulas (read from the Main Scenario read; identical across scenarios)
+
+| row | range | formula |
+|---|---|---|
+| Model month | forecast | `iferror(datedif(date(2026, 11, 1), Date.Month, "M") + 1, 0)` |
+| Customers | forecast | `sum(Customers[`Plan Tier` in any])` |
+| Customers[Plan Tier] | actuals | `0` |
+| Customers[Plan Tier] | forecast | `if((`Model month`$[Date.Month = this.Date.Month] - `Milestone delay months`$) < 1, 0, round(if((`Model month`$[...] - `Milestone delay months`$) <= 3, `Customers by month 3`$[`Plan Tier` = this.`Plan Tier`], if((... ) <= 6, `Customers by month 3`$[...] + (`Customers by month 6`$[...] - `Customers by month 3`$[...]) * ((...) - 3) / 3, if((...) <= 12, `Customers by month 6`$[...] + (`Customers by month 12`$[...] - `Customers by month 6`$[...]) * ((...) - 6) / 6, `Customers by month 12`$[...] + (`Customers by month 24`$[...] - `Customers by month 12`$[...]) * ((...) - 12) / 12))), 0))` |
+| New customers | forecast | `sum(`New customers`[`Plan Tier` in any])` |
+| New customers[Plan Tier] | forecast | `if(Customers - Customers[-1] > 0, Customers - Customers[-1], 0)` |
+| Onboarding hours | forecast | `` `New customers` * `Onboarding hours per new customer`$ `` |
+| Analysis runs | forecast | `sum(`Analysis runs`[`Plan Tier` in any])` |
+| Analysis runs[Plan Tier] | forecast | `` Customers * `Included runs per month`$[`Plan Tier` = this.`Plan Tier`] * `Allowance utilization`$ `` |
+| Revenue | forecast | `sum(Revenue[`Plan Tier` in any])` |
+| Revenue[Plan Tier] | forecast | `` Customers * `Price per month`$[`Plan Tier` = this.`Plan Tier`] `` |
+| LLM inference cost | forecast | `sum(`LLM inference cost`[`Plan Tier` in any])` |
+| LLM inference cost[Plan Tier] | forecast | `` `Analysis runs` * `LLM cost per run`$ `` |
+| Crustdata cost | forecast | `sum(`Crustdata cost`[`Plan Tier` in any])` |
+| Crustdata cost[Plan Tier] | forecast | `` Customers * `Uncached runs per customer`$[`Plan Tier` = this.`Plan Tier`] * `Crustdata cost per uncached run`$ `` |
+| Hosting | forecast | `` if(`Model month` >= 1, `Hosting per month`$, 0) `` |
+| COGS | forecast | `` `LLM inference cost` + `Crustdata cost` + Hosting `` |
+| Gross profit | forecast | `Revenue - COGS` |
+| Gross margin | timeless | `` iferror(`Gross profit` / Revenue, NULL) `` (inherited from `Gross margin#1d5`, condition `[]`) |
+| Founder salary | forecast | `` if(`Model month` >= 1, `Founder salary per month`$, 0) `` |
+| Tools and SaaS | forecast | `` if(`Model month` >= 1, `Tools and SaaS per month`$, 0) `` |
+| Operating expenses | forecast | `` `Founder salary` + `Tools and SaaS` `` |
+| Net cash flow | forecast | `` `Gross profit` - `Operating expenses` `` |
+| Net burn | forecast | `` -`Net cash flow` `` |
+| Ending cash | forecast | `` if(`Model month` = 1, `Starting cash`$, `Ending cash`[-1]) + `Net cash flow` `` |
+| Months of runway | forecast | `` if(`Net burn` > 0, `Ending cash` / `Net burn`, NULL) `` |
+
+Tool note on every read: "Distinct Plan Tier members in the visible calculated row layout: Model month: 0; Customers: 2; New customers: 2; Onboarding hours: 0; Analysis runs: 2; Revenue: 2; LLM inference cost: 2; Crustdata cost: 2; Hosting: 0; COGS: 0; Gross profit: 0; Gross margin: 0; Founder salary: 0; Tools and SaaS: 0; Operating expenses: 0; Net cash flow: 0; Net burn: 0; Ending cash: 0; Months of runway: 0."
+
+### 4.2 Main Scenario (Base)
+
+[source: `inspect_table_blocks` {read:{target:"Monthly P&L, cash and runway", scenario:"Main Scenario", depth:"all", comparison:"none", limit:500}}] — calculation source `promoted`, 731 non-empty cells.
+
+| row | m1 … m24 (2026-11 → 2028-10) |
+|---|---|
+| Model month | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 |
+| Customers | 0, 0, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 21, 23, 26, 28, 31, 35, 37, 40, 42, 45, 47, 50 |
+| Customers[Starter] | 0, 0, 0, 2, 3, 5, 7, 8, 10, 12, 13, 15, 17, 19, 21, 23, 25, 28, 30, 32, 34, 36, 38, 40 |
+| Customers[Team] | 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7, 8, 8, 9, 9, 10 |
+| New customers | 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 3, 2, 3, 4, 2, 3, 2, 3, 2, 3 |
+| New customers[Starter] | 0, 0, 0, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2 |
+| New customers[Team] | 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1 |
+| Onboarding hours | 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 4, 6, 4, 6, 8, 4, 6, 4, 6, 4, 6 |
+| Analysis runs | 0, 0, 0, 16, 64, 80, 96, 144, 160, 176, 224, 240, 296, 312, 368, 384, 440, 504, 520, 576, 592, 648, 664, 720 |
+| Analysis runs[Starter] | 0, 0, 0, 16, 24, 40, 56, 64, 80, 96, 104, 120, 136, 152, 168, 184, 200, 224, 240, 256, 272, 288, 304, 320 |
+| Analysis runs[Team] | 0, 0, 0, 0, 40, 40, 40, 80, 80, 80, 120, 120, 160, 160, 200, 200, 240, 280, 280, 320, 320, 360, 360, 400 |
+| Revenue | 0, 0, 0, 198, 696, 894, 1092, 1590, 1788, 1986, 2484, 2682, 3279, 3477, 4074, 4272, 4869, 5565, 5763, 6360, 6558, 7155, 7353, 7950 |
+| Revenue[Starter] | 0, 0, 0, 198, 297, 495, 693, 792, 990, 1188, 1287, 1485, 1683, 1881, 2079, 2277, 2475, 2772, 2970, 3168, 3366, 3564, 3762, 3960 |
+| Revenue[Team] | 0, 0, 0, 0, 399, 399, 399, 798, 798, 798, 1197, 1197, 1596, 1596, 1995, 1995, 2394, 2793, 2793, 3192, 3192, 3591, 3591, 3990 |
+| LLM inference cost | 0, 0, 0, 0.456, 1.8240000000000003, 2.2800000000000002, 2.736, 4.104, 4.5600000000000005, 5.016, 6.384, 6.84, 8.436, 8.892, 10.488, 10.943999999999999, 12.54, 14.364, 14.82, 16.416, 16.872, 18.468, 18.924, 20.520000000000003 |
+| LLM inference cost[Starter] | 0, 0, 0, 0.456, 0.684, 1.1400000000000001, 1.596, 1.824, 2.2800000000000002, 2.736, 2.964, 3.42, 3.8760000000000003, 4.332, 4.788, 5.244, 5.7, 6.384, 6.84, 7.296, 7.752000000000001, 8.208, 8.664, 9.120000000000001 |
+| LLM inference cost[Team] | 0, 0, 0, 0, 1.1400000000000001, 1.1400000000000001, 1.1400000000000001, 2.2800000000000002, 2.2800000000000002, 2.2800000000000002, 3.42, 3.42, 4.5600000000000005, 4.5600000000000005, 5.7, 5.7, 6.84, 7.98, 7.98, 9.120000000000001, 9.120000000000001, 10.26, 10.26, 11.4 |
+| Crustdata cost | 0, 0, 0, 73.92, 295.68, 369.6, 443.52000000000004, 665.28, 739.2, 813.12, 1034.88, 1108.8, 1367.52, 1441.44, 1700.1599999999999, 1774.08, 2032.8, 2328.4800000000005, 2402.4, 2661.12, 2735.04, 2993.76, 3067.6800000000003, 3326.4 |
+| Crustdata cost[Starter] | 0, 0, 0, 73.92, 110.88, 184.8, 258.72, 295.68, 369.6, 443.52, 480.48, 554.4, 628.32, 702.24, 776.16, 850.08, 924, 1034.88, 1108.8, 1182.72, 1256.64, 1330.56, 1404.48, 1478.4 |
+| Crustdata cost[Team] | 0, 0, 0, 0, 184.8, 184.8, 184.8, 369.6, 369.6, 369.6, 554.4, 554.4, 739.2, 739.2, 924, 924, 1108.8, 1293.6000000000001, 1293.6000000000001, 1478.4, 1478.4, 1663.2, 1663.2, 1848 |
+| Hosting | 15.2 × 24 |
+| COGS | 15.2, 15.2, 15.2, 89.57600000000001, 312.704, 387.08, 461.456, 684.5840000000001, 758.96, 833.336, 1056.4640000000002, 1130.84, 1391.156, 1465.5320000000002, 1725.848, 1800.224, 2060.54, 2358.0440000000003, 2432.42, 2692.736, 2767.1119999999996, 3027.428, 3101.804, 3362.12 |
+| Gross profit | −15.2, −15.2, −15.2, 108.42399999999999, 383.296, 506.92, 630.544, 905.4159999999999, 1029.04, 1152.664, 1427.5359999999998, 1551.16, 1887.844, 2011.4679999999998, 2348.152, 2471.776, 2808.46, 3206.9559999999997, 3330.58, 3667.264, 3790.8880000000004, 4127.572, 4251.196, 4587.88 |
+| Gross margin | null, null, null, 0.5475959595959595, 0.5507126436781609, 0.5670246085011186, 0.5774212454212454, 0.5694440251572327, 0.5755257270693512, 0.5803947633434038, 0.5746924315619967, 0.5783594332587622, 0.575737724916133, 0.5785067587000288, 0.5763750613647521, 0.5785992509363296, 0.5768042719244199, 0.5762724168912847, 0.5779246920006941, 0.5766138364779875, 0.578055504727051, 0.5768793850454228, 0.5781580307357541, 0.5770918238993711 |
+| Founder salary | 2000 × 24 |
+| Tools and SaaS | 100 × 24 |
+| Operating expenses | 2100 × 24 |
+| Net cash flow | −2115.2, −2115.2, −2115.2, −1991.576, −1716.704, −1593.08, −1469.4560000000001, −1194.584, −1070.96, −947.336, −672.4640000000002, −548.8399999999999, −212.15599999999995, −88.53200000000015, 248.15200000000004, 371.77599999999984, 708.46, 1106.9559999999997, 1230.58, 1567.2640000000001, 1690.8880000000004, 2027.5720000000001, 2151.196, 2487.88 |
+| Net burn | 2115.2, 2115.2, 2115.2, 1991.576, 1716.704, 1593.08, 1469.4560000000001, 1194.584, 1070.96, 947.336, 672.4640000000002, 548.8399999999999, 212.15599999999995, 88.53200000000015, −248.15200000000004, −371.77599999999984, −708.46, −1106.9559999999997, −1230.58, −1567.2640000000001, −1690.8880000000004, −2027.5720000000001, −2151.196, −2487.88 |
+| Ending cash | 22884.8, 20769.6, 18654.399999999998, 16662.823999999997, 14946.119999999997, 13353.039999999997, 11883.583999999997, 10688.999999999996, 9618.039999999997, 8670.703999999998, 7998.239999999998, 7449.399999999998, 7237.243999999998, 7148.711999999998, 7396.863999999998, 7768.639999999998, 8477.099999999999, 9584.055999999999, 10814.635999999999, 12381.899999999998, 14072.787999999999, 16100.359999999999, 18251.555999999997, 20739.435999999998 |
+| Months of runway | 10.819213313161876, 9.819213313161876, 8.819213313161876, 8.366652339654623, 8.706288329263517, 8.381901724960453, 8.08706351193911, 8.947884786670503, 8.980764921192199, 9.152723004298368, 11.89393038140331, 13.572990306828947, 34.112841493994985, 80.74721004834393, null × 10 |
+
+### 4.3 Growth
+
+[source: `inspect_table_blocks` {read:{target:"Monthly P&L, cash and runway", scenario:"Growth", depth:"all", comparison:"none", limit:500}}] — 724 non-empty cells.
+
+| row | m1 … m24 |
+|---|---|
+| Model month | 1 … 24 |
+| Customers | 0, 0, 0, 4, 8, 12, 17, 22, 28, 33, 38, 43, 49, 57, 63, 71, 77, 85, 91, 97, 105, 111, 119, 125 |
+| Customers[Starter] | 0, 0, 0, 3, 7, 10, 14, 18, 23, 27, 31, 35, 40, 46, 51, 57, 62, 68, 73, 78, 84, 89, 95, 100 |
+| Customers[Team] | 0, 0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 14, 15, 17, 18, 19, 21, 22, 24, 25 |
+| New customers | 0, 0, 0, 4, 4, 4, 5, 5, 6, 5, 5, 5, 6, 8, 6, 8, 6, 8, 6, 6, 8, 6, 8, 6 |
+| New customers[Starter] | 0, 0, 0, 3, 4, 3, 4, 4, 5, 4, 4, 4, 5, 6, 5, 6, 5, 6, 5, 5, 6, 5, 6, 5 |
+| New customers[Team] | 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1 |
+| Onboarding hours | 0, 0, 0, 8, 8, 8, 10, 10, 12, 10, 10, 10, 12, 16, 12, 16, 12, 16, 12, 12, 16, 12, 16, 12 |
+| Analysis runs | 0, 0, 0, 64, 96, 160, 232, 304, 384, 456, 528, 600, 680, 808, 888, 1016, 1096, 1224, 1304, 1384, 1512, 1592, 1720, 1800 |
+| Analysis runs[Starter] | 0, 0, 0, 24, 56, 80, 112, 144, 184, 216, 248, 280, 320, 368, 408, 456, 496, 544, 584, 624, 672, 712, 760, 800 |
+| Analysis runs[Team] | 0, 0, 0, 40, 40, 80, 120, 160, 200, 240, 280, 320, 360, 440, 480, 560, 600, 680, 720, 760, 840, 880, 960, 1000 |
+| Revenue | 0, 0, 0, 696, 1092, 1788, 2583, 3378, 4272, 5067, 5862, 6657, 7551, 8943, 9837, 11229, 12123, 13515, 14409, 15303, 16695, 17589, 18981, 19875 |
+| Revenue[Starter] | 0, 0, 0, 297, 693, 990, 1386, 1782, 2277, 2673, 3069, 3465, 3960, 4554, 5049, 5643, 6138, 6732, 7227, 7722, 8316, 8811, 9405, 9900 |
+| Revenue[Team] | 0, 0, 0, 399, 399, 798, 1197, 1596, 1995, 2394, 2793, 3192, 3591, 4389, 4788, 5586, 5985, 6783, 7182, 7581, 8379, 8778, 9576, 9975 |
+| LLM inference cost | 0, 0, 0, 1.8240000000000003, 2.736, 4.5600000000000005, 6.612, 8.664000000000001, 10.943999999999999, 12.996, 15.048000000000002, 17.1, 19.380000000000003, 23.028, 25.308, 28.956000000000003, 31.236000000000004, 34.884, 37.164, 39.444, 43.092, 45.372, 49.019999999999996, 51.3 |
+| LLM inference cost[Starter] | 0, 0, 0, 0.684, 1.596, 2.2800000000000002, 3.192, 4.104, 5.244, 6.156000000000001, 7.0680000000000005, 7.98, 9.120000000000001, 10.488, 11.628, 12.996, 14.136000000000001, 15.504000000000001, 16.644000000000002, 17.784, 19.152, 20.292, 21.66, 22.8 |
+| LLM inference cost[Team] | 0, 0, 0, 1.1400000000000001, 1.1400000000000001, 2.2800000000000002, 3.42, 4.5600000000000005, 5.7, 6.84, 7.98, 9.120000000000001, 10.26, 12.540000000000001, 13.68, 15.96, 17.1, 19.38, 20.52, 21.66, 23.94, 25.080000000000002, 27.36, 28.5 |
+| Crustdata cost | 0, 0, 0, 199.68, 299.52, 499.20000000000005, 723.84, 948.48, 1198.08, 1422.7200000000003, 1647.3600000000001, 1872, 2121.6000000000004, 2520.96, 2770.5600000000004, 3169.92, 3419.52, 3818.88, 4068.4800000000005, 4318.08, 4717.4400000000005, 4967.04, 5366.400000000001, 5616 |
+| Crustdata cost[Starter] | 0, 0, 0, 74.88, 174.72, 249.60000000000002, 349.44, 449.28000000000003, 574.08, 673.9200000000001, 773.76, 873.6, 998.4000000000001, 1148.16, 1272.96, 1422.72, 1547.52, 1697.28, 1822.0800000000002, 1946.88, 2096.64, 2221.44, 2371.2000000000003, 2496 |
+| Crustdata cost[Team] | 0, 0, 0, 124.80000000000001, 124.80000000000001, 249.60000000000002, 374.40000000000003, 499.20000000000005, 624, 748.8000000000001, 873.6, 998.4000000000001, 1123.2, 1372.8, 1497.6000000000001, 1747.2, 1872, 2121.6, 2246.4, 2371.2000000000003, 2620.8, 2745.6, 2995.2000000000003, 3120 |
+| Hosting | 15.2 × 24 |
+| COGS | 15.2, 15.2, 15.2, 216.704, 317.45599999999996, 518.96, 745.652, 972.344, 1224.224, 1450.9160000000004, 1677.6080000000002, 1904.3, 2156.1800000000003, 2559.1879999999996, 2811.068, 3214.076, 3465.9559999999997, 3868.964, 4120.844, 4372.724, 4775.732, 5027.612, 5430.620000000001, 5682.5 |
+| Gross profit | −15.2, −15.2, −15.2, 479.296, 774.5440000000001, 1269.04, 1837.348, 2405.656, 3047.776, 3616.084, 4184.392, 4752.7, 5394.82, 6383.812, 7025.932, 8014.924, 8657.044, 9646.036, 10288.155999999999, 10930.276, 11919.268, 12561.387999999999, 13550.38, 14192.5 |
+| Gross margin | null, null, null, 0.6886436781609195, 0.7092893772893774, 0.7097539149888143, 0.7113232675183895, 0.712153937240971, 0.7134307116104869, 0.7136538385632524, 0.7138164448993517, 0.7139402133092985, 0.7144510660839624, 0.7138333892429833, 0.7142352343194063, 0.7137700596669339, 0.7141008001319805, 0.7137281539030707, 0.7140090221389409, 0.7142570737763837, 0.7139423779574723, 0.7141615782591392, 0.7138917865233654, 0.7140880503144654 |
+| Founder salary | 2000 × 24 |
+| Tools and SaaS | 100 × 24 |
+| Operating expenses | 2100 × 24 |
+| Net cash flow | −2115.2, −2115.2, −2115.2, −1620.704, −1325.456, −830.96, −262.65200000000004, 305.65599999999995, 947.7759999999998, 1516.0839999999998, 2084.392, 2652.7, 3294.8199999999997, 4283.812, 4925.932, 5914.924, 6557.044, 7546.036, 8188.155999999999, 8830.276, 9819.268, 10461.387999999999, 11450.38, 12092.5 |
+| Net burn | 2115.2, 2115.2, 2115.2, 1620.704, 1325.456, 830.96, 262.65200000000004, −305.65599999999995, −947.7759999999998, −1516.0839999999998, −2084.392, −2652.7, −3294.8199999999997, −4283.812, −4925.932, −5914.924, −6557.044, −7546.036, −8188.155999999999, −8830.276, −9819.268, −10461.387999999999, −11450.38, −12092.5 |
+| Ending cash | 22884.8, 20769.6, 18654.399999999998, 17033.695999999996, 15708.239999999996, 14877.279999999995, 14614.627999999995, 14920.283999999996, 15868.059999999996, 17384.143999999997, 19468.535999999996, 22121.235999999997, 25416.055999999997, 29699.867999999995, 34625.799999999996, 40540.723999999995, 47097.768, 54643.804, 62831.95999999999, 71662.23599999999, 81481.50399999999, 91942.89199999999, 103393.272, 115485.772 |
+| Months of runway | 10.819213313161876, 9.819213313161876, 8.819213313161876, 10.510059825853455, 11.851196871114542, 17.903725811110036, 55.642553645127364, null × 17 |
+
+### 4.4 Downside
+
+[source: `inspect_table_blocks` {read:{target:"Monthly P&L, cash and runway", scenario:"Downside", depth:"all", comparison:"none", limit:500}}] — 738 non-empty cells.
+
+| row | m1 … m24 |
+|---|---|
+| Model month | 1 … 24 |
+| Customers | 0, 0, 0, 0, 0, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 21, 23, 26, 28, 31, 35, 37, 40, 42 |
+| Customers[Starter] | 0, 0, 0, 0, 0, 0, 2, 3, 5, 7, 8, 10, 12, 13, 15, 17, 19, 21, 23, 25, 28, 30, 32, 34 |
+| Customers[Team] | 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 7, 8, 8 |
+| New customers | 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 3, 2, 3, 4, 2, 3, 2 |
+| New customers[Starter] | 0, 0, 0, 0, 0, 0, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2 |
+| New customers[Team] | 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0 |
+| Onboarding hours | 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6, 4, 6, 4, 6, 8, 4, 6, 4 |
+| Analysis runs | 0, 0, 0, 0, 0, 0, 16, 64, 80, 96, 144, 160, 176, 224, 240, 296, 312, 368, 384, 440, 504, 520, 576, 592 |
+| Analysis runs[Starter] | 0, 0, 0, 0, 0, 0, 16, 24, 40, 56, 64, 80, 96, 104, 120, 136, 152, 168, 184, 200, 224, 240, 256, 272 |
+| Analysis runs[Team] | 0, 0, 0, 0, 0, 0, 0, 40, 40, 40, 80, 80, 80, 120, 120, 160, 160, 200, 200, 240, 280, 280, 320, 320 |
+| Revenue | 0, 0, 0, 0, 0, 0, 198, 696, 894, 1092, 1590, 1788, 1986, 2484, 2682, 3279, 3477, 4074, 4272, 4869, 5565, 5763, 6360, 6558 |
+| Revenue[Starter] | 0, 0, 0, 0, 0, 0, 198, 297, 495, 693, 792, 990, 1188, 1287, 1485, 1683, 1881, 2079, 2277, 2475, 2772, 2970, 3168, 3366 |
+| Revenue[Team] | 0, 0, 0, 0, 0, 0, 0, 399, 399, 399, 798, 798, 798, 1197, 1197, 1596, 1596, 1995, 1995, 2394, 2793, 2793, 3192, 3192 |
+| LLM inference cost | 0, 0, 0, 0, 0, 0, 0.64, 2.56, 3.2, 3.8400000000000003, 5.76, 6.4, 7.04, 8.96, 9.6, 11.84, 12.48, 14.719999999999999, 15.36, 17.6, 20.160000000000004, 20.8, 23.04, 23.68 |
+| LLM inference cost[Starter] | 0, 0, 0, 0, 0, 0, 0.64, 0.96, 1.6, 2.24, 2.56, 3.2, 3.84, 4.16, 4.8, 5.44, 6.08, 6.72, 7.36, 8, 8.96, 9.6, 10.24, 10.88 |
+| LLM inference cost[Team] | 0, 0, 0, 0, 0, 0, 0, 1.6, 1.6, 1.6, 3.2, 3.2, 3.2, 4.8, 4.8, 6.4, 6.4, 8, 8, 9.6, 11.200000000000001, 11.200000000000001, 12.8, 12.8 |
+| Crustdata cost | 0, 0, 0, 0, 0, 0, 123.84, 495.36, 619.2, 743.04, 1114.56, 1238.4, 1362.24, 1733.7600000000002, 1857.6000000000001, 2291.04, 2414.88, 2848.3199999999997, 2972.16, 3405.6000000000004, 3900.96, 4024.8, 4458.24, 4582.08 |
+| Crustdata cost[Starter] | 0, 0, 0, 0, 0, 0, 123.84, 185.76, 309.6, 433.44, 495.36, 619.2, 743.04, 804.96, 928.8000000000001, 1052.64, 1176.48, 1300.32, 1424.16, 1548, 1733.76, 1857.6000000000001, 1981.44, 2105.28 |
+| Crustdata cost[Team] | 0, 0, 0, 0, 0, 0, 0, 309.6, 309.6, 309.6, 619.2, 619.2, 619.2, 928.8000000000001, 928.8000000000001, 1238.4, 1238.4, 1548, 1548, 1857.6000000000001, 2167.2000000000003, 2167.2000000000003, 2476.8, 2476.8 |
+| Hosting | 15.2 × 24 |
+| COGS | 15.2, 15.2, 15.2, 15.2, 15.2, 15.2, 139.67999999999998, 513.12, 637.6000000000001, 762.08, 1135.52, 1260.0000000000002, 1384.48, 1757.9200000000003, 1882.4, 2318.08, 2442.56, 2878.2399999999993, 3002.72, 3438.4, 3936.3199999999997, 4060.8, 4496.48, 4620.96 |
+| Gross profit | −15.2, −15.2, −15.2, −15.2, −15.2, −15.2, 58.32000000000002, 182.88, 256.39999999999986, 329.91999999999996, 454.48, 527.9999999999998, 601.52, 726.0799999999997, 799.5999999999999, 960.9200000000001, 1034.44, 1195.7600000000007, 1269.2800000000002, 1430.6, 1628.6800000000003, 1702.1999999999998, 1863.5200000000004, 1937.04 |
+| Gross margin | null × 6, 0.29454545454545467, 0.26275862068965516, 0.286800894854586, 0.3021245421245421, 0.2858364779874214, 0.29530201342281864, 0.30288016112789523, 0.2923027375201287, 0.2981357196122296, 0.29305275998780117, 0.29750934713833765, 0.29351006381934236, 0.2971161048689139, 0.2938180324501951, 0.29266486972147354, 0.2953669963560645, 0.2930062893081762, 0.29537053979871913 |
+| Founder salary | 2000 × 24 |
+| Tools and SaaS | 100 × 24 |
+| Operating expenses | 2100 × 24 |
+| Net cash flow | −2115.2, −2115.2, −2115.2, −2115.2, −2115.2, −2115.2, −2041.68, −1917.12, −1843.6000000000001, −1770.08, −1645.52, −1572.0000000000002, −1498.48, −1373.9200000000003, −1300.4, −1139.08, −1065.56, −904.2399999999993, −830.7199999999998, −669.4000000000001, −471.3199999999997, −397.8000000000002, −236.47999999999956, −162.96000000000004 |
+| Net burn | 2115.2, 2115.2, 2115.2, 2115.2, 2115.2, 2115.2, 2041.68, 1917.12, 1843.6000000000001, 1770.08, 1645.52, 1572.0000000000002, 1498.48, 1373.9200000000003, 1300.4, 1139.08, 1065.56, 904.2399999999993, 830.7199999999998, 669.4000000000001, 471.3199999999997, 397.8000000000002, 236.47999999999956, 162.96000000000004 |
+| Ending cash | 22884.8, 20769.6, 18654.399999999998, 16539.199999999997, 14423.999999999996, 12308.799999999996, 10267.119999999995, 8349.999999999996, 6506.399999999996, 4736.319999999996, 3090.799999999996, 1518.7999999999959, 20.319999999995844, −1353.6000000000045, −2654.0000000000045, −3793.0800000000045, −4858.640000000005, −5762.880000000005, −6593.600000000004, −7263.000000000004, −7734.320000000003, −8132.1200000000035, −8368.600000000002, −8531.560000000001 |
+| Months of runway | 10.819213313161876, 9.819213313161876, 8.819213313161876, 7.8192133131618755, 6.819213313161875, 5.819213313161875, 5.028760628502016, 4.355491570689366, 3.5291820351486196, 2.6757660670704126, 1.878312022947151, 0.9661577608142466, 0.013560407879982278, −0.9852102014673374, −2.0409104890802863, −3.3299504863574154, −4.559705694658213, −6.373175263204469, −7.937211093990761, −10.850014938751125, −16.409912585928897, −20.44273504273504, −35.38819350473621, −52.35370643102601 |
+
+### 4.5 Team uncached cap
+
+[source: `inspect_table_blocks` {read:{target:"Monthly P&L, cash and runway", scenario:"Team uncached cap", depth:"all", comparison:"none", limit:500}}] — 729 non-empty cells. Customers, New customers, Onboarding hours, Analysis runs, Revenue, LLM inference cost, Hosting, Founder salary, Tools and SaaS and Operating expenses are **identical to Main Scenario** (§4.2). The differing rows:
+
+| row | m1 … m24 |
+|---|---|
+| Crustdata cost | 0, 0, 0, 73.92, 203.28, 277.20000000000005, 351.12, 480.48, 554.4000000000001, 628.3199999999999, 757.6800000000001, 831.5999999999999, 997.9200000000001, 1071.8400000000001, 1238.1599999999999, 1312.08, 1478.4, 1681.6800000000003, 1755.6, 1921.92, 1995.8400000000001, 2162.16, 2236.08, 2402.4 |
+| Crustdata cost[Starter] | 0, 0, 0, 73.92, 110.88, 184.8, 258.72, 295.68, 369.6, 443.52, 480.48, 554.4, 628.32, 702.24, 776.16, 850.08, 924, 1034.88, 1108.8, 1182.72, 1256.64, 1330.56, 1404.48, 1478.4 |
+| Crustdata cost[Team] | 0, 0, 0, 0, 92.4, 92.4, 92.4, 184.8, 184.8, 184.8, 277.2, 277.2, 369.6, 369.6, 462, 462, 554.4, 646.8000000000001, 646.8000000000001, 739.2, 739.2, 831.6, 831.6, 924 |
+| COGS | 15.2, 15.2, 15.2, 89.57600000000001, 220.304, 294.68, 369.056, 499.784, 574.1600000000001, 648.536, 779.2640000000001, 853.64, 1021.5560000000002, 1095.9320000000002, 1263.848, 1338.224, 1506.14, 1711.2440000000004, 1785.62, 1953.536, 2027.9120000000003, 2195.8279999999995, 2270.2039999999997, 2438.12 |
+| Gross profit | −15.2, −15.2, −15.2, 108.42399999999999, 475.696, 599.3199999999999, 722.944, 1090.216, 1213.84, 1337.464, 1704.7359999999999, 1828.3600000000001, 2257.444, 2381.0679999999998, 2810.152, 2933.776, 3362.8599999999997, 3853.7559999999994, 3977.38, 4406.464, 4530.088, 4959.1720000000005, 5082.796, 5511.88 |
+| Gross margin | null, null, null, 0.5475959595959595, 0.6834712643678161, 0.6703803131991051, 0.66203663003663, 0.6856704402515723, 0.6788814317673377, 0.6734461228600201, 0.6862866344605475, 0.6817151379567488, 0.6884550167734065, 0.6848052919183203, 0.6897771232204222, 0.6867453183520599, 0.6906674881905935, 0.6924988319856243, 0.6901579038695125, 0.692840251572327, 0.6907727965843244, 0.6931058001397624, 0.6912547259621923, 0.6933182389937107 |
+| Net cash flow | −2115.2, −2115.2, −2115.2, −1991.576, −1624.304, −1500.68, −1377.056, −1009.7840000000001, −886.1600000000001, −762.5360000000001, −395.2640000000001, −271.6399999999999, 157.44399999999996, 281.06799999999976, 710.152, 833.7759999999998, 1262.8599999999997, 1753.7559999999994, 1877.38, 2306.464, 2430.0879999999997, 2859.1720000000005, 2982.7960000000003, 3411.88 |
+| Net burn | 2115.2, 2115.2, 2115.2, 1991.576, 1624.304, 1500.68, 1377.056, 1009.7840000000001, 886.1600000000001, 762.5360000000001, 395.2640000000001, 271.6399999999999, −157.44399999999996, −281.06799999999976, −710.152, −833.7759999999998, −1262.8599999999997, −1753.7559999999994, −1877.38, −2306.464, −2430.0879999999997, −2859.1720000000005, −2982.7960000000003, −3411.88 |
+| Ending cash | 22884.8, 20769.6, 18654.399999999998, 16662.823999999997, 15038.519999999997, 13537.839999999997, 12160.783999999996, 11150.999999999996, 10264.839999999997, 9502.303999999996, 9107.039999999997, 8835.399999999998, 8992.843999999997, 9273.911999999997, 9984.063999999997, 10817.839999999997, 12080.699999999997, 13834.455999999996, 15711.835999999996, 18018.299999999996, 20448.387999999995, 23307.559999999998, 26290.356, 29702.236 |
+| Months of runway | 10.819213313161876, 9.819213313161876, 8.819213313161876, 8.366652339654623, 9.258439306927764, 9.021137084521682, 8.83100178932447, 11.042955721223544, 11.58350636453913, 12.461449688932714, 23.040398316062163, 32.52613753497277, null × 12 |
+
+### 4.6 Team repriced
+
+[source: `inspect_table_blocks` {read:{target:"Monthly P&L, cash and runway", scenario:"Team repriced", depth:"all", comparison:"none", limit:500}}] — 729 non-empty cells. Customers, New customers, Onboarding hours, Analysis runs, LLM inference cost, Crustdata cost, Hosting, COGS, Founder salary, Tools and SaaS and Operating expenses are **identical to Main Scenario** (§4.2). The differing rows:
+
+| row | m1 … m24 |
+|---|---|
+| Revenue | 0, 0, 0, 198, 792, 990, 1188, 1782, 1980, 2178, 2772, 2970, 3663, 3861, 4554, 4752, 5445, 6237, 6435, 7128, 7326, 8019, 8217, 8910 |
+| Revenue[Starter] | 0, 0, 0, 198, 297, 495, 693, 792, 990, 1188, 1287, 1485, 1683, 1881, 2079, 2277, 2475, 2772, 2970, 3168, 3366, 3564, 3762, 3960 |
+| Revenue[Team] | 0, 0, 0, 0, 495, 495, 495, 990, 990, 990, 1485, 1485, 1980, 1980, 2475, 2475, 2970, 3465, 3465, 3960, 3960, 4455, 4455, 4950 |
+| Gross profit | −15.2, −15.2, −15.2, 108.42399999999999, 479.296, 602.9200000000001, 726.544, 1097.416, 1221.04, 1344.664, 1715.5359999999998, 1839.16, 2271.844, 2395.468, 2828.152, 2951.776, 3384.46, 3878.9559999999997, 4002.58, 4435.264, 4558.888000000001, 4991.572, 5115.196, 5547.88 |
+| Gross margin | null, null, null, 0.5475959595959595, 0.6051717171717171, 0.6090101010101011, 0.6115690235690235, 0.6158338945005611, 0.6166868686868686, 0.6173847566574839, 0.6188802308802308, 0.6192457912457913, 0.6202140322140323, 0.6204268324268324, 0.6210259112867809, 0.6211649831649831, 0.6215720844811754, 0.6219265672599006, 0.622001554001554, 0.6222312008978675, 0.6222888342888344, 0.6224681381718419, 0.6225138128270659, 0.6226576879910214 |
+| Net cash flow | −2115.2, −2115.2, −2115.2, −1991.576, −1620.704, −1497.08, −1373.4560000000001, −1002.5840000000001, −878.96, −755.336, −384.46400000000017, −260.8399999999999, 171.84400000000005, 295.46799999999985, 728.152, 851.7759999999998, 1284.46, 1778.9559999999997, 1902.58, 2335.264, 2458.888000000001, 2891.572, 3015.196, 3447.88 |
+| Net burn | 2115.2, 2115.2, 2115.2, 1991.576, 1620.704, 1497.08, 1373.4560000000001, 1002.5840000000001, 878.96, 755.336, 384.46400000000017, 260.8399999999999, −171.84400000000005, −295.46799999999985, −728.152, −851.7759999999998, −1284.46, −1778.9559999999997, −1902.58, −2335.264, −2458.888000000001, −2891.572, −3015.196, −3447.88 |
+| Ending cash | 22884.8, 20769.6, 18654.399999999998, 16662.823999999997, 15042.119999999997, 13545.039999999997, 12171.583999999997, 11168.999999999996, 10290.039999999997, 9534.703999999998, 9150.239999999998, 8889.399999999998, 9061.243999999999, 9356.712, 10084.864, 10936.64, 12221.099999999999, 14000.055999999999, 15902.635999999999, 18237.899999999998, 20696.788, 23588.36, 26603.556, 30051.436 |
+| Months of runway | 10.819213313161876, 9.819213313161876, 8.819213313161876, 8.366652339654623, 9.2812259363832, 9.04763940470783, 8.862012325112705, 11.140213687830641, 11.707062892509326, 12.623129309340476, 23.79999167672394, 34.07989572151511, null × 12 |
+
+### 4.7 Industry mix
+
+[source: `inspect_table_blocks` {read:{target:"Monthly P&L, cash and runway", scenario:"Industry mix", depth:"all", comparison:"none", limit:500}}] — 731 non-empty cells. Customers, New customers, Onboarding hours, Analysis runs, Revenue, LLM inference cost, Hosting, Founder salary, Tools and SaaS and Operating expenses are **identical to Main Scenario** (§4.2). The differing rows:
+
+| row | m1 … m24 |
+|---|---|
+| Crustdata cost | 0, 0, 0, 69.696, 278.784, 348.48, 418.176, 627.264, 696.96, 766.656, 975.744, 1045.44, 1289.376, 1359.0720000000001, 1603.0079999999998, 1672.704, 1916.6399999999999, 2195.424, 2265.12, 2509.056, 2578.752, 2822.688, 2892.384, 3136.3199999999997 |
+| Crustdata cost[Starter] | 0, 0, 0, 69.696, 104.544, 174.24, 243.93599999999998, 278.784, 348.48, 418.176, 453.024, 522.72, 592.4159999999999, 662.112, 731.808, 801.504, 871.1999999999999, 975.7439999999999, 1045.44, 1115.136, 1184.8319999999999, 1254.528, 1324.224, 1393.92 |
+| Crustdata cost[Team] | 0, 0, 0, 0, 174.24, 174.24, 174.24, 348.48, 348.48, 348.48, 522.72, 522.72, 696.96, 696.96, 871.1999999999999, 871.1999999999999, 1045.44, 1219.68, 1219.68, 1393.92, 1393.92, 1568.1599999999999, 1568.1599999999999, 1742.3999999999999 |
+| COGS | 15.2, 15.2, 15.2, 85.352, 295.808, 365.96, 436.11199999999997, 646.5680000000001, 716.72, 786.872, 997.3280000000001, 1067.48, 1313.012, 1383.1640000000002, 1628.696, 1698.848, 1944.3799999999999, 2224.988, 2295.14, 2540.672, 2610.8239999999996, 2856.3559999999998, 2926.508, 3172.0399999999995 |
+| Gross profit | −15.2, −15.2, −15.2, 112.648, 400.192, 528.04, 655.888, 943.4319999999999, 1071.28, 1199.1280000000002, 1486.672, 1614.52, 1965.988, 2093.836, 2445.304, 2573.152, 2924.62, 3340.012, 3467.86, 3819.328, 3947.1760000000004, 4298.644, 4426.492, 4777.960000000001 |
+| Gross margin | null, null, null, 0.568929292929293, 0.5749885057471265, 0.590648769574944, 0.6006300366300367, 0.5933534591194968, 0.5991498881431767, 0.6037905337361531, 0.598499194847021, 0.6019835943325876, 0.5995693809088137, 0.6021961461029622, 0.6002218949435445, 0.6023295880149813, 0.6006613267611419, 0.600181850853549, 0.6017456186014228, 0.6005232704402516, 0.6018871607197317, 0.600788819007687, 0.6019980960152319, 0.6010012578616354 |
+| Net cash flow | −2115.2, −2115.2, −2115.2, −1987.352, −1699.808, −1571.96, −1444.112, −1156.5680000000002, −1028.72, −900.8719999999998, −613.328, −485.48, −134.01199999999994, −6.164000000000215, 345.3040000000001, 473.15200000000004, 824.6199999999999, 1240.0120000000002, 1367.8600000000001, 1719.328, 1847.1760000000004, 2198.6440000000002, 2326.492, 2677.960000000001 |
+| Net burn | 2115.2, 2115.2, 2115.2, 1987.352, 1699.808, 1571.96, 1444.112, 1156.5680000000002, 1028.72, 900.8719999999998, 613.328, 485.48, 134.01199999999994, 6.164000000000215, −345.3040000000001, −473.15200000000004, −824.6199999999999, −1240.0120000000002, −1367.8600000000001, −1719.328, −1847.1760000000004, −2198.6440000000002, −2326.492, −2677.960000000001 |
+| Ending cash | 22884.8, 20769.6, 18654.399999999998, 16667.048, 14967.239999999998, 13395.279999999999, 11951.167999999998, 10794.599999999999, 9765.88, 8865.008, 8251.68, 7766.200000000001, 7632.188000000001, 7626.024000000001, 7971.328000000001, 8444.480000000001, 9269.100000000002, 10509.112000000003, 11876.972000000003, 13596.300000000003, 15443.476000000002, 17642.120000000003, 19968.612, 22646.572 |
+| Months of runway | 10.819213313161876, 9.819213313161876, 8.819213313161876, 8.38656060929317, 8.805253299196144, 8.521387312654266, 8.27579024341602, 9.333303359594936, 9.49323431059958, 9.840474562423964, 13.453943077765894, 15.996951470709401, 56.95152672894968, 1237.1875405580363, null × 10 |
+
+---
+
+## 5. Cost-to-serve and runway roll-up (requested key rows)
+
+Cost to serve per customer per month, from §3.4 (`Variable COGS per customer`; excludes the $15.20/month hosting, as the Judge Summary notes):
+
+| scenario | Starter | Team |
+|---|---|---|
+| Main (Base) | 37.188 | 185.94 |
+| Growth | 25.188000000000002 | 125.94000000000001 |
+| Downside | 62.24 | 311.20000000000005 |
+| Team uncached cap | 37.188 | 93.54 |
+| Team repriced | 37.188 | 185.94 |
+| Industry mix | 35.076 | 175.38 |
+
+Runway (`Months of runway`) turns NULL as soon as Net burn ≤ 0, so the last non-null value per scenario is the last burning month: Main 80.74721004834393 at 2027-12; Growth 55.642553645127364 at 2027-05; Team uncached cap 32.52613753497277 at 2027-10; Team repriced 34.07989572151511 at 2027-10; Industry mix 1237.1875405580363 at 2027-12. Downside never stops burning and its runway goes negative once cash is negative (ending at −52.35370643102601).
+
+---
+
+## 6. Canvas blocks
+
+[source: `inspect_canvas_blocks` {org_id:103087, target:["Cash by scenario: Base vs Growth vs Downside","Spend Radar cash simulator"]}] — both on the Summary page, runtime_version 11, scenario context `default_layer`. Saved source read in full for both; no truncation.
+
+### 6.1 `Cash by scenario: Base vs Growth vs Downside#b8a` — position 2, revision 276493
+
+Three datasets, each with prompt `Ending cash` / `Net cash flow` / `by [Date.Month]`, window 2026-11-01 → 2028-10-31 MONTH:
+
+- `base` — bound to the scenario in view (no explicit layer)
+- `growth` — bound to layer `1a10b83a-80a7-43c3-8199-2ce4e6b83655` (Growth)
+- `downside` — bound to layer `5a05ea50-2e4c-4cab-929d-44b0501863e0` (Downside)
+
+The React `Block` component computes, per scenario: lowest ending cash and its month, the first month with positive net cash flow, the first month cash goes below zero, and ending cash in the last month. It renders a four-metric scorecard (anchor `scenario-scorecard`) — "First cash-flow positive month" (falling back to "Not within 24 months"), "Lowest cash balance", "Cash at month 24 (Oct 2028)", "Month cash hits zero" (falling back to "Never goes below zero") — with negative/bad values styled in `theme.tokens.negative`, then a 300px-high 3-line chart of Ending cash per scenario (anchor `scenario-cash-chart`).
+
+### 6.2 `Spend Radar cash simulator#d86` — position 4, revision 276492
+
+Three datasets:
+
+- `inputs` (NO_GRANULARITY): `Cache hit rate`, `Crustdata cost per uncached run`, `LLM cost per run`, `Hosting per month`, `Founder salary per month`, `Tools and SaaS per month`, `Starting cash`, `Allowance utilization`
+- `monthly`: `Customers [`Plan Tier`]`, `Ending cash`, `by [Date.Month]`, window 2026-11-01 → 2028-10-31 MONTH
+- `tiers` (NO_GRANULARITY): `Price per month`, `Included runs per month`, `by [`Plan Tier`]`
+
+The component recomputes cash month by month in the browser from the sliders: blended cost per run = `LLM cost per run + (1 − cache) × Crustdata cost per uncached run`; runs = `(starterCustomers × starterIncluded + teamCustomers × teamIncluded) × utilization`; net cash flow = `revenue − cogs − salary − tools`, with cash carried forward from `Starting cash`. It renders four KPI cards (Lowest cash with its month, First cash-flow positive month, Cash at month 24, Gross margin month 24 with "Cost per run $X") and four sliders (anchor `sim-levers`): Cache hit rate 0–0.9 step 0.05; Crustdata cost per uncached run $4–$14 step 0.1; Customer volume vs plan 0.5–2 step 0.05; Founder salary per month $0–$8000 step 250 — each with a reference marker at the model value. Then a 260px chart with two lines: Ending cash (saved model) and Ending cash (simulated). Its own on-screen caption: "What-if playground for the scenario in view. Sliders recalculate here only; to change the saved model, edit the Assumptions page."
+
+Neither canvas block has saved `state` (`"state": {}`), and the tool notes that saved code is not proof of a successful browser render.
+
+---
+
+## 7. History (changelog) — what was generated and when
+
+[source: `inspect_history` {org_id:103087, changelog:{limit:100, scenario:"Main Scenario"}}] and [source: `inspect_history` {org_id:103087, changelog:{limit:20, before:"276189", scenario:"Main Scenario"}}]
+
+30 entries total, all by **workspace owner** (user). No merges, reverts or undos (`is_merge`, `is_revert`, `is_undo` false on every entry). There is **no chat transcript** available through this MCP — only this model changelog.
+
+Everything was built in three sittings: a long one on 2026-10-10 (16:31–17:54 GMT), a short setup earlier that day (06:03), and one page added on 2026-10-11 (04:35).
+
+| id | timestamp (UTC) | headline |
+|---|---|---|
+| 274571 | 2026-10-10 06:03:37.681819 | Created 2 formula ranges and changed date and time settings + 5 more — workspace + Main Scenario created, `Last close` = 2026-09-30, Actuals/Forecast ranges, `Date` property |
+| 276171 | 2026-10-10 16:31:59.457127 | Created page Assumptions (88 changes: Company assumptions + Tier assumptions tables, variables, formulas) |
+| 276172 | 2026-10-10 16:31:59.482754 | **Created scenario Growth** |
+| 276173 | 2026-10-10 16:32:44.705838 | Created 2 pages — Monthly P&L & Cash and Unit Economics (239 changes: Monthly P&L, Cache sensitivity, Unit economics tables and their quarter/half/year rollup formulas) |
+| 276176 | 2026-10-10 16:33:15.120842 | Created page Summary, with table block "Base vs Growth: key metrics" |
+| 276178 | 2026-10-10 16:34:39.153969 | Created 1 Canvas block and changed 1 page — Spend Radar cash simulator |
+| 276182 | 2026-10-10 16:35:29.760329 | Edited Canvas block on Summary |
+| 276186 | 2026-10-10 16:35:38.989017 | Changed 1 page and created 1 text block — "Spend Radar: the short version" |
+| 276188 | 2026-10-10 16:36:00.496751 | Changed page Summary |
+| 276189 | 2026-10-10 16:36:00.633394 | Changed 3 pages |
+| 276484 | 2026-10-10 17:41:34.854773 | Created 1 variable and 1 table block — `Milestone delay months` (default 0) |
+| 276485 | 2026-10-10 17:41:34.870327 | **Created scenario Downside** |
+| 276486 | 2026-10-10 17:41:45.50772 | Edited formula for Customers at [`Plan Tier` in any, Date.Month in any] — wired in the milestone delay |
+| 276491 | 2026-10-10 17:42:49.75334 | Renamed table block "Base vs Growth: key metrics" → "Base vs Growth vs Downside: key metrics" |
+| 276492 | 2026-10-10 17:42:49.828333 | Edited Canvas block on Summary (simulator, current revision) |
+| 276493 | 2026-10-10 17:42:49.845828 | Created 1 Canvas block and changed 1 page — Cash by scenario (current revision) |
+| 276495 | 2026-10-10 17:43:20.073892 | Changed 1 page and deleted 1 table block (the old key-metrics block `c5ba1cfc…`) |
+| 276496 | 2026-10-10 17:43:48.449337 | Changed 1 page and created 1 table block — the current "Base vs Growth vs Downside: key metrics" |
+| 276497 | 2026-10-10 17:43:48.469945 | Edited text on Summary |
+| 276498 | 2026-10-10 17:44:05.417141 | Changed page Summary |
+| 276508 | 2026-10-10 17:50:46.310833 | **Created scenario Team uncached cap** |
+| 276509 | 2026-10-10 17:50:46.748428 | **Created scenario Team repriced** |
+| 276510 | 2026-10-10 17:50:46.79522 | Edited 2 cells and created 1 variable + 1 more — `Max uncached runs per customer` (Starter 8, Team 40) |
+| 276511 | 2026-10-10 17:50:56.584061 | Changed 5 table blocks and edited 1 formula + 2 more — created `Uncached runs per customer` with the min(runs × (1 − cache), cap) logic |
+| 276512 | 2026-10-10 17:51:07.455094 | Edited formula for Crustdata cost at [`Plan Tier` in any, Date.Month in any] — switched it onto `Uncached runs per customer` |
+| 276513 | 2026-10-10 17:51:07.461093 | Edited 2 formulas (the 0%/50% cache-sensitivity COGS variants) |
+| 276516 | 2026-10-10 17:51:32.920052 | Changed 1 page and created 1 table block — "Team options vs Base: month 24" |
+| 276524 | 2026-10-10 17:53:38.462298 | **Created scenario Industry mix** |
+| 276525 | 2026-10-10 17:53:39.022141 | Created 5 variables and edited 4 cells + 7 more (32 changes) — `Industry` dimension with Fintech / Observability and digital health, Industry assumptions table, `Gross margin if all fintech` and `Gross margin if all observability`, Gross margin by industry table |
+| 279211 | 2026-10-11 04:35:02.231185 | Created page **Spend Radar — Judge Summary** with its text block |
+
+Build order in one line: calendar → Assumptions → Growth → P&L and Unit Economics → Summary → simulator canvas → Downside (via Milestone delay months) → scenario-comparison table and cash canvas → Team uncached cap and Team repriced (via Max uncached runs per customer) → Industry mix (via the Industry dimension) → Judge Summary page.
+
+Changelog reads were truncated by response budget on two entries — id 276525 showed 12 of 32 changes, 276173 showed 12 of 239, 276171 showed 12 of 88. The headlines and the entity names shown are exact; the unshown remainder is additional formula/property creations within the same operation.
+
+---
+
+## 8. Everything that could not be read
+
+1. **Chat history / conversation transcript** — not exposed by this MCP. `inspect_history` only serves the model changelog.
+2. **Scenario descriptions** — no description field is returned for any scenario by `inspect_scenarios`.
+3. **Row formulas on 5 of the 9 table blocks** — Company assumptions, Tier assumptions, Industry assumptions, Unit economics per customer, Cache sensitivity, Gross margin by industry all returned `{"unavailable":"Selected formula is unavailable or unreadable"}` per row. On the two comparison tables (Base vs Growth vs Downside: key metrics, Team options vs Base: month 24) rows returned `{"unavailable":"Expression is available; its default or override origin is not resolved"}`.
+4. **Full change detail on 3 changelog entries** — truncated by response budget as noted in §7.
+5. Not attempted, because the request scoped the export to the listed tools: `inspect_memory`, `inspect_guides`, `inspect_skills`, `inspect_integrations`, `inspect_dimension_mappings`, `inspect_triggers`, `inspect_team`, `inspect_profile`, `inspect_billing`, `inspect_canvas_library`, `inspect_documentation`.

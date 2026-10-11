@@ -690,6 +690,177 @@
    "fallback_hops": 0
   }
  },
+ "sources": [
+  {
+   "company": "Honeycomb",
+   "category": "engineering",
+   "signal": "role_headcount",
+   "value": 97.0,
+   "as_of": "2026-10-10",
+   "ref": "/company/enrich?domain=honeycomb.io"
+  },
+  {
+   "company": "Honeycomb",
+   "category": "engineering",
+   "signal": "function_timeseries",
+   "value": 97.0,
+   "as_of": "2026-08-01",
+   "ref": "/company/enrich?domain=honeycomb.io"
+  },
+  {
+   "company": "Sentry",
+   "category": "engineering",
+   "signal": "role_headcount",
+   "value": 193.0,
+   "as_of": "2026-10-10",
+   "ref": "/company/enrich?domain=sentry.io"
+  },
+  {
+   "company": "Sentry",
+   "category": "engineering",
+   "signal": "function_timeseries",
+   "value": 193.0,
+   "as_of": "2026-08-01",
+   "ref": "/company/enrich?domain=sentry.io"
+  },
+  {
+   "company": "Arize",
+   "category": "engineering",
+   "signal": "role_headcount",
+   "value": 95.0,
+   "as_of": "2026-10-10",
+   "ref": "/company/enrich?domain=arize.com"
+  },
+  {
+   "company": "Arize",
+   "category": "engineering",
+   "signal": "function_timeseries",
+   "value": 95.0,
+   "as_of": "2026-08-01",
+   "ref": "/company/enrich?domain=arize.com"
+  },
+  {
+   "company": "Chronosphere",
+   "category": "engineering",
+   "signal": "role_headcount",
+   "value": 52.0,
+   "as_of": "2026-10-10",
+   "ref": "/company/enrich?domain=chronosphere.io"
+  },
+  {
+   "company": "Chronosphere",
+   "category": "engineering",
+   "signal": "function_timeseries",
+   "value": 51.0,
+   "as_of": "2026-08-01",
+   "ref": "/company/enrich?domain=chronosphere.io"
+  }
+ ],
+ "report_rows": [
+  {
+   "area": "Engineering",
+   "finding": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies); meets policy 'Engineering share of headcount at least 90% of competitor median'. Matching the competitor median would take 9 fewer to 0 fewer people (≈ $1,611,728 less to $84,091 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+   "refs": [
+    "1",
+    "2",
+    "10",
+    "11",
+    "12",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9"
+   ],
+   "policy": "met",
+   "confidence": "0.48",
+   "audit": "confirmed"
+  },
+  {
+   "area": "Sales",
+   "finding": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies); meets policy 'Sales share of headcount within 25% of competitor median'. Matching the competitor median would take 5 more to 7 more people (≈ $765,262 more to $1,040,714 more a year at Acme Observability Inc.'s loaded cost; estimate).",
+   "refs": [
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24"
+   ],
+   "policy": "met",
+   "confidence": "0.50",
+   "audit": "confirmed"
+  },
+  {
+   "area": "Marketing",
+   "finding": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies); meets policy 'Marketing share of headcount at least 80% of competitor median'. Matching the competitor median would take 10 fewer people (≈ $1,502,727 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+   "refs": [
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30",
+    "31",
+    "32",
+    "33",
+    "34",
+    "35",
+    "36"
+   ],
+   "policy": "met",
+   "confidence": "0.42",
+   "audit": "confirmed"
+  },
+  {
+   "area": "Internal checks",
+   "finding": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+   "refs": [],
+   "policy": "—",
+   "confidence": "1.00",
+   "audit": "confirmed"
+  },
+  {
+   "area": "Internal checks",
+   "finding": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+   "refs": [],
+   "policy": "—",
+   "confidence": "1.00",
+   "audit": "confirmed"
+  },
+  {
+   "area": "Internal checks",
+   "finding": "Tensorforge GPU: vendor billed to ['marketing', 'ml_ai']; likely mis-categorised invoice.",
+   "refs": [],
+   "policy": "—",
+   "confidence": "1.00",
+   "audit": "confirmed"
+  },
+  {
+   "area": "Infra/cloud",
+   "finding": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+   "refs": [
+    "37",
+    "38",
+    "39",
+    "40",
+    "41",
+    "42",
+    "43"
+   ],
+   "policy": "**violated**",
+   "confidence": "1.00",
+   "audit": "confirmed"
+  }
+ ],
  "report_head": [
   "# Spend Radar report — Acme Observability Inc. (fictional)",
   "",

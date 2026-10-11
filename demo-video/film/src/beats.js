@@ -70,6 +70,7 @@ const SPEC = [
   S("gen2.caught", "gen2", ["caught"], "ding"),
   S("gen2.zero", "gen2", ["zero", "0"], "pop"),
   S("gen3.purpose", "gen3", ["purpose"], "glitch"),
+  S("gen2.purpose", "gen2", ["purpose"], "glitch", { frac: 0.9 }),
   S("nl1.call", "nl1", ["call"], "tick"),
   S("nl1.retry", "nl1", ["retry"], "tick"),
   S("nl1.decision", "nl1", ["decision"], "tick"),

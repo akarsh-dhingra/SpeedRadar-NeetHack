@@ -49,85 +49,134 @@
    "key": "acme",
    "name": "Acme Observability Inc.",
    "industry": "observability SaaS",
+   "role": "development",
    "competitors": [
     "Honeycomb",
     "Sentry",
     "Arize",
     "Chronosphere",
     "Grafana Labs"
-   ]
+   ],
+   "latest": {
+    "run_id": "1011-334cde",
+    "caught": 5,
+    "total": 5,
+    "false_alarms": 0
+   }
   },
   {
    "key": "bastion",
    "name": "Bastion Security Inc.",
    "industry": "cybersecurity",
+   "role": "held_out",
    "competitors": [
     "Snyk",
     "Huntress",
     "Abnormal Security",
     "Tines",
     "Vanta"
-   ]
+   ],
+   "latest": {
+    "run_id": "1011-4d998b",
+    "caught": 6,
+    "total": 6,
+    "false_alarms": 0
+   }
   },
   {
    "key": "carebridge",
    "name": "Carebridge Health Inc.",
    "industry": "digital health",
+   "role": "held_out",
    "competitors": [
     "Spring Health",
     "Headway",
     "Sword Health",
     "Cityblock Health",
     "Komodo Health"
-   ]
+   ],
+   "latest": {
+    "run_id": "1011-529fd4",
+    "caught": 5,
+    "total": 5,
+    "false_alarms": 0
+   }
   },
   {
    "key": "kestrel",
    "name": "Kestrel Metrics Inc.",
    "industry": "observability SaaS",
+   "role": "held_out",
    "competitors": [
     "Honeycomb",
     "Sentry",
     "Arize",
     "Chronosphere",
     "Grafana Labs"
-   ]
+   ],
+   "latest": {
+    "run_id": "1010-451312",
+    "caught": 6,
+    "total": 6,
+    "false_alarms": 0
+   }
   },
   {
    "key": "ledgerly",
    "name": "Ledgerly Payments Inc.",
    "industry": "fintech (spend management)",
+   "role": "held_out",
    "competitors": [
     "Ramp",
     "Brex",
     "Mercury",
     "Airwallex",
     "Spendesk"
-   ]
+   ],
+   "latest": {
+    "run_id": "1011-3cd178",
+    "caught": 5,
+    "total": 5,
+    "false_alarms": 0
+   }
   },
   {
    "key": "parcelwise",
    "name": "Parcelwise Commerce Inc.",
    "industry": "e-commerce logistics",
+   "role": "held_out",
    "competitors": [
     "Shippo",
     "ShipBob",
     "Recharge",
     "Gorgias",
     "Yotpo"
-   ]
+   ],
+   "latest": {
+    "run_id": "1011-9d49bf",
+    "caught": 5,
+    "total": 5,
+    "false_alarms": 0
+   }
   },
   {
    "key": "peoplegraph",
    "name": "Peoplegraph HR Inc.",
    "industry": "HR tech",
+   "role": "held_out",
    "competitors": [
     "Lattice",
     "Culture Amp",
     "15Five",
     "Leapsome",
     "HiBob"
-   ]
+   ],
+   "latest": {
+    "run_id": "1011-d99185",
+    "caught": 5,
+    "total": 5,
+    "false_alarms": 0
+   }
   }
  ],
  "featured_metrics": {
@@ -148,6 +197,29 @@
   "models": [
    "gemini-3.5-flash-lite",
    "gpt-5-nano"
+  ]
+ },
+ "featured_finding": {
+  "id": "f_ml_ai",
+  "category": "ml_ai",
+  "statement": "Acme Observability Inc. ml_ai is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies); violates policy 'ML/AI share of headcount within 20% of competitor median'. Matching the competitor median would take 22 fewer to 19 fewer people (≈ $5,280,000 less to $4,466,786 less a year at Acme Observability Inc.'s loaded cost; estimate).",
+  "ours": 0.06666666666666667,
+  "theirs_low": 0.0,
+  "theirs_high": 0.010267857142857143,
+  "confidence": 0.0,
+  "confidence_inputs": {
+   "checks": "6/9",
+   "checks_score": 0.667,
+   "n_signals": 2,
+   "agreement": 0.0,
+   "signals_score": 0.0,
+   "oldest_input_days": 1,
+   "freshness_score": 1.0
+  },
+  "status": "overturned",
+  "audit_notes": [
+   "gpt-5-nano: overturn — Contradictory ml_ai signals: Honeycomb shows ml_share_job_search=0 and ml_share_engineering_2y=9; Sentry shows ml_share_recent_titles=0 and ml_share_job_search=5 (as of 2026-10-11/2026-10-10). These data points imply ml_ai headcount shares near 0–9%, not 6.7%, and do not support the claim that Acme Observability Inc.'s ml_ai share is within 20% of the competitor median. The evidence data and timestamps differ from the original dataset and undermine the robustness of the finding.",
+   "second opinion gemini-3.5-flash-lite: downgrade — The contradicting evidence regarding competitor ml_ai signals shows mixed data points up to 9 percent, weakening the confidence of the violation relative to the 0.0 percent to 1.0 percent median benchmark."
   ]
  },
  "planted": [
@@ -178,8 +250,166 @@
   }
  ],
  "cash": {
-  "_source": "business/cfoai/Monthly P&L & Cash.xlsx (Main Scenario = Base), business/cfoai/round2/Summary-Base-Growth-Downside.xlsx",
+  "_source": "business/cfoai/mcp_export_2026-10-11.json (cfo.ai MCP, read-only)",
   "months": "Nov 2026 – Oct 2028",
+  "scenarios": {
+   "Main Scenario": [
+    22885,
+    20770,
+    18654,
+    16663,
+    14946,
+    13353,
+    11884,
+    10689,
+    9618,
+    8671,
+    7998,
+    7449,
+    7237,
+    7149,
+    7397,
+    7769,
+    8477,
+    9584,
+    10815,
+    12382,
+    14073,
+    16100,
+    18252,
+    20739
+   ],
+   "Growth": [
+    22885,
+    20770,
+    18654,
+    17034,
+    15708,
+    14877,
+    14615,
+    14920,
+    15868,
+    17384,
+    19469,
+    22121,
+    25416,
+    29700,
+    34626,
+    40541,
+    47098,
+    54644,
+    62832,
+    71662,
+    81482,
+    91943,
+    103393,
+    115486
+   ],
+   "Downside": [
+    22885,
+    20770,
+    18654,
+    16539,
+    14424,
+    12309,
+    10267,
+    8350,
+    6506,
+    4736,
+    3091,
+    1519,
+    20,
+    -1354,
+    -2654,
+    -3793,
+    -4859,
+    -5763,
+    -6594,
+    -7263,
+    -7734,
+    -8132,
+    -8369,
+    -8532
+   ],
+   "Team uncached cap": [
+    22885,
+    20770,
+    18654,
+    16663,
+    15039,
+    13538,
+    12161,
+    11151,
+    10265,
+    9502,
+    9107,
+    8835,
+    8993,
+    9274,
+    9984,
+    10818,
+    12081,
+    13834,
+    15712,
+    18018,
+    20448,
+    23308,
+    26290,
+    29702
+   ],
+   "Team repriced": [
+    22885,
+    20770,
+    18654,
+    16663,
+    15042,
+    13545,
+    12172,
+    11169,
+    10290,
+    9535,
+    9150,
+    8889,
+    9061,
+    9357,
+    10085,
+    10937,
+    12221,
+    14000,
+    15903,
+    18238,
+    20697,
+    23588,
+    26604,
+    30051
+   ],
+   "Industry mix": [
+    22885,
+    20770,
+    18654,
+    16667,
+    14967,
+    13395,
+    11951,
+    10795,
+    9766,
+    8865,
+    8252,
+    7766,
+    7632,
+    7626,
+    7971,
+    8444,
+    9269,
+    10509,
+    11877,
+    13596,
+    15443,
+    17642,
+    19969,
+    22647
+   ]
+  },
   "base": [
    22885,
    20770,
@@ -259,6 +489,79 @@
    -8532
   ]
  },
+ "cfo_model": {
+  "scenarios": [
+   {
+    "name": "Main Scenario",
+    "first_cash_flow_positive_month": "2028-01 (month 15)",
+    "lowest_ending_cash": 7148.711999999998,
+    "lowest_ending_cash_month": "2027-12",
+    "ending_cash_month_24": 20739.435999999998,
+    "revenue_month_24": 7950,
+    "gross_margin_month_24": 0.5770918238993711,
+    "customers_month_24": 50
+   },
+   {
+    "name": "Growth",
+    "first_cash_flow_positive_month": "2027-06 (month 8)",
+    "lowest_ending_cash": 14614.627999999995,
+    "lowest_ending_cash_month": "2027-05",
+    "ending_cash_month_24": 115485.772,
+    "revenue_month_24": 19875,
+    "gross_margin_month_24": 0.7140880503144654,
+    "customers_month_24": 125
+   },
+   {
+    "name": "Downside",
+    "first_cash_flow_positive_month": null,
+    "lowest_ending_cash": -8531.560000000001,
+    "lowest_ending_cash_month": "2028-10",
+    "ending_cash_month_24": -8531.560000000001,
+    "revenue_month_24": 6558,
+    "gross_margin_month_24": 0.29537053979871913,
+    "customers_month_24": 42
+   },
+   {
+    "name": "Team uncached cap",
+    "first_cash_flow_positive_month": "2027-11 (month 13)",
+    "lowest_ending_cash": 8835.399999999998,
+    "lowest_ending_cash_month": "2027-10",
+    "ending_cash_month_24": 29702.236,
+    "revenue_month_24": 7950,
+    "gross_margin_month_24": 0.6933182389937107,
+    "customers_month_24": 50
+   },
+   {
+    "name": "Team repriced",
+    "first_cash_flow_positive_month": "2027-11 (month 13)",
+    "lowest_ending_cash": 8889.399999999998,
+    "lowest_ending_cash_month": "2027-10",
+    "ending_cash_month_24": 30051.436,
+    "revenue_month_24": 8910,
+    "gross_margin_month_24": 0.6226576879910214,
+    "customers_month_24": 50
+   },
+   {
+    "name": "Industry mix",
+    "first_cash_flow_positive_month": "2028-01 (month 15)",
+    "lowest_ending_cash": 7626.024000000001,
+    "lowest_ending_cash_month": "2027-12",
+    "ending_cash_month_24": 22646.572,
+    "revenue_month_24": 7950,
+    "gross_margin_month_24": 0.6010012578616354,
+    "customers_month_24": 50
+   }
+  ],
+  "changelog_entries": 30,
+  "canvas_blocks": 2,
+  "pages": [
+   "Summary",
+   "Assumptions",
+   "Monthly P&L & Cash",
+   "Unit Economics",
+   "Spend Radar — Judge Summary"
+  ]
+ },
  "explain": {
   "trace": "5fcef2f7f2f862bcbafe9636d6819d94",
   "code": "spendradar/agent.py:447",
@@ -293,6 +596,61 @@
   ]
  },
  "checkpoints": 69,
+ "commits": [
+  {
+   "sha": "8547df8",
+   "subject": "log: submission readiness pass",
+   "checkpoint": "01M4N7ABWJRD26YGGN3DS3BH6S"
+  },
+  {
+   "sha": "dd2ee14",
+   "subject": "submission readiness: live site + GIF in README, Submission section with Entire checkpoint, focus-area traces, case study 05 in results, updated limitations, demo script and post 4",
+   "checkpoint": "01M4N7825AMZC0MAKT2XEHX9XJ"
+  },
+  {
+   "sha": "d935eaa",
+   "subject": "site: publish site/ to GitHub Pages on push",
+   "checkpoint": "01M4N70TFE8BXDW6BWKXEPMY76"
+  },
+  {
+   "sha": "2d5a134",
+   "subject": "site: Entire and neatlogs pages, three-tool strip and judge evidence map on the overview, case study 05 with per-run verdicts; export keeps original run labels over re-scores",
+   "checkpoint": "01M4N6ZFX8F1Y954B0YNCEGZ7C"
+  },
+  {
+   "sha": "62c6b69",
+   "subject": "explain: stop paging when the neatlogs cursor does not advance (Entire trail #3 runner finding 01M4N686NR31)",
+   "checkpoint": "01M4N6B6CGG1RDCGAP7RSG9STX"
+  },
+  {
+   "sha": "7228e06",
+   "subject": "README: Entire trails live on the GitHub repo (trails 1-3)",
+   "checkpoint": "01M4N67ADZ7Z01ZWBKN5EBFWCV"
+  },
+  {
+   "sha": "abbd57a",
+   "subject": "evidence: final eval on merged main (5/5, 0 unsupported, 0 hops; provenance to checkpoint)",
+   "checkpoint": "01M4N5SJ1JRSZRE7YPZGANR2F4"
+  },
+  {
+   "sha": "a9b572e",
+   "subject": "log: audit, neatlogs coverage, Entire trails/runners, case study 05, explain",
+   "checkpoint": "01M4N5FPCVHT22HXVK3PE6DZE1"
+  },
+  {
+   "sha": "a16758f",
+   "subject": "audit: weigh news evidence even when signals disagree (Entire trail #2 runner finding 01M4N4SF2YQX); floor at downgrade",
+   "checkpoint": "01M4N525ZQ174NPSPNEYSV321V"
+  }
+ ],
+ "runners": [
+  "risk",
+  "confidence",
+  "drift",
+  "security",
+  "review",
+  "summary"
+ ],
  "trails": [
   {
    "number": 1,

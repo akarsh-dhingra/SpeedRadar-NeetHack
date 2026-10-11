@@ -2,3 +2,4 @@ node_modules/
 out/
 public/clips/
 public/shots/
+src/data/timeline.json
