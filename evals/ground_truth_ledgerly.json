@@ -1,0 +1,208 @@
+{
+  "_note": "HELD-OUT eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "company": "Ledgerly Payments Inc.",
+  "industry": "fintech (spend management)",
+  "people_cost_fy27": {
+    "engineering": 18050000,
+    "ml_ai": 2817500,
+    "sales": 17737500,
+    "marketing": 3600000,
+    "other": 9750000
+  },
+  "headcount_end_fy27": {
+    "engineering": 102,
+    "ml_ai": 14,
+    "sales": 120,
+    "marketing": 26,
+    "other": 80
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 936000,
+    "sales": 78000,
+    "marketing": 336000,
+    "ml_ai": 264000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 474987,
+    "ml_ai": 45835,
+    "marketing": 28528,
+    "sales": 12559
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_corvane_2026-04.pdf",
+      "number": "LP-202604-01",
+      "vendor": "Corvane Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 80111,
+      "stated_total": 80111
+    },
+    {
+      "file": "invoices/02_corvane_2026-05.pdf",
+      "number": "LP-202605-02",
+      "vendor": "Corvane Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 83978,
+      "stated_total": 83978
+    },
+    {
+      "file": "invoices/03_corvane_2026-06.pdf",
+      "number": "LP-202606-03",
+      "vendor": "Corvane Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 73539,
+      "stated_total": 73539
+    },
+    {
+      "file": "invoices/04_corvane_2026-07.pdf",
+      "number": "LP-202607-04",
+      "vendor": "Corvane Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 77479,
+      "stated_total": 77479
+    },
+    {
+      "file": "invoices/05_corvane_2026-08.pdf",
+      "number": "LP-202608-05",
+      "vendor": "Corvane Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 78225,
+      "stated_total": 78225
+    },
+    {
+      "file": "invoices/06_corvane_2026-09.pdf",
+      "number": "LP-202609-06",
+      "vendor": "Corvane Cloud",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-09",
+      "line_items_sum": 81655,
+      "stated_total": 81655
+    },
+    {
+      "file": "invoices/07_fraudshield_2026-05.pdf",
+      "number": "LP-202605-07",
+      "vendor": "Fraudshield Data",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "ML Platform",
+      "month": "2026-05",
+      "line_items_sum": 21954,
+      "stated_total": 21954
+    },
+    {
+      "file": "invoices/08_fraudshield_2026-08.pdf",
+      "number": "LP-202608-08",
+      "vendor": "Fraudshield Data",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "Engineering",
+      "month": "2026-08",
+      "line_items_sum": 23881,
+      "stated_total": 23881
+    },
+    {
+      "file": "invoices/09_pitchroom_2026-06.pdf",
+      "number": "LP-202606-09",
+      "vendor": "Pitchroom Events",
+      "kind": "scanned",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-06",
+      "line_items_sum": 28528,
+      "stated_total": 28528
+    },
+    {
+      "file": "invoices/10_dealflow_2026-07.pdf",
+      "number": "LP-202607-10",
+      "vendor": "Dealflow CRM",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-07",
+      "line_items_sum": 6184,
+      "stated_total": 6209
+    },
+    {
+      "file": "invoices/11_dealflow_2026-09.pdf",
+      "number": "LP-202609-11",
+      "vendor": "Dealflow CRM",
+      "kind": "text",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-09",
+      "line_items_sum": 6375,
+      "stated_total": 6566
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 4,
+      "category": "engineering",
+      "stated_total": 18429050,
+      "correct_total": 18050000,
+      "diff_pct": 2.1
+    },
+    {
+      "id": "invoice_miscategorised",
+      "type": "miscategorised",
+      "file": "invoices/08_fraudshield_2026-08.pdf",
+      "stated_cost_centre": "Engineering",
+      "correct_category": "ml_ai",
+      "amount": 23881,
+      "vendor_appears_once": false
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/09_pitchroom_2026-06.pdf",
+      "expected": "text parser finds no text; LLM route extracts total",
+      "amount": 28528
+    },
+    {
+      "id": "near_miss_within_tolerance",
+      "type": "negative_control",
+      "file": "invoices/10_dealflow_2026-07.pdf",
+      "stated_total": 6209,
+      "line_items_sum": 6184,
+      "expected": "NOT flagged (0.4% < 1% tolerance)"
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/11_dealflow_2026-09.pdf",
+      "stated_total": 6566,
+      "line_items_sum": 6375,
+      "diff_pct": 3.0
+    },
+    {
+      "id": "invoice_duplicate",
+      "type": "duplicate",
+      "file": "invoices/12_corvane_2026-07_resent.pdf",
+      "duplicate_of": "invoices/04_corvane_2026-07.pdf",
+      "number": "LP-202607-04",
+      "amount": 77479
+    }
+  ],
+  "fixtures": []
+}

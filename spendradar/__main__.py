@@ -56,12 +56,14 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--crash-after-step", type=int, default=None, help="simulate a crash (resume demo)")
         p.add_argument("--fixtures", default=None, help="EVALS ONLY: folder of altered Crustdata fixtures")
     sub.add_parser("ledger")
+    sub.add_parser("export", help="write evidence/frontend_data.json for a front end (docs/frontend-data.md)")
     e = sub.add_parser("eval")
     e.add_argument("--n", type=int, default=1)
     e.add_argument("--variant", default="eval")
     e.add_argument("--evidence", action="store_true")
     e.add_argument("--score", nargs="*", help="score existing run ids instead of launching runs")
     e.add_argument("--fixtures", default=None, help="EVALS ONLY: run against altered fixtures")
+    e.add_argument("--data", default="data/acme", help="input folder, e.g. data/kestrel (held-out)")
     args = ap.parse_args(argv)
 
     if args.cmd == "ledger":
@@ -70,11 +72,17 @@ def main(argv: list[str] | None = None) -> None:
         print(json.dumps(llm.LEDGER.summary(), indent=1))
         return
 
+    if args.cmd == "export":
+        from spendradar import export
+
+        print(f"wrote {export.build()}")
+        return
+
     if args.cmd == "eval":
         from spendradar import evals
 
-        path = evals.run_eval(args.n, args.variant, args.evidence, args.score, args.fixtures)
-        card = json.loads(path.read_text())
+        path = evals.run_eval(args.n, args.variant, args.evidence, args.score, args.fixtures, args.data)
+        card = json.loads(path.read_text(encoding="utf-8"))
         print(f"scorecard: {path}")
         print(json.dumps({k: card[k] for k in ("n_runs", "n_runs_without_fallback", "planted_total",
                                                 "summary_all_runs")}, indent=1))

@@ -19,8 +19,8 @@ Timing follows CLAUDE.md section 13. Captions on. Every number is copied from th
 **VO:** "Entire kept the coding agent's context. Every commit links to its prompt and transcript. Before changing the recovery menu, I used the code graph to list the callers of decide recovery. [evidence/entire/README.md]"
 
 ## 1:45-2:20 cfo.ai
-**On screen:** `business/unit_costs.md` table, then the cfo.ai plan with inputs from `business/inputs.md` and the plan export in `business/`.
-**VO:** "Cfo dot A I builds the plan from measured costs. One evidence run: thirty model calls, ten thousand tokens in, twenty-five thousand out. Paid-equivalent cost, six point nine cents, plus twenty point eight Crustdata credits. [business/unit_costs.md] Price per run {{price_per_run}}, monthly cost {{monthly_cost}}, revenue {{monthly_revenue}}, runway {{runway_months}} months."
+**On screen:** `business/unit_costs.md` table, then cfo.ai: the Unit Economics cache-sensitivity view, then the Summary page (Base vs Growth cash). Exports in `business/cfoai/`.
+**VO:** "Cfo dot A I builds the plan from measured costs. Across five evidence runs: about thirty model calls, thirteen thousand tokens in, sixty-six thousand out. Paid-equivalent cost, two point nine cents a run. [business/unit_costs.md] But competitor data costs six to nine dollars a run, ninety-nine percent of the cost. With half the runs cached, Starter at ninety-nine dollars keeps sixty-two percent. With no cache, Team keeps seven. Base plan: cash-flow positive in month fifteen, lowest cash about seven thousand dollars. [business/cfoai_plan.md]"
 
 ## 2:20-2:50 Final report
 **On screen:** `evidence/sample-report/report.md` (or the final run's report): data-mode header, a finding with its numbered sources, the Overturned claims section, the recovery log.

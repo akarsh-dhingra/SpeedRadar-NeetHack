@@ -21,7 +21,8 @@ class ToolError(Exception):
 @neatlogs.span(kind="TOOL", name="act:list_files", tool_name="list_files")
 def list_files(folder: str) -> list[dict]:
     root = Path(folder)
-    return [{"path": str(p.relative_to(root)), "bytes": p.stat().st_size, "suffix": p.suffix.lower()}
+    # as_posix: on Windows str() gave "invoices\01.pdf", which silently disabled the plan-coverage check
+    return [{"path": p.relative_to(root).as_posix(), "bytes": p.stat().st_size, "suffix": p.suffix.lower()}
             for p in sorted(root.rglob("*")) if p.is_file() and not p.name.startswith(".")]
 
 
@@ -42,6 +43,16 @@ def read_spreadsheet(path: str, sheet: str, first_row: int = 1, last_row: int | 
             continue
         out.append({"_row": i, **{h: v for h, v in zip(header, r)}})
     return out
+
+
+def sheet_title(path: str, sheet: str) -> list[str]:
+    """Non-empty cells of the sheet's first row (the title line above the header)."""
+    try:
+        wb = load_workbook(path, data_only=True, read_only=True)
+        first = next(wb[sheet].iter_rows(values_only=True, max_row=1), ())
+    except Exception as e:
+        raise ToolError(f"cannot open {path}!{sheet}: {e}") from e
+    return [str(v) for v in first if v not in (None, "")]
 
 
 class InvoiceLine(BaseModel):

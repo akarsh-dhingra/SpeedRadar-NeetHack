@@ -1,0 +1,184 @@
+{
+  "_note": "HELD-OUT eval ground truth. NEVER shown to the agent. Generated, not hand-typed.",
+  "company": "Carebridge Health Inc.",
+  "industry": "digital health",
+  "people_cost_fy27": {
+    "engineering": 8632999,
+    "ml_ai": 1276000,
+    "sales": 3040001,
+    "marketing": 1260000,
+    "other": 16800000
+  },
+  "headcount_end_fy27": {
+    "engineering": 52,
+    "ml_ai": 7,
+    "sales": 22,
+    "marketing": 10,
+    "other": 190
+  },
+  "non_people_budget_fy27": {
+    "infra_cloud": 528000,
+    "sales": 36000,
+    "marketing": 180000,
+    "ml_ai": 132000
+  },
+  "invoice_totals_by_true_category": {
+    "infra_cloud": 219146,
+    "ml_ai": 10915,
+    "marketing": 27588,
+    "sales": 2952
+  },
+  "invoices": [
+    {
+      "file": "invoices/01_helix_2026-04.pdf",
+      "number": "CH-202604-01",
+      "vendor": "Helix Cloud Health",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-04",
+      "line_items_sum": 40612,
+      "stated_total": 40612
+    },
+    {
+      "file": "invoices/02_helix_2026-05.pdf",
+      "number": "CH-202605-02",
+      "vendor": "Helix Cloud Health",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-05",
+      "line_items_sum": 40951,
+      "stated_total": 41115
+    },
+    {
+      "file": "invoices/03_helix_2026-06.pdf",
+      "number": "CH-202606-03",
+      "vendor": "Helix Cloud Health",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-06",
+      "line_items_sum": 46275,
+      "stated_total": 46275
+    },
+    {
+      "file": "invoices/04_helix_2026-07.pdf",
+      "number": "CH-202607-04",
+      "vendor": "Helix Cloud Health",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-07",
+      "line_items_sum": 43345,
+      "stated_total": 43345
+    },
+    {
+      "file": "invoices/05_helix_2026-08.pdf",
+      "number": "CH-202608-05",
+      "vendor": "Helix Cloud Health",
+      "kind": "text",
+      "true_category": "infra_cloud",
+      "cost_centre": "Infrastructure",
+      "month": "2026-08",
+      "line_items_sum": 47963,
+      "stated_total": 47963
+    },
+    {
+      "file": "invoices/06_clinitext_2026-06.pdf",
+      "number": "CH-202606-06",
+      "vendor": "Clinitext AI",
+      "kind": "text",
+      "true_category": "ml_ai",
+      "cost_centre": "Marketing",
+      "month": "2026-06",
+      "line_items_sum": 10915,
+      "stated_total": 10915
+    },
+    {
+      "file": "invoices/07_brightpath_2026-05.pdf",
+      "number": "CH-202605-07",
+      "vendor": "Brightpath Media",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-05",
+      "line_items_sum": 14402,
+      "stated_total": 14402
+    },
+    {
+      "file": "invoices/08_brightpath_2026-08.pdf",
+      "number": "CH-202608-08",
+      "vendor": "Brightpath Media",
+      "kind": "text",
+      "true_category": "marketing",
+      "cost_centre": "Marketing",
+      "month": "2026-08",
+      "line_items_sum": 13186,
+      "stated_total": 13582
+    },
+    {
+      "file": "invoices/09_caseline_2026-07.pdf",
+      "number": "CH-202607-09",
+      "vendor": "Caseline CRM",
+      "kind": "scanned",
+      "true_category": "sales",
+      "cost_centre": "Sales",
+      "month": "2026-07",
+      "line_items_sum": 2952,
+      "stated_total": 2952
+    }
+  ],
+  "planted_errors": [
+    {
+      "id": "budget_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "budget_fy27.xlsx",
+      "sheet": "People",
+      "row": 12,
+      "category": "other",
+      "stated_total": 17152800,
+      "correct_total": 16800000,
+      "diff_pct": 2.1
+    },
+    {
+      "id": "near_miss_within_tolerance",
+      "type": "negative_control",
+      "file": "invoices/02_helix_2026-05.pdf",
+      "stated_total": 41115,
+      "line_items_sum": 40951,
+      "expected": "NOT flagged (0.4% < 1% tolerance)"
+    },
+    {
+      "id": "invoice_miscategorised_single_vendor",
+      "type": "miscategorised",
+      "file": "invoices/06_clinitext_2026-06.pdf",
+      "stated_cost_centre": "Marketing",
+      "correct_category": "ml_ai",
+      "amount": 10915,
+      "vendor_appears_once": true
+    },
+    {
+      "id": "invoice_total_mismatch",
+      "type": "totals_mismatch",
+      "file": "invoices/08_brightpath_2026-08.pdf",
+      "stated_total": 13582,
+      "line_items_sum": 13186,
+      "diff_pct": 3.0
+    },
+    {
+      "id": "invoice_scanned",
+      "type": "scanned_pdf",
+      "file": "invoices/09_caseline_2026-07.pdf",
+      "expected": "text parser finds no text; LLM route extracts total",
+      "amount": 2952
+    },
+    {
+      "id": "invoice_corrupt",
+      "type": "corrupt_file",
+      "file": "invoices/10_helix_2026-10.pdf",
+      "expected": "zero bytes; listed under Not analysed"
+    }
+  ],
+  "fixtures": []
+}

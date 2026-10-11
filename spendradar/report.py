@@ -32,13 +32,14 @@ def write(state: RunState) -> Path:
     out: list[str] = []
     mode = "FIXTURE (eval only)" if state.data_mode == "fixture" else "real data"
     providers = sorted({m for m in state.llm_usage})
-    out += [f"# Spend Radar report — Acme Observability Inc. (fictional)", "",
+    co = state.company
+    out += [f"# Spend Radar report — {co}" + (" (fictional)" if state.company_fictional else ""), "",
             f"- Run `{state.run_id}` · commit `{state.git_sha}` · neatlogs trace `{state.trace_id}`",
             f"- **Data mode: {mode}** · LLM models used: {', '.join(providers) or 'none'}"
             + (f" · **injected faults: {', '.join(state.injected)} (fired: {', '.join(state.faults_fired) or 'none'})**"
                if state.injected else ""),
-            "- Competitor comparison is **people cost only** (headcount × Acme's loaded cost, an estimate). "
-            "Infra/cloud is checked against Acme's own budget only.", ""]
+            f"- Competitor comparison is **people cost only** (headcount × {co}'s loaded cost, an estimate). "
+            f"Infra/cloud is checked against {co}'s own budget only.", ""]
 
     live = [f for f in state.findings if f.status != "overturned"]
     out += ["## Findings", "", "| Area | Finding | Policy | Confidence | Audit |", "|---|---|---|---|---|"]
@@ -74,7 +75,7 @@ def write(state: RunState) -> Path:
             out.append(f"| {p.name} | — | missing | — | — | {'; '.join(p.missing)} |")
     out.append("")
 
-    out += ["## Acme's own numbers", "", "| Category | Headcount (end FY27) | People cost FY27 | Source |",
+    out += [f"## {co}'s own numbers", "", "| Category | Headcount (end FY27) | People cost FY27 | Source |",
             "|---|---|---|---|"]
     for cat in ("engineering", "ml_ai", "sales", "marketing", "other"):
         hc, cost = state.figures.get(f"hc_{cat}"), state.figures.get(f"cost_{cat}")
@@ -120,7 +121,7 @@ def write(state: RunState) -> Path:
             f"- LLM response cache: {'on' if llm.cache_enabled() else 'off'}", ""]
 
     path = Path("runs") / state.run_id / "report.md"
-    path.write_text("\n".join(out))
+    path.write_text("\n".join(out), encoding="utf-8")
     write_html(path)
     return path
 
@@ -140,8 +141,8 @@ code{font-size:.85em}del{color:var(--muted)}strong{color:var(--accent)}a{color:v
 def write_html(md_path: Path) -> Path:
     import markdown
 
-    body = markdown.markdown(md_path.read_text(), extensions=["tables"])
+    body = markdown.markdown(md_path.read_text(encoding="utf-8"), extensions=["tables"])
     body = body.replace("<strong>violated</strong>", '<strong style="color:var(--bad)">violated</strong>')
     out = md_path.with_suffix(".html")
-    out.write_text(HTML_HEAD + body + "</body></html>")
+    out.write_text(HTML_HEAD + body + "</body></html>", encoding="utf-8")
     return out

@@ -1,0 +1,17 @@
+_note: Real companies; data from Crustdata. Bastion Security Inc. itself is FICTIONAL.
+competitors:
+- name: Snyk
+  domain: snyk.io
+- name: Huntress
+  domain: huntress.com
+- name: Abnormal Security
+  domain: abnormalsecurity.com
+- name: Tines
+  domain: tines.com
+- name: Vanta
+  domain: vanta.com
+substitutes:
+- name: Drata
+  domain: drata.com
+- name: Semgrep
+  domain: semgrep.dev

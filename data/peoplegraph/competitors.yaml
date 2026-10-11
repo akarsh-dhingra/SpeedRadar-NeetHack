@@ -1,0 +1,17 @@
+_note: Real companies; data from Crustdata. Peoplegraph HR Inc. itself is FICTIONAL.
+competitors:
+- name: Lattice
+  domain: lattice.com
+- name: Culture Amp
+  domain: cultureamp.com
+- name: 15Five
+  domain: 15five.com
+- name: Leapsome
+  domain: leapsome.com
+- name: HiBob
+  domain: hibob.com
+substitutes:
+- name: Personio
+  domain: personio.com
+- name: Deel
+  domain: deel.com

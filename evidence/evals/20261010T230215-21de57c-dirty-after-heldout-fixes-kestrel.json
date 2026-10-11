@@ -1,0 +1,259 @@
+{
+ "created": "2026-10-10T23:02:15",
+ "variant": "after-heldout-fixes-kestrel",
+ "evidence": true,
+ "git_sha": "21de57c-dirty",
+ "n_runs": 1,
+ "n_runs_without_fallback": 1,
+ "planted_total": 6,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 1,
+   "max": 1,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 10,
+   "min": 10,
+   "max": 10,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 31,
+   "min": 31,
+   "max": 31,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 15313,
+   "min": 15313,
+   "max": 15313,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 66276,
+   "min": 66276,
+   "max": 66276,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 324.8,
+   "min": 324.8,
+   "max": 324.8,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 1,
+   "max": 1,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 10,
+   "min": 10,
+   "max": 10,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 31,
+   "min": 31,
+   "max": 31,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 15313,
+   "min": 15313,
+   "max": 15313,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 66276,
+   "min": 66276,
+   "max": 66276,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 324.8,
+   "min": 324.8,
+   "max": 324.8,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1010-d514dc",
+   "trace_id": "d9f640f09022a87f323639df6203aa09",
+   "git_sha": "21de57c-dirty",
+   "tags": [
+    "sha:21de57c-dirty",
+    "run:1010-d514dc",
+    "variant:after-heldout-fixes-kestrel",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "kestrel",
+   "ground_truth": "evals/ground_truth_kestrel.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_total_mismatch": true,
+    "invoice_scanned": true,
+    "invoice_duplicate": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "marketing": 51.2,
+    "sales": 526.04,
+    "ml_ai": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.417
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.508
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 1,
+   "recovery_decisions": 10,
+   "recovery_non_default": 5,
+   "llm_calls": 31,
+   "llm_tokens_in": 15313,
+   "llm_tokens_out": 66276,
+   "llm_latency_s": 324.8,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 28,
+     "cached_calls": 0,
+     "tokens_in": 13772,
+     "tokens_out": 65937,
+     "latency_s": 307.89,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 3,
+     "cached_calls": 0,
+     "tokens_in": 1541,
+     "tokens_out": 339,
+     "latency_s": 16.88,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  }
+ ]
+}
