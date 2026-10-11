@@ -99,6 +99,11 @@ CLASSIFY_TITLES = Prompt(
     user="Classify each title. Return every title exactly as given.\n{{titles}}")
 
 PDF_EXTRACT = Prompt(
-    key="read_pdf_llm", version="v1", system="",
+    key="read_pdf_llm", version="v2", system="",
+    # v2: on real FCC broadcast invoices v1 copied "Net Amount Due" (gross minus agency commission) as the
+    # stated total on 4 of 12; see evidence/real-invoices/.
     user=("Extract this invoice exactly as printed. Amounts as numbers without separators. "
-          "Do not compute or correct anything; copy the stated total as printed."))
+          "Do not compute or correct anything; copy the stated total as printed. "
+          "stated_total is the gross total of the charges (the line labelled Total, Gross Total or Total Charges), "
+          "before any agency commission, discount or deduction. Never use Net Amount Due or Balance Due when a "
+          "gross total is printed. Each line item is one charge line with its printed amount."))
