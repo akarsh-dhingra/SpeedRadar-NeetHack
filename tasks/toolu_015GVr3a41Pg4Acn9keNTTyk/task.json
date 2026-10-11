@@ -1,0 +1,18 @@
+{
+  "tool_use_id": "toolu_015GVr3a41Pg4Acn9keNTTyk",
+  "agent_id": "a1a1709b07ee49877",
+  "subagent_type": "web-fetch",
+  "task_description": "Verify LibriSpeech license and URL",
+  "files": [
+    "scripts/pre-commit"
+  ],
+  "token_usage": {
+    "input_tokens": 4,
+    "cache_creation_tokens": 10379,
+    "cache_read_tokens": 3585,
+    "output_tokens": 48,
+    "api_call_count": 2
+  },
+  "started_at": "2026-10-11T14:58:48.8641429+05:30",
+  "completed_at": "2026-10-11T14:58:48.8715495+05:30"
+}
