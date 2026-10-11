@@ -155,7 +155,7 @@ def test_tool_errors_puts_the_exception_in_span_output(monkeypatch):
         def set_attribute(self, k, v):
             seen[k] = v
 
-    monkeypatch.setattr("opentelemetry.trace.get_current_span", lambda: Span())
+    monkeypatch.setattr(tracing, "current_span", lambda: Span())
 
     @tracing.tool_errors
     def boom():

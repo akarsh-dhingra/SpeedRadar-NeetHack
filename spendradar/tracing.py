@@ -92,17 +92,30 @@ def tool_errors(fn):
     but leaves the output empty). Apply directly under @neatlogs.span so it runs inside the span."""
     import functools
 
-    from opentelemetry import trace as otel
-
     @functools.wraps(fn)
     def wrapper(*args, **kwargs):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
-            set_io(otel.get_current_span(), output={"error": f"{type(e).__name__}: {str(e)[:500]}"})
+            set_io(current_span(), output={"error": f"{type(e).__name__}: {str(e)[:500]}"})
             raise
 
     return wrapper
+
+
+def current_span():
+    """The active neatlogs span. neatlogs runs on a private TracerProvider, so OpenTelemetry's global
+    current span is a no-op inside its spans (checked 2026-10-11, neatlogs SDK installed here); the SDK
+    threads its parent through a private context key instead. Fall back to the global span if that
+    internal helper ever moves."""
+    from opentelemetry import trace as otel
+
+    try:
+        from neatlogs._wrap_utils import _current_neatlogs_parent
+
+        return _current_neatlogs_parent() or otel.get_current_span()
+    except ImportError:
+        return otel.get_current_span()
 
 
 def record_error(name: str, error: str, **inputs: Any) -> None:
