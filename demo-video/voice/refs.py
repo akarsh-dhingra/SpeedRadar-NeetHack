@@ -12,7 +12,9 @@ HERE = Path(__file__).parent
 CORPUS = HERE / "LibriSpeech"
 REFS = HERE / "refs"
 REFS.mkdir(exist_ok=True)
-KEEP = int(sys.argv[1]) if len(sys.argv) > 1 else 6
+# `python refs.py 6` keeps the 6 liveliest readers; `python refs.py --speaker 1673` keeps just that reader.
+ONLY = sys.argv[2] if len(sys.argv) > 2 and sys.argv[1] == "--speaker" else None
+KEEP = 1 if ONLY else (int(sys.argv[1]) if len(sys.argv) > 1 else 6)
 TARGET_S = 12.0
 
 
@@ -50,6 +52,8 @@ print("SPEAKERS.TXT female ids:", None if females is None else len(females))
 rows = []
 for spk_dir in sorted(p for p in (CORPUS / "dev-clean").iterdir() if p.is_dir()):
     spk = spk_dir.name
+    if ONLY and spk != ONLY:
+        continue
     if females is not None and spk not in females:
         continue
     y, sr = clip_for(spk_dir)

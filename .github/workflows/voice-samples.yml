@@ -2,10 +2,8 @@
 # Output: the "voice-samples" artifact.
 name: voice-samples
 
+# Auditions are run by hand now that the voice is chosen (reader 1673).
 on:
-  push:
-    branches: [demo-video]
-    paths: ["demo-video/voice/**", ".github/workflows/voice-samples.yml"]
   workflow_dispatch:
 
 jobs:

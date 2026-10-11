@@ -2,10 +2,8 @@
 # Runs only on pushes to the demo-video branch; main is untouched. Output: the "spend-radar-demo" artifact.
 name: demo-video
 
+# v1 (canvas film). Superseded by demo-film.yml; kept runnable by hand only.
 on:
-  push:
-    branches: [demo-video]
-    paths: ["demo-video/**", "!demo-video/voice/**", "site/**", ".github/workflows/demo-video.yml"]
   workflow_dispatch:
 
 concurrency:

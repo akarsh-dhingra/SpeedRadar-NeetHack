@@ -1,0 +1,102 @@
+# Demo film v2, rendered in the cloud (team laptops are too slow for video).
+# narration (Chatterbox, cached per script) -> site capture -> timeline + music -> Remotion render in shards -> MP4.
+# Runs only on the demo-video branch. Output: the "spend-radar-film" artifact.
+name: demo-film
+
+on:
+  push:
+    branches: [demo-video]
+    paths: ["demo-video/**", "!demo-video/comp/**", "site/**", ".github/workflows/demo-film.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: demo-film
+  cancel-in-progress: true
+
+env:
+  SHARDS: 8
+
+jobs:
+  # ── narration: one job per slice of lines, skipped when the cache already has this script's voice ──
+  voice-key:
+    runs-on: ubuntu-latest
+    outputs:
+      key: ${{ steps.k.outputs.key }}
+      hit: ${{ steps.c.outputs.cache-hit }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: k
+        run: echo "key=voice-v2-${{ hashFiles('demo-video/script.json', 'demo-video/voice/tts_lines.py', 'demo-video/voice/refs.py') }}" >> "$GITHUB_OUTPUT"
+      - id: c
+        uses: actions/cache/restore@v4
+        with: { path: demo-video/build/voice/lines, key: "${{ steps.k.outputs.key }}", lookup-only: true }
+
+  voice:
+    needs: voice-key
+    if: needs.voice-key.outputs.hit != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: true
+      matrix: { shard: [0, 1, 2, 3, 4, 5] }
+    defaults: { run: { working-directory: demo-video/voice } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Python packages (CPU torch)
+        run: pip install -q --extra-index-url https://download.pytorch.org/whl/cpu chatterbox-tts faster-whisper num2words librosa soundfile
+      - uses: actions/cache@v4
+        with: { path: demo-video/voice/dev-clean.tar.gz, key: librispeech-dev-clean }
+      - name: Reference reader (LibriSpeech dev-clean, CC BY 4.0)
+        run: |
+          [ -f dev-clean.tar.gz ] || curl -sSfL https://openslr.elda.org/resources/12/dev-clean.tar.gz -o dev-clean.tar.gz || curl -sSfL https://openslr.trmal.net/resources/12/dev-clean.tar.gz -o dev-clean.tar.gz
+          tar xzf dev-clean.tar.gz
+          python refs.py --speaker "$(python -c "import json;print(json.load(open('../script.json'))['voice']['reference'].split('reader ')[1].split()[0])")"
+      - name: Lines (shard ${{ matrix.shard }})
+        run: python tts_lines.py ${{ matrix.shard }} 6
+      - uses: actions/upload-artifact@v4
+        with: { name: "voice-${{ matrix.shard }}", path: demo-video/build/voice/lines, retention-days: 3 }
+
+  voice-save:
+    needs: [voice-key, voice]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { pattern: voice-*, path: demo-video/build/voice/lines, merge-multiple: true }
+      - uses: actions/cache/save@v4
+        with: { path: demo-video/build/voice/lines, key: "${{ needs.voice-key.outputs.key }}" }
+
+  # ── timeline, music and mix ──
+  prep:
+    needs: [voice-key, voice-save]
+    if: always() && needs.voice-key.result == 'success' && (needs.voice-save.result == 'success' || needs.voice-key.outputs.hit == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults: { run: { working-directory: demo-video } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - uses: actions/cache/restore@v4
+        with: { path: demo-video/build/voice/lines, key: "${{ needs.voice-key.outputs.key }}", fail-on-cache-miss: true }
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg && pip install -q numpy scipy soundfile
+      - name: Timeline + voice track
+        run: python voice/align.py
+      - name: Music bed, sound-effect cues, mix
+        run: |
+          python music.py
+          node film/cues.mjs
+          python music.py --mix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prep
+          path: |
+            demo-video/build/timeline.json
+            demo-video/build/audio.wav
+            demo-video/build/voice.wav
+            demo-video/build/cues.json
+          retention-days: 3

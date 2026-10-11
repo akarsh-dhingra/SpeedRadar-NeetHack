@@ -208,5 +208,5 @@ if __name__ == "__main__":
         mix()
     else:
         tl = json.loads((BUILD / "timeline.json").read_text(encoding="utf-8"))
-        sf.write(BUILD / "music.wav", music(tl["duration"], tl["bpm"], tl["scenes"]), SR)
+        sf.write(BUILD / "music.wav", music(tl["duration"], tl.get("bpm", 118), tl["scenes"]), SR)
         print("music", tl["duration"], "s")
