@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "generated_at": "2026-10-11T22:39:38",
+ "generated_at": "2026-10-11T22:58:47",
  "summary": {
   "runs_scored": 74,
   "runs_unfinished": 3,
@@ -167,43 +167,43 @@
     "label": "Chosen peers kept",
     "values": {
      "1011-324f77": {
-      "text": "2 of 5 (3 swapped for New Relic / Datadog)",
+      "text": "2 / 5 (3 swapped for New Relic / Datadog)",
       "good": false
      },
      "1011-45b4f4": {
-      "text": "2 of 5 (3 swapped for New Relic / Datadog)",
+      "text": "2 / 5 (3 swapped for New Relic / Datadog)",
       "good": false
      },
      "1011-e6132c": {
-      "text": "2 of 5 (3 swapped for New Relic / Datadog)",
+      "text": "2 / 5 (3 swapped for New Relic / Datadog)",
       "good": false
      },
      "1011-2c53f4": {
-      "text": "2 of 5 (3 swapped for New Relic / Datadog)",
+      "text": "2 / 5 (3 swapped for New Relic / Datadog)",
       "good": false
      },
      "1011-e8b645": {
-      "text": "2 of 5 (3 swapped for New Relic / Datadog)",
+      "text": "2 / 5 (3 swapped for New Relic / Datadog)",
       "good": false
      },
      "1011-efdab4": {
-      "text": "5 of 5",
+      "text": "5 / 5",
       "good": true
      },
      "1011-51f5c4": {
-      "text": "5 of 5",
+      "text": "5 / 5",
       "good": true
      },
      "1011-6d3ba6": {
-      "text": "5 of 5",
+      "text": "5 / 5",
       "good": true
      },
      "1011-1078e9": {
-      "text": "5 of 5",
+      "text": "5 / 5",
       "good": true
      },
      "1011-09fd9f": {
-      "text": "5 of 5",
+      "text": "5 / 5",
       "good": true
      }
     }
@@ -224,11 +224,11 @@
     "label": "Chosen peers kept",
     "values": {
      "1010-b31657": {
-      "text": "2 of 5",
+      "text": "2 / 5",
       "good": false
      },
      "1010-7bf26d": {
-      "text": "5 of 5",
+      "text": "5 / 5",
       "good": true
      }
     }
@@ -449,6 +449,7 @@
    }
   ],
   "what_changed": null,
+  "silent_misses": 0,
   "created": "2026-10-11T21:48:21",
   "git_sha": "25cf3b6",
   "neatlogs_trace_id": "7c65a3da6faf8e4d6985bd6ed712bdbf",
@@ -664,6 +665,476 @@
     }
    }
   ]
+ },
+ "story": {
+  "company": "Acme Observability Inc.",
+  "company_key": "acme",
+  "run_id": "1011-142099",
+  "trace_id": "7cc53718a707e08091ed5b9e0e210039",
+  "models": [
+   "gemini-3.5-flash-lite",
+   "gpt-5-nano"
+  ],
+  "plan_rationale": "Plan to identify where competitors out-invest Acme in people (engineering, ML/AI, sales, marketing) by pulling in competitor data and job signals, verify Acme’s own spend files for errors, apply the spend policy, and back every number with a source. Tasks are ordered so that inputs exist before they’re needed and each action targets a single file or competitor action.",
+  "planted_total": 5,
+  "files": [
+   "budget_fy27.xlsx",
+   "policy.yaml",
+   "salary_table.csv",
+   "01_nimbus_2026-04.pdf",
+   "02_nimbus_2026-05.pdf",
+   "03_nimbus_2026-06.pdf",
+   "04_nimbus_2026-07.pdf",
+   "05_nimbus_2026-08.pdf",
+   "06_nimbus_2026-09.pdf",
+   "07_tensorforge_2026-05.pdf",
+   "08_tensorforge_2026-08.pdf",
+   "09_brightloop_2026-06.pdf",
+   "10_brightloop_2026-09.pdf",
+   "11_pipewise_2026-07.pdf",
+   "12_nimbus_2026-10.pdf",
+   "13_brightloop_2026-10.pdf"
+  ],
+  "competitors": [
+   "Honeycomb",
+   "Sentry",
+   "Arize",
+   "Chronosphere",
+   "Grafana Labs"
+  ],
+  "plan": [
+   {
+    "tool": "read_budget",
+    "label": "Read the budget spreadsheet",
+    "n": 1
+   },
+   {
+    "tool": "read_policy",
+    "label": "Read the spend policy",
+    "n": 1
+   },
+   {
+    "tool": "read_salary_table",
+    "label": "Read the salary table",
+    "n": 1
+   },
+   {
+    "tool": "read_invoice",
+    "label": "Read an invoice PDF",
+    "n": 13
+   },
+   {
+    "tool": "fetch_competitor",
+    "label": "Look up a competitor's headcount (Crustdata)",
+    "n": 5
+   },
+   {
+    "tool": "fetch_jobs",
+    "label": "Fetch a competitor's job posts (Crustdata)",
+    "n": 5
+   },
+   {
+    "tool": "classify_titles",
+    "label": "Sort job titles into teams (LLM)",
+    "n": 5
+   }
+  ],
+  "n_tasks": 31,
+  "tiles": [
+   {
+    "id": "t01",
+    "word": "Spreadsheet",
+    "target": "budget_fy27.xlsx",
+    "reason": "Load Acme's FY27 budget to validate totals and prepare spend comparisons.",
+    "outcome": "flagged"
+   },
+   {
+    "id": "t02",
+    "word": "Policy",
+    "target": "policy.yaml",
+    "reason": "Load the spend policy to apply rules to detected variances.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t03",
+    "word": "Salary table",
+    "target": "salary_table.csv",
+    "reason": "Load salary table to help validate payroll-related spend and headcount-related allocations.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t04",
+    "word": "Invoice",
+    "target": "01_nimbus_2026-04.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus April 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t05",
+    "word": "Invoice",
+    "target": "02_nimbus_2026-05.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus May 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t06",
+    "word": "Invoice",
+    "target": "03_nimbus_2026-06.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus Jun 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t07",
+    "word": "Invoice",
+    "target": "04_nimbus_2026-07.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus Jul 2026.",
+    "outcome": "flagged"
+   },
+   {
+    "id": "t08",
+    "word": "Invoice",
+    "target": "05_nimbus_2026-08.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus Aug 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t09",
+    "word": "Invoice",
+    "target": "06_nimbus_2026-09.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus Sep 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t10",
+    "word": "Invoice",
+    "target": "07_tensorforge_2026-05.pdf",
+    "reason": "Verify invoice line items and totals against records for TensorForge May 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t11",
+    "word": "Invoice",
+    "target": "08_tensorforge_2026-08.pdf",
+    "reason": "Verify invoice line items and totals against records for TensorForge Aug 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t12",
+    "word": "Invoice",
+    "target": "09_brightloop_2026-06.pdf",
+    "reason": "Verify invoice line items and totals against records for BrightLoop Jun 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t13",
+    "word": "Invoice",
+    "target": "10_brightloop_2026-09.pdf",
+    "reason": "Verify invoice line items and totals against records for BrightLoop Sep 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t14",
+    "word": "Invoice",
+    "target": "11_pipewise_2026-07.pdf",
+    "reason": "Verify invoice line items and totals against records for PipeWise Jul 2026.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t15",
+    "word": "Invoice",
+    "target": "12_nimbus_2026-10.pdf",
+    "reason": "Verify invoice line items and totals against records for Nimbus Oct 2026.",
+    "outcome": "recovered"
+   },
+   {
+    "id": "t16",
+    "word": "Invoice",
+    "target": "13_brightloop_2026-10.pdf",
+    "reason": "Verify invoice line items and totals against records for BrightLoop Oct 2026.",
+    "outcome": "flagged"
+   },
+   {
+    "id": "t17",
+    "word": "Competitor",
+    "target": "honeycomb.io",
+    "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t18",
+    "word": "Competitor",
+    "target": "sentry.io",
+    "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t19",
+    "word": "Competitor",
+    "target": "arize.com",
+    "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t20",
+    "word": "Competitor",
+    "target": "chronosphere.io",
+    "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t21",
+    "word": "Competitor",
+    "target": "grafana.com",
+    "reason": "Enrich data with headcount, funding history, and news to contextualize spend gaps.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t22",
+    "word": "Job posts",
+    "target": "honeycomb.io",
+    "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t23",
+    "word": "Job posts",
+    "target": "sentry.io",
+    "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t24",
+    "word": "Job posts",
+    "target": "arize.com",
+    "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t25",
+    "word": "Job posts",
+    "target": "chronosphere.io",
+    "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t26",
+    "word": "Job posts",
+    "target": "grafana.com",
+    "reason": "Collect recent job postings to compare role counts and ML/AI headcount signals.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t27",
+    "word": "Job titles",
+    "target": "honeycomb.io",
+    "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+    "outcome": "recovered"
+   },
+   {
+    "id": "t28",
+    "word": "Job titles",
+    "target": "sentry.io",
+    "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+    "outcome": "ok"
+   },
+   {
+    "id": "t29",
+    "word": "Job titles",
+    "target": "arize.com",
+    "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+    "outcome": "recovered"
+   },
+   {
+    "id": "t30",
+    "word": "Job titles",
+    "target": "chronosphere.io",
+    "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+    "outcome": "recovered"
+   },
+   {
+    "id": "t31",
+    "word": "Job titles",
+    "target": "grafana.com",
+    "reason": "Estimate ML/AI share of roles by classifying competitor job titles.",
+    "outcome": "ok"
+   }
+  ],
+  "counts": {
+   "ok": 24,
+   "recovered": 4,
+   "flagged": 3
+  },
+  "cases": [
+   {
+    "task_id": "t27",
+    "word": "Job titles",
+    "target": "honeycomb.io",
+    "failed_check": "verify:signals failed: Honeycomb:ml_ai: 1 ML/AI signals",
+    "options": [
+     {
+      "label": "Fetch more evidence",
+      "chosen": true
+     },
+     {
+      "label": "Keep it, marked low confidence",
+      "chosen": false
+     }
+    ],
+    "rule": "Keep it, marked low confidence",
+    "chosen": "Fetch more evidence",
+    "override": true,
+    "model": "gpt-5-nano",
+    "reason": "Need an extra independent signal for Honeycomb (ml_ai) to recover from verify:signals failure and produce a sourced number.",
+    "next": "worked"
+   },
+   {
+    "task_id": "t01",
+    "word": "Spreadsheet",
+    "target": "budget_fy27.xlsx",
+    "failed_check": "verify:totals failed: budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off)",
+    "options": [
+     {
+      "label": "Re-read only the row that looked wrong",
+      "chosen": true
+     },
+     {
+      "label": "Keep it, marked low confidence",
+      "chosen": false
+     },
+     {
+      "label": "Leave it out and say so in the report",
+      "chosen": false
+     }
+    ],
+    "rule": "Keep it, marked low confidence",
+    "chosen": "Re-read only the row that looked wrong",
+    "override": true,
+    "model": "gpt-5-nano",
+    "reason": "Re-read failing range to rule out parse slip: budget_fy27.xlsx, People sheet, row 10; totals mismatch: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45%).",
+    "next": "reported"
+   },
+   {
+    "task_id": "t07",
+    "word": "Invoice",
+    "target": "04_nimbus_2026-07.pdf",
+    "failed_check": "verify:totals failed: invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off)",
+    "options": [
+     {
+      "label": "Try a different way to read the file",
+      "chosen": true
+     },
+     {
+      "label": "Keep it, marked low confidence",
+      "chosen": false
+     },
+     {
+      "label": "Leave it out and say so in the report",
+      "chosen": false
+     }
+    ],
+    "rule": "Keep it, marked low confidence",
+    "chosen": "Try a different way to read the file",
+    "override": true,
+    "model": "gpt-5-nano",
+    "reason": "Attempt alternative text extraction parser to re-read Nimbus 04 Jul 2026 invoice for corrected totals (04_nimbus_2026-07.pdf).",
+    "next": "reported"
+   }
+  ],
+  "decisions": 10,
+  "non_default": 5,
+  "findings": [
+   {
+    "status": "downgraded",
+    "category": "ML/AI",
+    "text": "Acme Observability Inc. ML/AI is 6.7% of headcount vs competitor median 0.0%–1.0% (5 companies)",
+    "why": "competitor signals disagree for Honeycomb, Sentry (agreement < 0.6); the comparison cannot be confirmed, so it is downgraded"
+   },
+   {
+    "status": "confirmed",
+    "category": "Engineering",
+    "text": "Acme Observability Inc. engineering is 39.4% of headcount vs competitor median 36.8%–39.3% (5 companies)",
+    "why": ""
+   },
+   {
+    "status": "confirmed",
+    "category": "Sales",
+    "text": "Acme Observability Inc. sales is 19.4% of headcount vs competitor median 20.9%–21.4% (5 companies)",
+    "why": ""
+   },
+   {
+    "status": "confirmed",
+    "category": "Marketing",
+    "text": "Acme Observability Inc. marketing is 7.3% of headcount vs competitor median 4.1%–4.1% (5 companies)",
+    "why": ""
+   },
+   {
+    "status": "confirmed",
+    "category": "Own books",
+    "text": "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10: line items sum 3,262,500.00 vs stated 3,310,500.00 (1.45% off). Line items used.",
+    "why": ""
+   },
+   {
+    "status": "confirmed",
+    "category": "Own books",
+    "text": "Totals mismatch in invoices/04_nimbus_2026-07.pdf: line items sum 89,435.00 vs stated 96,935.00 (7.74% off). Line items used.",
+    "why": ""
+   },
+   {
+    "status": "confirmed",
+    "category": "Own books",
+    "text": "Tensorforge GPU: vendor billed to ['marketing', 'ML/AI']",
+    "why": ""
+   },
+   {
+    "status": "confirmed",
+    "category": "Infra/cloud",
+    "text": "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724.",
+    "why": ""
+   }
+  ],
+  "policy": [
+   {
+    "category": "Engineering",
+    "ours": "39.4%",
+    "peers": "36.8%–39.3%",
+    "violated": false,
+    "status": "confirmed"
+   },
+   {
+    "category": "ML/AI",
+    "ours": "6.7%",
+    "peers": "0.0%–1.0%",
+    "violated": true,
+    "status": "downgraded"
+   },
+   {
+    "category": "Sales",
+    "ours": "19.4%",
+    "peers": "20.9%–21.4%",
+    "violated": false,
+    "status": "confirmed"
+   },
+   {
+    "category": "Marketing",
+    "ours": "7.3%",
+    "peers": "4.1%–4.1%",
+    "violated": false,
+    "status": "confirmed"
+   }
+  ],
+  "own_books": [
+   "Totals mismatch in budget:marketing: budget_fy27.xlsx People!row 10",
+   "Totals mismatch in invoices/04_nimbus_2026-07.pdf",
+   "Tensorforge GPU: vendor billed to ['marketing', 'ML/AI']",
+   "1 of 7 infra/cloud invoices exceed the monthly budget $92,000 by more than 5%: INV-202604-001 $98,724."
+  ],
+  "score": {
+   "planted_caught": 5,
+   "planted_total": 5,
+   "unsupported": 0,
+   "llm_calls": 26,
+   "crustdata_credits": 0.0
+  }
  },
  "companies": [
   {

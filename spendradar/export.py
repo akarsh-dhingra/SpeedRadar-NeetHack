@@ -57,15 +57,15 @@ COMPARISONS = [
              "before, 0 after. 0 fallback hops.",
      # Read from each run's state.json (competitors kept, substitute_competitor decisions); see the case study.
      "per_run": {"label": "Chosen peers kept", "values": {
-         **{rid: {"text": "2 of 5 (3 swapped for New Relic / Datadog)", "good": False}
+         **{rid: {"text": "2 / 5 (3 swapped for New Relic / Datadog)", "good": False}
             for rid in ("1011-324f77", "1011-45b4f4", "1011-e6132c", "1011-2c53f4", "1011-e8b645")},
-         **{rid: {"text": "5 of 5", "good": True}
+         **{rid: {"text": "5 / 5", "good": True}
             for rid in ("1011-efdab4", "1011-51f5c4", "1011-6d3ba6", "1011-1078e9", "1011-09fd9f")}}}},
     {"title": "One weak signal threw away 3 of 5 peers (original)", "company": "acme",
      "before": ["1010-b31657"], "after": ["1010-7bf26d"],
      "case_study": "evidence/case-studies/02-competitor-substitution.md", "note": "n = 1 per side.",
-     "per_run": {"label": "Chosen peers kept", "values": {"1010-b31657": {"text": "2 of 5", "good": False},
-                                                          "1010-7bf26d": {"text": "5 of 5", "good": True}}}},
+     "per_run": {"label": "Chosen peers kept", "values": {"1010-b31657": {"text": "2 / 5", "good": False},
+                                                          "1010-7bf26d": {"text": "5 / 5", "good": True}}}},
 ]
 
 # Headline figures from the cfo.ai plan, copied from business/cfoai_plan.md ("Results" and "Fixing the
@@ -322,6 +322,7 @@ def _real_invoices() -> dict | None:
     main = [pc for pc in loaded if pc[1].get("variant") == REAL_INVOICES_MAIN] or loaded
     p, card = main[-1]
     return {"scorecard": p.as_posix(), "passes": passes, "summary": summary, "what_changed": REAL_INVOICES_NOTE,
+            "silent_misses": silent(card),
             **{k: card.get(k) for k in ("created", "git_sha", "neatlogs_trace_id", "source", "license", "n_invoices",
                                          "read_ok", "total_correct", "agent_totals_check_passed", "invoices")}}
 
@@ -331,6 +332,129 @@ def _real_invoices() -> dict | None:
 REAL_INVOICES_VARIANTS = ["real-before-prompt-v2", "real-after-prompt-v2", "heldout-prompt-v1", "heldout-prompt-v2"]
 REAL_INVOICES_MAIN = "real-after-prompt-v2"
 REAL_INVOICES_NOTE = None
+
+
+# "How it works": one real run told in plain words. Everything the page shows is prepared here, so the page
+# only renders (the design system's "show, never compute").
+STORY_TOOLS = {  # tool -> (plan line, tile word)
+    "read_budget": ("Read the budget spreadsheet", "Spreadsheet"),
+    "read_invoice": ("Read an invoice PDF", "Invoice"),
+    "read_policy": ("Read the spend policy", "Policy"),
+    "read_salary_table": ("Read the salary table", "Salary table"),
+    "fetch_competitor": ("Look up a competitor's headcount (Crustdata)", "Competitor"),
+    "fetch_jobs": ("Fetch a competitor's job posts (Crustdata)", "Job posts"),
+    "classify_titles": ("Sort job titles into teams (LLM)", "Job titles"),
+}
+STORY_ACTIONS = {
+    "narrow_range": "Re-read only the row that looked wrong",
+    "reparse_alt": "Try a different way to read the file",
+    "fetch_more_signal": "Fetch more evidence",
+    "mark_low_confidence": "Keep it, marked low confidence",
+    "substitute_competitor": "Swap in a similar company",
+    "skip": "Leave it out and say so in the report",
+}
+STORY_CATEGORY = {"ml_ai": "ML/AI", "infra_cloud": "Infra/cloud", "engineering": "Engineering", "sales": "Sales",
+                  "marketing": "Marketing", "internal": "Own books"}
+
+
+def _plain(text: str) -> str:
+    return text.replace("ml_ai", "ML/AI").replace("infra_cloud", "infra/cloud")
+
+
+def _story(comps: list[dict]) -> dict | None:
+    """The latest finished, real-data, uninjected run of the featured company with a full step log; never a
+    deliberate before-run."""
+    c = next((x for x in comps if x["key"] == FEATURED["company"]), None)
+    ok = [r for r in (c or {}).get("runs", []) if r["tasks"] and r["findings"] and r["recovery"]
+          and r["data_mode"] == "real" and not r["injected_faults"] and r["phase"] == "done"
+          and not re.search(r"before|ablation", r["variant"])]
+    if not ok:
+        return None
+    r = ok[-1]
+
+    def short(t: str) -> str:
+        return t.replace("invoices/", "")
+
+    top = [t for t in r["tasks"] if not t["parent"]]
+    kids: dict[str, list[dict]] = {}
+    for t in r["tasks"]:
+        if t["parent"]:
+            kids.setdefault(t["parent"], []).append(t)
+
+    def outcome(t: dict) -> str:
+        if t["status"] != "failed":
+            return "ok"
+        k = kids.get(t["id"], [])
+        return "recovered" if k and k[-1]["status"] == "done" else "flagged"
+
+    groups: list[dict] = []
+    for t in top:
+        if groups and groups[-1]["tool"] == t["tool"]:
+            groups[-1]["n"] += 1
+        else:
+            groups.append({"tool": t["tool"], "label": STORY_TOOLS.get(t["tool"], (t["tool"],))[0], "n": 1})
+    tiles = [{"id": t["id"], "word": STORY_TOOLS.get(t["tool"], ("", t["tool"]))[1], "target": short(t["target"]),
+              "reason": t["reason"], "outcome": outcome(t)} for t in top]
+    counts = {k: sum(1 for x in tiles if x["outcome"] == k) for k in ("ok", "recovered", "flagged")}
+
+    by_id = {t["id"]: t for t in r["tasks"]}
+    internal = [f for f in r["findings"] if f["kind"] != "policy"]
+
+    def next_step(d: dict) -> str:
+        k = kids.get(d["task_id"], [])
+        if not k:
+            return ""
+        if k[-1]["status"] == "done":
+            return "worked"
+        name = by_id.get(d["task_id"], {}).get("target", "").split("/")[-1]
+        return "reported" if name and any(name in f["statement"] for f in internal) else "flagged"
+
+    picks, seen = [], set()
+    for d in r["recovery"]:  # one example per action the agent chose against the rule, then other actions
+        if d["chosen"] != d["rule_default"] and d["chosen"] not in seen:
+            seen.add(d["chosen"])
+            picks.append(d)
+    for d in r["recovery"]:
+        if d["chosen"] not in seen and d["chosen"] != "mark_low_confidence":
+            seen.add(d["chosen"])
+            picks.append(d)
+    picks.sort(key=lambda d: next_step(d) != "worked")
+    cases = []
+    for d in picks[:3]:
+        t = by_id.get(d["task_id"], {})
+        cases.append({"task_id": d["task_id"], "word": STORY_TOOLS.get(t.get("tool", ""), ("", ""))[1],
+                      "target": short(t.get("target", "")),
+                      "failed_check": re.sub(r"^(tool_error: )+", "", d["failed_check"]).split("\n")[0],
+                      "options": [{"label": STORY_ACTIONS.get(o, o), "chosen": o == d["chosen"]} for o in d["options"]],
+                      "rule": STORY_ACTIONS.get(d["rule_default"], d["rule_default"]),
+                      "chosen": STORY_ACTIONS.get(d["chosen"], d["chosen"]), "override": d["chosen"] != d["rule_default"],
+                      "model": d["model"] or "rule", "reason": re.split(r"(?<=[.!?])\s", d["reason"] or "—")[0],
+                      "next": next_step(d)})
+
+    order = {"overturned": 0, "downgraded": 1, "confirmed": 2}
+    findings = [{"status": f["status"], "category": STORY_CATEGORY.get(f["category"], f["category"]),
+                 "text": _plain(f["statement"].split(". Matching")[0].split("; ")[0]),
+                 "why": _plain(re.sub(r"^[^:]+:\s*", "", (f["audit_notes"] or [""])[0])) if f["status"] != "confirmed" else ""}
+                for f in sorted(r["findings"], key=lambda f: order.get(f["status"], 3))]
+    policy = []
+    for f in r["findings"]:
+        if f["kind"] != "policy":
+            continue
+        m = re.search(r"is ([\d.]+%) of headcount vs competitor median ([\d.]+%[^\s(]*)", f["statement"])
+        policy.append({"category": STORY_CATEGORY.get(f["category"], f["category"]), "ours": m.group(1) if m else None,
+                       "peers": m.group(2) if m else None, "violated": bool(f["policy_violated"]), "status": f["status"]})
+    m = r["metrics"]
+    return {"company": c["name"], "company_key": c["key"], "run_id": r["run_id"], "trace_id": r["neatlogs_trace_id"],
+            "models": m["models"], "plan_rationale": r["plan_rationale"], "planted_total": m["planted_total"],
+            "files": [short(t["target"]) for t in top if t["tool"].startswith("read_")],
+            "competitors": [x["name"] for x in c["competitors"]],
+            "plan": groups, "n_tasks": len(top), "tiles": tiles, "counts": counts,
+            "cases": cases, "decisions": m["recovery_decisions"], "non_default": m["recovery_non_default"],
+            "findings": findings, "policy": policy,
+            "own_books": [_plain(f["statement"].split(";")[0].split(": line items")[0]) for f in internal],
+            "score": {"planted_caught": m["planted_caught"], "planted_total": m["planted_total"],
+                      "unsupported": m["unsupported_numbers_in_report"], "llm_calls": m["llm_calls"],
+                      "crustdata_credits": m["crustdata_credits"]}}
 
 
 def build() -> Path:
@@ -385,6 +509,7 @@ def build() -> Path:
                                   for c in comps for r in c["runs"] if r["injected_faults"]],
             },
             "featured": FEATURED, "comparisons": COMPARISONS, "real_invoices": _real_invoices(),
+            "story": _story(comps),
             "companies": comps,
             "business": {"plan": "business/cfoai_plan.md", "unit_costs": "business/unit_costs.md",
                          "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES,

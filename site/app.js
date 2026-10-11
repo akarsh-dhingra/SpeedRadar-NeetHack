@@ -299,6 +299,22 @@
       }).join("") + "</tbody></table></div></section>";
   }
 
+  function same(xs) { return xs.every(function (v) { return v === xs[0]; }); }
+  function newResults() {
+    var R = D.real_invoices, cs = (D.comparisons || []).filter(function (c) { return c.per_run && c.before.length >= 5; })[0];
+    var held = R && (R.summary || []).filter(function (g) { return g.invoice_set === "held out"; });
+    var tiles = "";
+    if (cs) {
+      var b = cs.per_run.values[cs.before[0]], a = cs.per_run.values[cs.after[0]];
+      tiles += '<a class="ac-card sr-tool" href="#compare" data-view="compare"><div class="ac-stat-label">Case study 02 rerun · n = ' + cs.before.length + ' per side</div><div class="ac-stat-value"><span class="ac-down">' + esc(b.text.split(" (")[0]) + '</span> → <span class="ac-up">' + esc(a.text) + '</span></div><div class="ac-delta">chosen competitors kept, in every run on each side ' + icon("arrow") + "</div></a>";
+    }
+    if (held && held.length === 2) {
+      tiles += '<a class="ac-card sr-tool" href="#real" data-view="real"><div class="ac-stat-label">Real invoices, held out · ' + held[0].passes + ' passes per side</div><div class="ac-stat-value"><span class="ac-down">' + held[0].silent_misses.join(" · ") + '</span> → <span class="ac-up">' + held[1].silent_misses.join(" · ") + '</span></div><div class="ac-delta">wrong totals nobody was warned about, of ' + held[0].n_invoices + ' real FCC invoices ' + icon("arrow") + "</div></a>";
+      tiles += '<a class="ac-card sr-tool" href="#real" data-view="real"><div class="ac-stat-label">Real invoices, held out · totals read correctly</div><div class="ac-stat-value">' + (same(held[1].total_correct) ? '<span class="ac-up">' + held[1].total_correct[0] + " / " + held[1].n_invoices + "</span>" : held[1].total_correct.join(" · ")) + '</div><div class="ac-delta">' + (same(held[1].total_correct) ? "in all " + held[1].passes + " passes after the fix" : "per pass after the fix") + "; before: " + held[0].total_correct.map(function (v) { return v + " / " + held[0].n_invoices; }).join(" · ") + " " + icon("arrow") + "</div></a>";
+    }
+    return tiles ? '<div class="sr-section-title" data-enter><h2>Latest results</h2><p>Measured on 11 Oct: a case study re-run at n = 5, and the invoice reader on real public invoices.</p></div><div class="ac-stats" data-enter>' + tiles + "</div>" : "";
+  }
+
   function viewOverview() {
     var sm = D.summary, nC = sm.companies, held = sm.held_out_companies;
     var allLatest = sm.latest_runs_all_caught === nC;
@@ -333,21 +349,20 @@
       ["Held-out company", "A company created after the agent was built. The agent was never adjusted to fit it."],
       ["Finding", "One conclusion in the report, for example \"Acme's ML team is a bigger share of staff than at its competitors\"."],
       ["Self-audit", "A step where the agent tries to prove its own finding wrong before reporting it."],
-      ["Overturned / downgraded", "Thrown out of the report, or kept with lower confidence."],
+      ["Overturned / downgraded", "Removed from the report, or kept with its confidence cut."],
       ["Confidence", "A score from 0 to 1 computed by a formula: checks passed × how far the sources agree × how fresh the data is. Never typed in."],
-      ["Fixed rule vs agent's own call", "When a check fails, a simple rule would always pick the same fix. The AI may choose differently and must give a reason."],
+      ["Rule default vs override", "When a check fails, a simple rule would always pick the same fix. The LLM may choose differently (an override) and must give a reason."],
       ["Fallback hop", "The AI model was busy or failed, so the agent switched to another model."],
       ["Fixture", "A test run with one competitor number changed on purpose. Labelled everywhere; never used for real reports."],
       ["Trace (neatlogs)", "The complete step-by-step recording of one run."],
       ["Checkpoint (Entire)", "A link from a commit to the AI coding session that wrote it."]
     ];
-    var intro = '<section class="sr-intro-box" data-enter><div class="sr-intro-main"><span class="ac-overline-inline">What is Spend Radar?</span>' +
+    var intro = '<section class="ac-card sr-intro-box" data-enter><div class="sr-intro-main"><span class="ac-overline-inline">What is Spend Radar?</span>' +
       '<h1>An AI agent that tells a finance team where competitors spend more, or less, on people than they do, and shows its work.</h1>' +
       '<p>You give it your budget, invoices and spending policy. It looks up real competitors\' team sizes and hiring, compares team by team, checks your own books for mistakes, and then tries to <b>disprove its own findings</b> before writing a report where every number links to its source.</p>' +
       '<div class="sr-intro-cta"><a class="ac-btn" href="#story" data-view="story">' + icon("play") + 'See how it works, step by step</a><a class="ac-btn ac-btn--ghost" href="#run" data-view="run">Open a full run</a></div></div>' +
       '<details class="sr-gloss"><summary>Words used on this site</summary><dl>' + GLOSS.map(function (g) { return "<dt>" + esc(g[0]) + "</dt><dd>" + esc(g[1]) + "</dd>"; }).join("") + "</dl></details></section>";
     return enter(
-      intro + helpBox("overview").replace("<section ", "<section data-enter ") +
       '<section class="ac-verdict" data-enter id="verdict"><div class="ac-verdict-grid"><div>' +
         '<span class="ac-overline-inline">Does it work? · latest finished run per company</span>' +
         '<h1 class="ac-hero-xl">' + headWords + "</h1>" +
@@ -359,6 +374,7 @@
         "</div></div>" +
         '<div class="ac-matrix" aria-label="Planted errors caught, latest run per company">' + rows + "</div>" +
       "</div></section>" +
+      intro + helpBox("overview").replace("<section ", "<section data-enter ") + newResults() +
 
       '<div class="sr-section-title" data-enter><h2>How one run works</h2><p>The LLM plans, picks recoveries and audits. Python runs every tool, does all the maths and enforces the limits.</p></div>' +
       '<section class="ac-card sr-scroll" data-enter><div class="sr-loop"><span class="sr-pulse" aria-hidden="true"></span>' + loop + "</div>" +
@@ -374,133 +390,83 @@
   }
 
   // ── "How it works": one real run told in six plain steps ─────────
-  // Everything shown is read from the run's exported tasks, recovery decisions and findings.
-  var TOOL_WORDS = {
-    read_budget: ["Read the budget spreadsheet", "spreadsheet"],
-    read_invoice: ["Read an invoice PDF", "invoice"],
-    read_policy: ["Read the spend policy", "policy"],
-    read_salary_table: ["Read the salary table", "salary table"],
-    fetch_competitor: ["Look up a competitor's headcount (Crustdata)", "competitor"],
-    fetch_jobs: ["Fetch a competitor's job posts (Crustdata)", "job posts"],
-    classify_titles: ["Sort job titles into teams (LLM)", "job titles"]
-  };
-  var ACTION_WORDS = {
-    narrow_range: "Re-read only the row that looked wrong",
-    reparse_alt: "Try a different way to read the file",
-    fetch_more_signal: "Go and get more evidence",
-    mark_low_confidence: "Keep it, but mark it as shaky",
-    substitute_competitor: "Swap in a similar company",
-    skip: "Leave it out and say so in the report"
-  };
-  function plain(t) { return String(t).replace(/ml_ai/g, "ML/AI").replace(/infra_cloud/g, "infra/cloud"); }
-  function toolWord(t, i) { return (TOOL_WORDS[t] || [t, t])[i || 0]; }
-  function storyRun() {
-    var c = company(D.featured.company) || D.companies[0];
-    // Never a deliberate "before" run (a fix reverted for a case study): the walkthrough shows the agent as it is.
-    var ok = c.runs.filter(function (r) { return r.tasks.length && r.findings.length && r.recovery.length && r.data_mode === "real" && !(r.injected_faults || []).length && r.phase === "done" && !/before|ablation/i.test(r.variant); });
-    return ok.length ? { c: c, r: ok[ok.length - 1] } : null;
-  }
+  // D.story is prepared by the export (counts, labels, examples); this only renders it.
+  var STATUS_WORD = { confirmed: ["ac-badge--up", "✓ Confirmed"], downgraded: ["ac-badge--warn", "Downgraded"], overturned: ["ac-badge--down", "✗ Overturned"] };
+  var MARK = { ok: ["ac-up", "✓"], recovered: ["ac-accent", "→"], flagged: ["ac-down", "✗"] };
   function viewStory() {
-    var sr = storyRun();
-    if (!sr) return '<p class="sr-empty">No exported run has a full step log yet.</p>';
-    var c = sr.c, r = sr.r, m = r.metrics;
-    var top = r.tasks.filter(function (t) { return !t.parent; });
-    var kids = {}; r.tasks.forEach(function (t) { if (t.parent) (kids[t.parent] = kids[t.parent] || []).push(t); });
-    function outcome(t) {
-      if (t.status !== "failed") return "ok";
-      var k = kids[t.id] || [];
-      return k.length && k[k.length - 1].status === "done" ? "fixed" : "flagged";
-    }
-    var counts = { ok: 0, fixed: 0, flagged: 0 }; top.forEach(function (t) { counts[outcome(t)]++; });
+    var s = D.story;
+    if (!s) return '<p class="sr-empty">No exported run has a full step log yet.</p>';
+    var sc = s.score;
 
-    // 1. inputs
-    var files = top.filter(function (t) { return /^read_/.test(t.tool); });
-    var ch1 = '<div class="sr-st-cols"><div><h4>' + n(files.length) + ' finance files</h4><div class="sr-st-chips">' +
-      files.map(function (t) { return '<span class="sr-st-chip">' + icon("file") + esc(t.target.replace(/^invoices\//, "")) + "</span>"; }).join("") +
-      '</div><p class="sr-st-note">Acme\'s books are fictional. ' + word(m.planted_total).replace(/^./, function (x) { return x.toUpperCase(); }) + ' mistakes are planted in them; the agent is not told which or where.</p></div>' +
-      '<div><h4>' + n(c.competitors.length) + ' real competitors</h4><div class="sr-st-chips">' +
-      c.competitors.map(function (x) { return '<span class="sr-st-chip sr-st-chip--real">' + esc(x.name) + "</span>"; }).join("") +
+    var ch1 = '<div class="sr-st-cols"><div><h4 class="sr-st-h">' + n(s.files.length) + ' finance files</h4><div class="ac-row">' +
+      s.files.map(function (f) { return '<span class="ac-tag sr-st-file">' + esc(f) + "</span>"; }).join("") +
+      '</div><p class="sr-st-note">' + esc(s.company) + "'s books are fictional. " + word(s.planted_total).replace(/^./, function (x) { return x.toUpperCase(); }) + " mistakes are planted in them; the agent is not told which or where.</p></div>" +
+      '<div><h4 class="sr-st-h">' + n(s.competitors.length) + ' real competitors</h4><div class="ac-row">' +
+      s.competitors.map(function (x) { return '<span class="ac-badge ac-badge--neutral">' + esc(x) + "</span>"; }).join("") +
       '</div><p class="sr-st-note">Their headcount and job posts come live from Crustdata.</p></div></div>' +
-      '<div class="sr-st-q"><b>The question it has to answer</b>Where does Acme spend more or less on people than its competitors, does that break Acme\'s own spend policy, and is anything wrong in Acme\'s own books?</div>';
+      '<div class="sr-st-q"><div class="ac-overline">The question it has to answer</div>Where does ' + esc(s.company) + " spend more or less on people than its competitors, does that break its own spend policy, and is anything wrong in its own books?</div>";
 
-    // 2. plan
-    var groups = []; top.forEach(function (t) { var g = groups[groups.length - 1]; if (g && g.tool === t.tool) g.n++; else groups.push({ tool: t.tool, n: 1 }); });
-    var ch2 = (r.plan_rationale ? '<div class="sr-plan"><b>The plan, in the agent\'s own words</b>' + esc(r.plan_rationale) + "</div>" : "") +
-      '<ol class="sr-st-plan">' + groups.map(function (g, i) {
-        return '<li style="--i:' + i + '"><span class="sr-st-num">' + (i + 1) + "</span>" + esc(toolWord(g.tool)) + (g.n > 1 ? ' <span class="sr-st-times">× ' + g.n + "</span>" : "") + "</li>";
-      }).join("") + "</ol>" +
-      '<p class="sr-st-note">The LLM wrote this as a typed list of ' + n(top.length) + ' tasks. Python checked it against a schema and would have added any file the plan forgot.</p>';
+    var ch2 = (s.plan_rationale ? '<div class="sr-plan"><b>The plan, in the agent\'s own words</b>' + esc(s.plan_rationale) + "</div>" : "") +
+      '<ul class="ac-list sr-st-plan">' + s.plan.map(function (g, i) {
+        return '<li class="ac-li"><span class="ac-avatar">' + (i + 1) + '</span><div class="ac-li-main"><div class="ac-li-name">' + esc(g.label) + '</div></div><div class="ac-li-end ac-code ac-muted">× ' + n(g.n) + "</div></li>";
+      }).join("") + "</ul>" +
+      '<p class="sr-st-note">The LLM wrote this as a typed list of ' + n(s.n_tasks) + " tasks. Python checked it against a schema and adds any file the plan forgot.</p>";
 
-    // 3. act
-    var LBL = { ok: "worked first time", fixed: "a check failed, then it recovered", flagged: "a check failed; kept with a warning or left out" };
-    var ch3 = '<div class="sr-st-legend">' + ["ok", "fixed", "flagged"].map(function (k) { return '<span><i class="sr-st-dot sr-st-dot--' + k + '"></i>' + n(counts[k]) + " " + LBL[k] + "</span>"; }).join("") + "</div>" +
-      '<div class="sr-st-grid">' + top.map(function (t, i) {
-        var o = outcome(t);
-        return '<div class="sr-st-task sr-st-task--' + o + '" style="--i:' + i + '" title="' + esc(t.reason) + '"><span class="sr-mono">' + esc(t.id) + "</span><b>" + esc(toolWord(t.tool, 1)) + "</b><small>" + esc((t.target || "").replace(/^invoices\//, "")) + "</small></div>";
+    var LBL = { ok: "worked first time", recovered: "a check failed, then it recovered", flagged: "a check failed; kept low confidence or left out" };
+    var ch3 = '<div class="sr-st-legend">' + ["ok", "recovered", "flagged"].map(function (k) { return '<span><b class="' + MARK[k][0] + '">' + MARK[k][1] + " " + n(s.counts[k]) + "</b> " + LBL[k] + "</span>"; }).join("") + "</div>" +
+      '<div class="sr-st-grid">' + s.tiles.map(function (t) {
+        return '<div class="sr-st-task" title="' + esc(t.reason) + '"><div class="sr-st-task-top"><span class="ac-code ac-muted">' + esc(t.id) + '</span><b class="' + MARK[t.outcome][0] + '">' + MARK[t.outcome][1] + "</b></div><div class=\"sr-st-task-word\">" + esc(t.word) + '</div><div class="ac-code ac-muted sr-st-task-target">' + esc(t.target) + "</div></div>";
       }).join("") + "</div>" +
       '<p class="sr-st-note">Each tile is one tool call. After each one, Python runs a fixed check: do the line items add up to the total? Are there at least two independent signals? Is there a source for every number? Hover a tile for why the agent ran it.</p>';
 
-    // 4. recover: one example per action it chose against the rule, then the rest of the actions it used
-    var seen = {}, picks = [];
-    r.recovery.forEach(function (d) { if (d.chosen !== d.rule_default && !seen[d.chosen]) { seen[d.chosen] = 1; picks.push(d); } });
-    r.recovery.forEach(function (d) { if (!seen[d.chosen] && d.chosen !== "mark_low_confidence") { seen[d.chosen] = 1; picks.push(d); } });
-    var byId = {}; r.tasks.forEach(function (t) { byId[t.id] = t; });
-    function lastKid(d) { var k = kids[d.task_id] || []; return k[k.length - 1]; }
-    picks.sort(function (a, b) { var x = lastKid(a), y = lastKid(b); return ((y && y.status === "done") ? 1 : 0) - ((x && x.status === "done") ? 1 : 0); });
-    function reported(t) { var f = (t.target || "").split("/").pop(); return f && r.findings.some(function (x) { return x.kind !== "policy" && x.statement.indexOf(f) >= 0; }); }
-    var ch4 = '<div class="sr-st-cases">' + picks.slice(0, 3).map(function (d) {
-      var t = byId[d.task_id] || {}, after = (kids[d.task_id] || []), last = after[after.length - 1];
-      var override = d.chosen !== d.rule_default;
-      return '<div class="ac-card sr-st-case"><div class="sr-st-case-what"><span class="ac-tag">' + esc(toolWord(t.tool, 1)) + "</span> " + esc((t.target || "").replace(/^invoices\//, "")) + "</div>" +
-        '<div class="sr-st-case-row"><span class="sr-st-k">What went wrong</span><span class="sr-decision-check">' + esc(String(d.failed_check || "").replace(/^(tool_error: )+/, "").split("\n")[0]) + "</span></div>" +
-        '<div class="sr-st-case-row"><span class="sr-st-k">Options it was given</span><div class="sr-opts">' + (d.options || []).map(function (o) { return '<span class="sr-opt' + (o === d.chosen ? " sr-opt--chosen" : "") + '">' + esc(ACTION_WORDS[o] || o) + "</span>"; }).join("") + "</div></div>" +
-        '<div class="sr-st-case-row"><span class="sr-st-k">A fixed rule would</span><span>' + esc(ACTION_WORDS[d.rule_default] || d.rule_default) + "</span></div>" +
-        '<div class="sr-st-case-row"><span class="sr-st-k">The agent chose</span><span><b class="' + (override ? "ac-accent" : "") + '">' + esc(ACTION_WORDS[d.chosen] || d.chosen) + "</b>" + (override ? ' <span class="ac-badge ac-badge--accent">differs from the rule</span>' : "") + '</span></div>' +
-        '<div class="sr-st-case-row"><span class="sr-st-k">Why (' + esc(d.model || "rule") + ')</span><span class="sr-st-why">' + esc(firstSentence(d.reason || "—")) + "</span></div>" +
-        (last ? '<div class="sr-st-case-row"><span class="sr-st-k">What happened next</span><span>' + (last.status === "done" ? '<b class="ac-up">✓ It worked, and the run carried on</b>' : reported(t) ? '<b class="ac-warn">The numbers really do not add up. That is a real problem in the file, so it goes into the report (step 6).</b>' : '<b class="ac-warn">Still failed, so it was kept with a warning or left out, and the report says so.</b>') + "</span></div>" : "") +
-        "</div>";
+    var NEXT = { worked: '<b class="ac-up">✓ It worked, and the run carried on</b>', reported: '<span class="ac-status">The numbers really do not add up. That is a real problem in the file, so it goes into the report (step 6).</span>', flagged: '<span class="ac-status ac-status--down">Still failed, so it was kept low confidence or left out, and the report says so.</span>' };
+    var ch4 = '<div class="sr-st-cases">' + s.cases.map(function (d) {
+      return '<div class="ac-card sr-st-case"><div class="ac-row"><span class="ac-tag">' + esc(d.word) + '</span><span class="ac-code">' + esc(d.target) + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">What went wrong</span><span class="ac-code ac-down">' + esc(d.failed_check) + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">Options it was given</span><div class="ac-seg ac-seg--plain sr-st-opts" role="group" aria-label="Options">' + d.options.map(function (o) { return '<button type="button" tabindex="-1" aria-pressed="' + o.chosen + '">' + esc(o.label) + "</button>"; }).join("") + "</div></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">The fixed rule would</span><span>' + esc(d.rule) + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">The agent chose</span><span><b>' + esc(d.chosen) + "</b> " + (d.override ? '<span class="ac-badge ac-badge--accent">Override</span>' : '<span class="ac-badge ac-badge--neutral">Rule</span>') + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">Why · ' + esc(d.model) + '</span><span class="ac-muted">' + esc(d.reason) + "</span></div>" +
+        (d.next ? '<div class="sr-st-row"><span class="sr-st-k">What happened next</span>' + NEXT[d.next] + "</div>" : "") + "</div>";
     }).join("") + "</div>" +
-      '<p class="sr-st-note">' + n(m.recovery_decisions) + " decisions in this run; " + n(m.recovery_non_default) + ' differed from the fixed rule. The LLM only picks from the menu. Retry limits and credit limits are enforced in Python.</p>';
+      '<p class="sr-st-note">' + n(s.decisions) + " decisions in this run; " + n(s.non_default) + " were overrides (the LLM chose differently from the fixed rule). The LLM only picks from the menu; retry and credit limits are enforced in Python.</p>";
 
-    // 5. audit
-    var ST = { confirmed: ["ac-badge--up", "Survived"], downgraded: ["ac-badge--warn", "Weakened"], overturned: ["ac-badge--down", "Thrown out"] };
-    var fs = r.findings.slice().sort(function (a, b) { return (a.status === "confirmed") - (b.status === "confirmed"); });
-    var ch5 = '<div class="sr-st-audit">' + fs.map(function (f) {
-      var s = ST[f.status] || ["ac-badge--neutral", f.status], note = (f.audit_notes || [])[0] || "";
-      var cat = f.category === "ml_ai" ? "ML/AI" : f.category === "infra_cloud" ? "Infra/cloud" : f.category.charAt(0).toUpperCase() + f.category.slice(1);
-      return '<div class="sr-st-find' + (f.status !== "confirmed" ? " sr-st-find--hit" : "") + '"><span class="ac-badge ' + s[0] + '">' + s[1] + '</span><span class="sr-st-cat">' + esc(cat) + "</span><span>" + esc(plain(f.statement.split(". Matching")[0].split("; ")[0])) + "</span>" +
-        (f.status !== "confirmed" ? '<span class="sr-st-auditnote">Why: ' + esc(plain(note.replace(/^[^:]+:\s*/, ""))) + "</span>" : "") + "</div>";
-    }).join("") + "</div>" +
+    var ch5 = '<ul class="ac-list">' + s.findings.map(function (f) {
+      var b = STATUS_WORD[f.status] || ["ac-badge--neutral", f.status];
+      return '<li class="ac-li sr-st-find"><span class="ac-badge ' + b[0] + '">' + b[1] + '</span><div class="ac-li-main"><div class="ac-li-name">' + esc(f.category) + '</div><div class="ac-li-sub">' + esc(f.text) + "</div>" +
+        (f.why ? '<div class="sr-st-why">' + esc(f.why) + "</div>" : "") + "</div></li>";
+    }).join("") + "</ul>" +
       '<p class="sr-st-note">For every finding, the audit recomputes the number, re-checks the sources and looks for contradicting evidence. Confidence comes from a formula: checks passed × signal agreement × data freshness.</p>';
 
-    // 6. answer
-    var pol = r.findings.filter(function (f) { return f.kind === "policy"; }), inner = r.findings.filter(function (f) { return f.kind !== "policy"; });
-    var ch6 = '<div class="sr-st-cols"><div><h4>People spend vs competitors</h4><ul class="sr-st-ans">' + pol.map(function (f) {
-      var cat = f.category === "ml_ai" ? "ML/AI" : f.category.charAt(0).toUpperCase() + f.category.slice(1);
-      var pct = /is ([\d.]+%) of headcount vs competitor median ([\d.]+%[^\s(]*)/.exec(f.statement);
-      return '<li class="sr-st-ans3"><span class="' + (f.policy_violated ? "ac-down" : "ac-up") + '">' + (f.policy_violated ? "✗" : "✓") + "</span><span><b>" + esc(cat) + "</b> " + (pct ? "Acme " + esc(pct[1]) + " vs peers " + esc(pct[2]) : "") + '</span><small>' + (f.policy_violated ? "breaks policy" : "within policy") + (f.status !== "confirmed" ? " · " + esc(f.status) : "") + "</small></li>";
-    }).join("") + '</ul></div><div><h4>Problems in Acme\'s own books</h4><ul class="sr-st-ans">' + inner.map(function (f) {
-      return '<li><span class="ac-down">!</span><span>' + esc(plain(f.statement.split(";")[0].split(": line items")[0])) + "</span></li>";
+    var ch6 = '<div class="sr-st-cols"><div><h4 class="sr-st-h">People spend vs competitors</h4><ul class="ac-list">' + s.policy.map(function (p) {
+      return '<li class="ac-li"><b class="' + (p.violated ? "ac-down" : "ac-up") + '">' + (p.violated ? "✗" : "✓") + '</b><div class="ac-li-main"><div class="ac-li-name">' + esc(p.category) + '</div><div class="ac-li-sub">' + (p.ours ? esc(s.company.split(" ")[0]) + " " + esc(p.ours) + " vs peers " + esc(p.peers) : "") + '</div></div><div class="ac-li-end"><small class="ac-muted">' + (p.violated ? "breaks policy" : "within policy") + (p.status !== "confirmed" ? " · " + esc(p.status) : "") + "</small></div></li>";
+    }).join("") + '</ul></div><div><h4 class="sr-st-h">Problems in its own books</h4><ul class="ac-list">' + s.own_books.map(function (t) {
+      return '<li class="ac-li"><span class="ac-status ac-status--down"></span><div class="ac-li-main"><div class="ac-li-sub" style="color:var(--text)">' + esc(t) + "</div></div></li>";
     }).join("") + "</ul></div></div>" +
-      '<div class="sr-st-score"><div><b class="ac-up">' + score(m) + '</b><span>planted mistakes caught</span></div><div><b>' + n(m.unsupported_numbers_in_report) + '</b><span>numbers without a source</span></div><div><b>' + n(m.llm_calls) + '</b><span>LLM calls</span></div><div><b>' + n(m.crustdata_credits) + '</b><span>Crustdata credits (cached)</span></div></div>' +
-      '<p class="sr-st-note">The report itself cites a file and row, a PDF page, or a Crustdata request for every number. <a class="ac-link" href="#run" data-open-run="' + r.run_id + '" data-company="' + c.key + '">Open this run\'s full detail ' + icon("arrow") + "</a></p>";
+      '<div class="ac-stats sr-section">' +
+        stat("Planted mistakes caught", '<span class="' + (sc.planted_caught === sc.planted_total ? "ac-up" : "ac-down") + '">' + score({ planted_caught: sc.planted_caught, planted_total: sc.planted_total }) + "</span>", "from the ground-truth file the agent never sees", 0) +
+        stat("Numbers without a source", n(sc.unsupported), "every number in the report cites a file, page or API request", 1) +
+        stat("LLM calls", n(sc.llm_calls), (s.models || []).join(", "), 2) +
+        stat("Crustdata credits", n(sc.crustdata_credits), "served from cache in this run", 3) +
+      "</div>" +
+      '<p class="sr-st-note"><a class="ac-link" href="#run" data-open-run="' + s.run_id + '" data-company="' + s.company_key + '">Open this run\'s full detail ' + icon("arrow") + "</a></p>";
 
     var CH = [
       ["What it was given", "A folder of finance files and a list of competitors. No other help.", ch1],
       ["It made a plan", "The LLM reads the folder and writes its own to-do list.", ch2],
       ["It did the work, one tool at a time", "Python runs each task and checks the result straight away.", ch3],
       ["When a check failed, it chose what to do", "The LLM picks a fix from a fixed menu and gives a reason.", ch4],
-      ["It tried to prove itself wrong", "Before reporting, every finding is attacked. Weak ones are cut down.", ch5],
+      ["It tried to prove itself wrong", "Before reporting, every finding is attacked. Weak ones are downgraded or overturned.", ch5],
       ["The answer", "What the finance team gets.", ch6]
     ];
     var k = Math.max(0, Math.min(CH.length - 1, S.story));
-    var steps = '<ol class="sr-st-steps" role="tablist">' + CH.map(function (x, i) {
-      return '<li><button type="button" role="tab" data-story="' + i + '" aria-selected="' + (i === k) + '" class="' + (i < k ? "is-done" : "") + '"><span>' + (i + 1) + "</span>" + esc(x[0]) + "</button></li>";
-    }).join("") + "</ol>";
+    var steps = '<div class="ac-seg ac-seg--plain sr-st-steps" role="group" aria-label="Steps">' + CH.map(function (x, i) {
+      return '<button type="button" data-story="' + i + '" aria-pressed="' + (i === k) + '"><span class="ac-code">' + (i + 1) + "</span> " + esc(x[0]) + "</button>";
+    }).join("") + "</div>";
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">How Spend Radar works, in one real run</h1><p class="ac-subtitle">' + esc(c.name) + " (fictional) · run <span class=\"sr-mono\">" + r.run_id + "</span> · " + esc((m.models || []).join(", ")) + ". Every value below is read from this run's saved log, not typed in. Use ← → to step.</p></div></div>" +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">How Spend Radar works, in one real run</h1><p class="ac-subtitle">' + esc(s.company) + " (fictional) · run <span class=\"ac-code\">" + s.run_id + "</span> · " + esc((s.models || []).join(", ")) + ". Every value is read from this run's saved log. Use ← → to step.</p></div></div>" +
       '<div data-enter>' + steps + "</div>" +
-      '<section class="ac-card sr-st-panel" data-enter role="tabpanel"><div class="sr-st-head"><span class="sr-st-big">' + (k + 1) + '</span><div><h2>' + esc(CH[k][0]) + "</h2><p>" + esc(CH[k][1]) + "</p></div></div>" + CH[k][2] +
+      '<section class="ac-card sr-st-panel" data-enter><div class="ac-card-head"><div><span class="ac-overline-inline">Step ' + (k + 1) + " of " + CH.length + '</span><h3 class="ac-card-title" style="margin-top:var(--space-1)">' + esc(CH[k][0]) + '</h3><p class="sr-st-sub">' + esc(CH[k][1]) + "</p></div></div>" + CH[k][2] +
         '<div class="sr-st-nav"><button type="button" class="ac-btn ac-btn--ghost" data-story="' + (k - 1) + '"' + (k === 0 ? " disabled" : "") + ">← Back</button>" +
         (k < CH.length - 1 ? '<button type="button" class="ac-btn" data-story="' + (k + 1) + '">Next: ' + esc(CH[k + 1][0]) + " →</button>" : '<a class="ac-btn" href="#overview" data-view="overview">See every run →</a>') + "</div></section>"
     );
@@ -560,7 +526,7 @@
           '<div class="sr-opts">' + (d.options || [d.chosen]).map(function (o) {
             return '<span class="sr-opt' + (o === d.chosen ? " sr-opt--chosen" + (override ? "" : " is-rule") : "") + '">' + esc(o) + (o === d.rule_default ? " <small>rule</small>" : "") + "</span>";
           }).join("") + "</div>" +
-          '<div class="sr-decision-why"><b>' + (override ? '<span class="ac-accent">Agent\'s own call</span> (not the fixed rule) by ' : "Same as the fixed rule, chosen by ") + esc(d.model || "rule") + ":</b> " + esc(d.reason || "—") + "</div></div>";
+          '<div class="sr-decision-why"><b>' + (override ? '<span class="ac-accent">Override</span> by ' : "Chosen by ") + esc(d.model || "rule") + ":</b> " + esc(d.reason || "—") + "</div></div>";
       }).join("");
       return '<div class="sr-tl-row' + (failed ? " sr-tl-row--failed" : "") + (child ? " sr-tl-row--child" : "") + '"><span class="sr-tl-dot"></span><div>' +
         '<div class="sr-tl-head"><span class="sr-mono sr-muted">' + esc(t.id) + '</span><span class="ac-tag">' + esc(t.tool) + "</span>" + (t.target ? '<span class="sr-tl-target">' + esc(t.target) + "</span>" : "") + (failed ? '<span class="ac-badge ac-badge--down">✗ check failed</span>' : "") + "</div>" +
@@ -590,10 +556,10 @@
   function recoveryCard(r) {
     var head = '<div class="ac-card-head"><h3 class="ac-card-title">Recovery log</h3><div class="ac-row">' + (r.injected_faults || []).map(function (f) { return '<span class="ac-badge ac-badge--accent">Injected · ' + esc(f) + "</span>"; }).join("") + "</div></div>";
     if (!r.recovery.length) return '<section class="ac-card">' + head + '<p class="sr-empty">' + (r.findings.length ? "No check failed in this run, so no recovery was needed." : "Recovery decisions were not exported for this run.") + "</p></section>";
-    return '<section class="ac-card">' + head + '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Who decided</th><th>Step</th><th>What it did</th><th>Fixed rule would do</th><th>Reason given</th></tr></thead><tbody>' +
+    return '<section class="ac-card">' + head + '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Decision</th><th>Task</th><th>Chosen</th><th>Rule default</th><th>Reason</th></tr></thead><tbody>' +
       r.recovery.map(function (d) {
         var o = d.chosen !== d.rule_default;
-        return "<tr><td>" + (o ? '<span class="ac-badge ac-badge--accent">Agent\'s own call</span>' : '<span class="ac-badge ac-badge--neutral">Same as rule</span>') + '</td><td class="ac-code">' + esc(d.task_id) + '</td><td class="ac-code">' + esc(d.chosen) + '</td><td class="ac-code ac-muted">' + esc(d.rule_default) + '</td><td class="sr-wrap">' + esc(d.reason || "—") + "</td></tr>";
+        return "<tr><td>" + (o ? '<span class="ac-badge ac-badge--accent">Override</span>' : '<span class="ac-badge ac-badge--neutral">Rule</span>') + '</td><td class="ac-code">' + esc(d.task_id) + '</td><td class="ac-code">' + esc(d.chosen) + '</td><td class="ac-code ac-muted">' + esc(d.rule_default) + '</td><td class="sr-wrap">' + esc(d.reason || "—") + "</td></tr>";
       }).join("") + "</tbody></table></div></section>";
   }
 
@@ -624,7 +590,7 @@
     D.companies.forEach(function (c) { c.runs.forEach(function (r) { r.recovery.forEach(function (d) { rows.push({ c: c, r: r, d: d }); }); }); });
     rows.reverse();
     var shown = rows.filter(function (x) { return S.recovery === "all" || x.d.chosen !== x.d.rule_default; });
-    var seg = [["overrides", "Only the agent's own calls"], ["all", "All decisions"]].map(function (s) { return '<button type="button" data-recovery="' + s[0] + '" aria-pressed="' + (S.recovery === s[0]) + '">' + s[1] + "</button>"; }).join("");
+    var seg = [["overrides", "Overrides only"], ["all", "All decisions"]].map(function (s) { return '<button type="button" data-recovery="' + s[0] + '" aria-pressed="' + (S.recovery === s[0]) + '">' + s[1] + "</button>"; }).join("");
     var inj = D.summary.injected_runs.map(function (x) {
       var c = company(x.company);
       return '<button type="button" class="ac-card sr-tilt" data-open-run="' + x.run_id + '" data-company="' + x.company + '"><div class="ac-row">' + avatar(c) + '<div><div class="ac-li-name">' + esc(c.name) + '</div><div class="ac-li-sub sr-mono">' + x.run_id + "</div></div></div>" +
@@ -642,10 +608,10 @@
       }).join("") + "</tbody></table></div>" +
       (shown.length > S.recoveryShown ? '<div class="sr-more"><button class="ac-btn ac-btn--ghost" type="button" data-more>Show 30 more · ' + n(shown.length - S.recoveryShown) + " left</button></div>" : "");
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Recovery log</h1><p class="ac-subtitle">When a check fails, the LLM picks one action from a fixed menu. Python enforces retry caps and budgets. "Agent\'s own call" marks a choice that differs from what the fixed rule would pick.</p></div></div>' +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Recovery log</h1><p class="ac-subtitle">When a check fails, the LLM picks one action from a fixed menu. Python enforces retry caps and budgets. An override is a choice that differs from the rule\'s default.</p></div></div>' +
       '<div class="ac-stats" data-enter>' +
         stat("Recovery decisions", n(D.summary.recovery_decisions), "across runs with exported logs") +
-        stat("Agent's own calls", '<span class="ac-accent">' + n(D.summary.recovery_overrides) + "</span>", "the AI chose differently from the fixed rule") +
+        stat("Overrides of the rule", '<span class="ac-accent">' + n(D.summary.recovery_overrides) + "</span>", "the LLM chose something else") +
         stat("Runs with injected failures", n(D.summary.injected_runs.length), "Crustdata 429 and LLM 429") +
       "</div>" +
       '<div class="sr-section-title" data-enter><h2>Failures injected on purpose</h2><p>Each run below was started with a forced Crustdata 429 and LLM 429. Open one to see what it did next.</p></div>' +
@@ -825,7 +791,7 @@
       "Overturned means the claim was removed from the report. Downgraded means it stayed in with lower confidence. Each card quotes the reason."],
     recovery: ["Every time a check failed (a total did not add up, a file would not open, a competitor had too little data) and what the agent chose to do about it.",
       "Things go wrong in real data. The agent does not crash or guess; it picks a fix from a fixed menu and says why.",
-      "\"Fixed rule\" is what a simple if/else would have done. \"Agent's own call\" marks the times the AI chose something different, with its reason."],
+      "\"Rule default\" is what a simple if/else would have done. An Override badge marks the times the LLM chose something different, with its reason."],
     compare: ["Bugs we found by reading the agent's traces, and the same test run again after the fix.",
       "This is the proof the agent got better during the hackathon, with numbers, not claims.",
       "Before is on the left, after on the right. n is how many runs sit on each side."],
@@ -844,14 +810,14 @@
   };
   function helpBox(v) {
     var h = HELP[v]; if (!h) return "";
-    return '<section class="sr-help" aria-label="About this page"><div><b>What you are looking at</b>' + h[0] + "</div><div><b>Why it matters</b>" + h[1] + "</div><div><b>How to read it</b>" + h[2] + "</div></section>";
+    return '<section class="ac-card sr-help" aria-label="About this page"><div><div class="ac-overline">What you are looking at</div>' + h[0] + '</div><div><div class="ac-overline">Why it matters</div>' + h[1] + '</div><div><div class="ac-overline">How to read it</div>' + h[2] + "</div></section>";
   }
 
   function viewReal() {
     var R = D.real_invoices;
     var head = '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Real invoices</h1><p class="ac-subtitle">The same invoice reader an agent run uses (text parser first, then the LLM reader as its recovery), on real public invoices with verified totals.</p></div></div>';
     if (!R) return enter(head + '<p class="sr-empty">No real-invoice scorecard yet. Run <span class="sr-mono">python -m evals.real_invoices</span>.</p>');
-    var silent = R.invoices.filter(function (x) { return !x.total_correct && x.agent_totals_check && x.agent_totals_check.passed; }).length;
+    var silent = R.silent_misses;
     var passes = (R.passes || []).map(function (x) {
       return "<tr><td>" + esc(x.variant) + "</td><td>" + esc(x.invoice_set || "") + '</td><td class="ac-code">' + esc(x.created) + '</td><td class="ac-code">' + esc(x.git_sha) + "</td><td>" + n(x.total_correct) + " / " + n(x.n_invoices) + "</td><td>" + n(x.silent_misses) + '</td><td class="ac-code">' + esc(String(x.neatlogs_trace_id || "").slice(0, 12)) + "…</td></tr>";
     }).join("");
@@ -860,7 +826,7 @@
     var summary = (R.summary || []).map(function (g) {
       var bad = g.silent_misses.some(function (v) { return v > 0; });
       return "<tr><td><b>" + esc(VLABEL[g.variant] || g.variant) + '</b><div class="sr-muted" style="font-size:12px">' + esc(g.variant) + "</div></td><td>" + esc(g.invoice_set) + "</td><td>" + n(g.passes) + "</td>" +
-        '<td class="ac-code">' + g.total_correct.join(", ") + " of " + n(g.n_invoices) + '</td><td class="ac-code ' + (bad ? "ac-down" : "ac-up") + '">' + g.silent_misses.join(", ") + "</td></tr>";
+        '<td class="ac-code">' + g.total_correct.map(function (v) { return v + " / " + g.n_invoices; }).join(" · ") + '</td><td class="ac-code ' + (bad ? "ac-down" : "ac-up") + '">' + g.silent_misses.join(" · ") + "</td></tr>";
     }).join("");
     var money = function (v) { return v == null ? "—" : "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
     var rows = R.invoices.map(function (x) {
@@ -868,14 +834,14 @@
       return "<tr><td>" + esc(x.advertiser || "—") + '<div class="sr-muted" style="font-size:12px">' + esc(x.agency || "") + "</div></td>" +
         '<td class="ac-code">' + money(x.verified_gross_total) + '</td><td class="ac-code">' + money(x.extracted_total) + "</td>" +
         "<td>" + (x.total_correct ? '<span class="ac-badge ac-badge--up">✓ correct</span>' : '<span class="ac-badge ac-badge--down">✗ wrong</span>') + "</td>" +
-        "<td>" + (chk ? (chk.passed ? '<span class="ac-badge ac-badge--up">✓ adds up</span>' : '<span class="ac-badge ac-badge--warn">would flag</span><div class="sr-muted" style="font-size:12px">' + esc(chk.detail) + "</div>") : '<span class="sr-muted">' + esc(x.error || "not read") + "</span>") + "</td>" +
-        '<td class="sr-wrap" style="font-size:12px">' + (x.route === "text" ? "Text parser" : "Text parser failed → LLM reader") + (x.parser && x.parser.indexOf("llm:") === 0 ? '<div class="sr-muted">' + esc(x.parser.slice(4)) + "</div>" : "") + "</td></tr>";
+        "<td>" + (chk ? (chk.passed ? '<span class="ac-badge ac-badge--up">✓ adds up</span>' : '<span class="ac-badge ac-badge--neutral">✗ flagged for review</span><div class="ac-muted" style="font-size:13px">' + esc(chk.detail) + "</div>") : '<span class="sr-muted">' + esc(x.error || "not read") + "</span>") + "</td>" +
+        '<td class="sr-wrap" style="font-size:13px">' + (x.route === "text" ? "Text parser" : "Text parser failed → LLM reader") + (x.parser && x.parser.indexOf("llm:") === 0 ? '<div class="ac-code ac-muted">' + esc(x.parser.slice(4)) + "</div>" : "") + "</td></tr>";
     }).join("");
     return enter(head +
       '<div class="ac-stats" data-enter>' +
         stat("Real invoices", n(R.n_invoices), "from public FCC political-ad files", 0) +
         stat("Total read correctly", '<span class="' + (R.total_correct === R.n_invoices ? "ac-up" : "") + '">' + n(R.total_correct) + " / " + n(R.n_invoices) + "</span>", "within 1% of the verified total", 1) +
-        stat("Line items add up", n(R.agent_totals_check_passed) + " / " + n(R.read_ok), "the rest the agent would flag for a human", 2) +
+        stat("Line items add up", n(R.agent_totals_check_passed) + " / " + n(R.read_ok), "the rest are flagged for a human", 2) +
         stat("Wrong and not flagged", '<span class="' + (silent ? "ac-down" : "ac-up") + '">' + n(silent) + "</span>", "a wrong total whose line items still add up: the only kind a human would not be warned about", 3) +
       "</div>" +
       (summary ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">A bug these real invoices exposed, and the fix</h3><span class="ac-card-meta">each number is one full pass over the set</span></div>' +
@@ -903,7 +869,7 @@
     var pill = document.getElementById("modepill");
     var r = v === "run" ? ((S.runId && runOf(company(S.company), S.runId)) || latest(company(S.company))) : null;
     if (r && r.data_mode === "fixture") { pill.className = "ac-pill ac-pill--fixture"; pill.textContent = "Fixture data"; } else { pill.className = "ac-pill"; pill.textContent = "Real data"; }
-    document.title = (v === "story" ? "Spend Radar" : label + " · Spend Radar");
+    document.title = (v === "overview" ? "Spend Radar" : label + " · Spend Radar");
 
     var swap = function () {
       main.innerHTML = '<div class="sr-enter' + (opts.play ? " sr-play" : "") + '">' + (v === "overview" || v === "story" ? "" : helpBox(v)) + RENDER[v]() + "</div>";
@@ -994,6 +960,6 @@
 
   // ── boot ─────────────────────────────────────────────────────────
   var first = location.hash.slice(1);
-  S.view = RENDER[first] ? first : "story";
+  S.view = RENDER[first] ? first : "overview";
   FX.intro(D, function () { render({ play: true }); });
 })();
