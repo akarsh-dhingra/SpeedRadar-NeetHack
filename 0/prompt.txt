@@ -1,0 +1,5 @@
+How to merge all the stuff present in this https://entire.io/et/jeetnahai/neathack with https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack
+
+---
+
+Go on with Optiona A I enabled all teh runners auto build push and Trails
