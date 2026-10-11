@@ -1,0 +1,371 @@
+{
+ "created": "2026-10-11T08:43:58",
+ "variant": "n3-after-fixes-kestrel-rescored-path-fix",
+ "evidence": true,
+ "git_sha": "d172a62-dirty",
+ "n_runs": 2,
+ "n_runs_without_fallback": 2,
+ "planted_total": 6,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 2
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "overturned": {
+   "mean": 0.5,
+   "min": 0,
+   "max": 1,
+   "n": 2
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 0,
+   "max": 2,
+   "n": 2
+  },
+  "recovery_decisions": {
+   "mean": 10,
+   "min": 10,
+   "max": 10,
+   "n": 2
+  },
+  "llm_calls": {
+   "mean": 30,
+   "min": 30,
+   "max": 30,
+   "n": 2
+  },
+  "llm_tokens_in": {
+   "mean": 14306.5,
+   "min": 13671,
+   "max": 14942,
+   "n": 2
+  },
+  "llm_tokens_out": {
+   "mean": 65015.5,
+   "min": 61418,
+   "max": 68613,
+   "n": 2
+  },
+  "llm_latency_s": {
+   "mean": 360.05,
+   "min": 351.9,
+   "max": 368.2,
+   "n": 2
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 2
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 2
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 2
+  },
+  "overturned": {
+   "mean": 0.5,
+   "min": 0,
+   "max": 1,
+   "n": 2
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 0,
+   "max": 2,
+   "n": 2
+  },
+  "recovery_decisions": {
+   "mean": 10,
+   "min": 10,
+   "max": 10,
+   "n": 2
+  },
+  "llm_calls": {
+   "mean": 30,
+   "min": 30,
+   "max": 30,
+   "n": 2
+  },
+  "llm_tokens_in": {
+   "mean": 14306.5,
+   "min": 13671,
+   "max": 14942,
+   "n": 2
+  },
+  "llm_tokens_out": {
+   "mean": 65015.5,
+   "min": 61418,
+   "max": 68613,
+   "n": 2
+  },
+  "llm_latency_s": {
+   "mean": 360.05,
+   "min": 351.9,
+   "max": 368.2,
+   "n": 2
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 2
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1010-0cb70b",
+   "trace_id": "bec51333ca291a715a66fc6406328f9f",
+   "git_sha": "d172a62-dirty",
+   "tags": [
+    "sha:d172a62-dirty",
+    "run:1010-0cb70b",
+    "variant:n3-after-fixes-kestrel",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "kestrel",
+   "ground_truth": "evals/ground_truth_kestrel.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_total_mismatch": true,
+    "invoice_scanned": true,
+    "invoice_duplicate": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "marketing": 51.2,
+    "sales": 526.04,
+    "ml_ai": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "overturned",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.417
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.508
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 1,
+   "downgraded": 0,
+   "recovery_decisions": 10,
+   "recovery_non_default": 5,
+   "llm_calls": 30,
+   "llm_tokens_in": 14942,
+   "llm_tokens_out": 68613,
+   "llm_latency_s": 368.2,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 27,
+     "cached_calls": 0,
+     "tokens_in": 13400,
+     "tokens_out": 68276,
+     "latency_s": 361.91,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 3,
+     "cached_calls": 0,
+     "tokens_in": 1542,
+     "tokens_out": 337,
+     "latency_s": 6.29,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  },
+  {
+   "run_id": "1010-451312",
+   "trace_id": "d4df9061a3747f846939ac18e60c08e7",
+   "git_sha": "d172a62-dirty",
+   "tags": [
+    "sha:d172a62-dirty",
+    "run:1010-451312",
+    "variant:n3-after-fixes-kestrel",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "kestrel",
+   "ground_truth": "evals/ground_truth_kestrel.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_total_mismatch": true,
+    "invoice_scanned": true,
+    "invoice_duplicate": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "marketing": 51.2,
+    "sales": 526.04,
+    "ml_ai": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.485
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "downgraded",
+     "confidence": 0.417
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.508
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_dup_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_7": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 2,
+   "recovery_decisions": 10,
+   "recovery_non_default": 5,
+   "llm_calls": 30,
+   "llm_tokens_in": 13671,
+   "llm_tokens_out": 61418,
+   "llm_latency_s": 351.9,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 27,
+     "cached_calls": 0,
+     "tokens_in": 12129,
+     "tokens_out": 61089,
+     "latency_s": 338.49,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 3,
+     "cached_calls": 0,
+     "tokens_in": 1542,
+     "tokens_out": 329,
+     "latency_s": 13.43,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0
+  }
+ ]
+}

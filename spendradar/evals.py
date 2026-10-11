@@ -33,21 +33,26 @@ def truth_for(input_dir: str) -> Path:
     return held_out
 
 
+def _norm(path: str) -> str:
+    """Compare paths, not spellings: the planner once wrote 'invoices\\08.pdf' for 'invoices/08.pdf'."""
+    return re.sub(r"[\\/]+", "/", str(path))
+
+
 def _false_alarms(state: RunState, planted: list[dict]) -> list[str]:
     """Problems the agent raised where the ground truth has none (negative controls included)."""
-    totals_targets = {p["file"] for p in planted if p["type"] == "totals_mismatch" and p["id"] != "budget_total_mismatch"}
+    totals_targets = {_norm(p["file"]) for p in planted if p["type"] == "totals_mismatch" and p["id"] != "budget_total_mismatch"}
     totals_targets |= {f"budget:{p['category']}" for p in planted if p["id"] == "budget_total_mismatch"}
     out = [f"totals:{c.target}" for c in state.checks
-           if c.name == "verify:totals" and not c.passed and c.target not in totals_targets]
+           if c.name == "verify:totals" and not c.passed and _norm(c.target) not in totals_targets]
     # A flag the self-audit overturned never reaches the report, so it is not a false alarm.
-    miscat_files = {p["file"] for p in planted if p["type"] == "miscategorised"}
-    miscat_vendors = {i["vendor"] for i in state.invoices if i["path"] in miscat_files}
+    miscat_files = {_norm(p["file"]) for p in planted if p["type"] == "miscategorised"}
+    miscat_vendors = {i["vendor"] for i in state.invoices if _norm(i["path"]) in miscat_files}
     out += [f"miscategorised:{f.statement.split(':')[0]}" for f in state.findings
             if "mis-categorised" in f.statement and f.status != "overturned"
             and f.statement.split(":")[0] not in miscat_vendors]
-    dup_files = {p["file"] for p in planted if p["type"] == "duplicate"}
+    dup_files = {_norm(p["file"]) for p in planted if p["type"] == "duplicate"}
     out += [f"duplicate:{c.target}" for c in state.checks
-            if c.name == "verify:duplicate_invoice" and not c.passed and c.target not in dup_files]
+            if c.name == "verify:duplicate_invoice" and not c.passed and _norm(c.target) not in dup_files]
     return sorted(set(out))
 
 
@@ -57,7 +62,7 @@ def _caught(state: RunState, p: dict, truth: dict) -> bool:
         return any(c.name == "verify:totals" and c.target == f"budget:{p['category']}" and not c.passed
                    for c in state.checks)
     if t == "totals_mismatch":
-        return any(c.name == "verify:totals" and c.target == p["file"] and not c.passed for c in state.checks)
+        return any(c.name == "verify:totals" and _norm(c.target) == _norm(p["file"]) and not c.passed for c in state.checks)
     if t == "miscategorised":
         inv = next((i for i in truth["invoices"] if i["file"] == p["file"]), None)
         vendor_flagged = any(inv and inv["vendor"] in fl["target"] for fl in state.flags)
@@ -65,10 +70,10 @@ def _caught(state: RunState, p: dict, truth: dict) -> bool:
                         " ".join(f.audit_notes) for f in state.findings)
         return vendor_flagged and corrected
     if t == "scanned_pdf":
-        inv = next((i for i in state.invoices if i["path"] == p["file"]), None)
+        inv = next((i for i in state.invoices if _norm(i["path"]) == _norm(p["file"])), None)
         return bool(inv and abs(inv["line_sum"] - p["amount"]) <= 0.01 * p["amount"])
     if t == "corrupt_file":
-        return any(n["input"] == p["file"] for n in state.not_analysed)
+        return any(_norm(n["input"]) == _norm(p["file"]) for n in state.not_analysed)
     if t == "duplicate":
         said = [fl["issue"] + " " + str(fl["target"]) for fl in state.flags] + [f.statement for f in state.findings]
         return any("duplicate" in s.lower() and p["number"] in s for s in said)

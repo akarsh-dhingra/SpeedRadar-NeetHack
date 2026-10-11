@@ -146,8 +146,10 @@ def plan(state: RunState) -> None:
 
 
 def _normalise_path(input_dir: str, path: str) -> str:
-    """Planner paths must be relative to the input folder; models sometimes prefix the folder."""
-    p, root = path.strip().lstrip("./"), input_dir.rstrip("/").lstrip("./") + "/"
+    """Planner paths must be relative to the input folder, with forward slashes. Models sometimes prefix the
+    folder, and once wrote Windows paths ("invoices\\\\08_x.pdf", run 1010-0cb70b) that leaked into the report."""
+    p = re.sub(r"[\\/]+", "/", path.strip())
+    p, root = p.lstrip("./"), re.sub(r"[\\/]+", "/", input_dir).rstrip("/").lstrip("./") + "/"
     while p.startswith(root):
         p = p[len(root):]
     return p

@@ -120,3 +120,9 @@ def test_same_vendor_date_and_amount_with_new_number_is_a_duplicate():
     s.invoices = [_inv("invoices/a.pdf", "Stratus", "KM-1", 100.0), _inv("invoices/b.pdf", "Stratus", "KM-9", 100.0)]
     agent._duplicate_check(s)
     assert s.invoices[1]["duplicate_of"] == "invoices/a.pdf"
+
+
+def test_planner_backslash_paths_are_normalised():
+    # run 1010-0cb70b: the planner wrote Windows paths, which leaked into state and the report
+    assert agent._normalise_path("data/kestrel", r"invoices\\08_ledgerline_2026-06.pdf") == "invoices/08_ledgerline_2026-06.pdf"
+    assert agent._normalise_path("data/kestrel", r"data\kestrel\invoices\01.pdf") == "invoices/01.pdf"
