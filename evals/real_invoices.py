@@ -63,6 +63,7 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--variant", default="real-invoices")
+    ap.add_argument("--gt", default=str(GT), help="ground-truth file (evals/real_invoices_heldout_gt.json = held-out set)")
     args = ap.parse_args(argv)
     os.environ["SPENDRADAR_LLM_CACHE"] = "0"  # real model calls, as in an evidence run
 
@@ -71,7 +72,7 @@ def main(argv: list[str] | None = None) -> None:
     from spendradar.tracing import git_sha, init_tracing, shutdown_tracing
     from spendradar.verify import TOLERANCE, totals_check
 
-    gt = json.loads(GT.read_text(encoding="utf-8"))
+    gt = json.loads(Path(args.gt).read_text(encoding="utf-8"))
     items = gt["invoices"][: args.limit] if args.limit else gt["invoices"]
     run_id = "real-" + datetime.now().strftime("%m%d-%H%M%S")
     init_tracing(run_id, [f"variant:{args.variant}", "evidence", "real-data:public"])
@@ -104,7 +105,7 @@ def main(argv: list[str] | None = None) -> None:
     shutdown_tracing()
     read = [x for x in results if "extracted_total" in x]
     card = {"created": datetime.now().isoformat(timespec="seconds"), "git_sha": git_sha(), "run_id": run_id,
-            "variant": args.variant,
+            "variant": args.variant, "gt_file": Path(args.gt).as_posix(),
             "neatlogs_trace_id": trace_id, "source": gt["source"], "license": gt["license"],
             "n_invoices": len(results), "read_ok": len(read),
             "total_correct": sum(1 for x in results if x["total_correct"]),

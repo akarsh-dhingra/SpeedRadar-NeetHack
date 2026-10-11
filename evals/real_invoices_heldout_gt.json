@@ -1,0 +1,128 @@
+{
+ "source": "https://huggingface.co/datasets/amazon/ConfBench",
+ "license": "CC BY-NC 4.0 (evaluation/benchmark use only). The original FCC invoice documents are public records.",
+ "what": "Real broadcast-advertising invoices from FCC political ad files; ground truth verified by Amazon (re-annotated RealKIE FCC subset). Only the clean __original.pdf files are used. HELD-OUT set: 12 other originals (first 12 by id with a positive GrossTotal and <= 4 pages), chosen after prompt v2 was written and never used to tune it.",
+ "pdf_url": "https://huggingface.co/datasets/amazon/ConfBench/resolve/main/pdfs/{file}",
+ "invoices": [
+  {
+   "file": "08e2649c3291ee569a116260d46e9866__original.pdf",
+   "pages": 1,
+   "agency": "OnMedia",
+   "advertiser": "NRCC IE-DM",
+   "gross_total": 22466.0,
+   "agency_commission": 3369.9,
+   "net_amount_due": 15563.32,
+   "line_items": 0
+  },
+  {
+   "file": "3aac2d4d386a203e8d6419043f1adfa1__original.pdf",
+   "pages": 1,
+   "agency": "ADELSTEIN LISTON",
+   "advertiser": "CONNOLLY COMMITTEE",
+   "gross_total": 105000.0,
+   "agency_commission": null,
+   "net_amount_due": 89250.0,
+   "line_items": 4
+  },
+  {
+   "file": "3b9f33e058641d47cf2ebe76b9382648__original.pdf",
+   "pages": 1,
+   "agency": "ONMEDIA",
+   "advertiser": "CARLY FOR PRESIDENT-DM",
+   "gross_total": 230.0,
+   "agency_commission": 34.5,
+   "net_amount_due": 159.33,
+   "line_items": 0
+  },
+  {
+   "file": "3d239b34e970a6f5ad4d1417352cf82e__original.pdf",
+   "pages": 3,
+   "agency": "Rainmaker Inc",
+   "advertiser": "Doug Reynolds",
+   "gross_total": 1555.0,
+   "agency_commission": 233.25,
+   "net_amount_due": 1321.75,
+   "line_items": 17
+  },
+  {
+   "file": "3dabc131205d3a2c74a73eb545494d3f__original.pdf",
+   "pages": 2,
+   "agency": "Mentzer Media",
+   "advertiser": "American Future Fund",
+   "gross_total": 15000.0,
+   "agency_commission": 2250.0,
+   "net_amount_due": 12750.0,
+   "line_items": 4
+  },
+  {
+   "file": "7bc4cc14d20c04204f81948012da50c9__original.pdf",
+   "pages": 2,
+   "agency": "MENTZER MEDIA SERVICES",
+   "advertiser": "Judicial Crisis Netw",
+   "gross_total": 73400.0,
+   "agency_commission": 11010.0,
+   "net_amount_due": 62390.0,
+   "line_items": 16
+  },
+  {
+   "file": "7c4e113ac908349db24caff741a89313__original.pdf",
+   "pages": 2,
+   "agency": "KCRA_MT",
+   "advertiser": "Stop the Special Interest Ta",
+   "gross_total": 3450.0,
+   "agency_commission": 517.5,
+   "net_amount_due": 2932.5,
+   "line_items": 6
+  },
+  {
+   "file": "7ec895784100dd7287978ab5cac9f283__original.pdf",
+   "pages": 1,
+   "agency": "ONMEDIA A MEDIACOM COMMUNICATIONS CO.",
+   "advertiser": "Hawley For AG NCC SPG-MO",
+   "gross_total": 9072.0,
+   "agency_commission": 1360.8,
+   "net_amount_due": 6284.62,
+   "line_items": 0
+  },
+  {
+   "file": "8064c51e90f5e7bb8b36c1dcf68f9feb__original.pdf",
+   "pages": 4,
+   "agency": "viamedia",
+   "advertiser": "Texans for Greg Abbott",
+   "gross_total": 1400.0,
+   "agency_commission": 210.0,
+   "net_amount_due": 773.5,
+   "line_items": 99
+  },
+  {
+   "file": "8ecb95435a6eeb3dd384d6eb2f007c3c__original.pdf",
+   "pages": 1,
+   "agency": "ASELLUS GROUP INC",
+   "advertiser": "LORRETTA SANCHEZ FOR US SENATE",
+   "gross_total": 2215.0,
+   "agency_commission": 332.25,
+   "net_amount_due": 1732.13,
+   "line_items": 0
+  },
+  {
+   "file": "9a5b4d80b3d2fa19526ec0f1fafa1b24__original.pdf",
+   "pages": 4,
+   "agency": "",
+   "advertiser": "Consumers for Sensible Energy",
+   "gross_total": 19000.0,
+   "agency_commission": 2850.0,
+   "net_amount_due": 16150.0,
+   "line_items": 19
+  },
+  {
+   "file": "b9c03770cf700075de53e44c70b20f4f__original.pdf",
+   "pages": 3,
+   "agency": "Mentzer Media Services",
+   "advertiser": "ISS/American Action Network",
+   "gross_total": 17450.0,
+   "agency_commission": 2617.5,
+   "net_amount_due": 14832.5,
+   "line_items": 13
+  }
+ ]
+}
