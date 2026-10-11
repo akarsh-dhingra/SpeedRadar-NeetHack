@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N1YMJQGHP83B67Q85FMPCP",
+  "strategy": "manual-commit",
+  "branch": "demo-video",
+  "checkpoints_count": 2,
+  "files_touched": [
+    ".github/workflows/demo-video.yml",
+    "demo-video/comp/comp.js",
+    "demo-video/comp/index.html",
+    "demo-video/music.py",
+    "demo-video/record_site.mjs",
+    "demo-video/render.mjs",
+    "demo-video/script.json",
+    "demo-video/tts.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/0/metadata.json",
+      "transcript": "/0/full.jsonl",
+      "compact_transcript": "/0/transcript.jsonl",
+      "content_hash": "/0/content_hash.txt",
+      "prompt": "/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 62,
+    "cache_creation_tokens": 562038,
+    "cache_read_tokens": 15731535,
+    "output_tokens": 83647,
+    "api_call_count": 31
+  }
+}
