@@ -1,0 +1,275 @@
+{
+ "created": "2026-10-11T15:17:50",
+ "variant": "final-main-after-merge",
+ "evidence": true,
+ "git_sha": "61e39d8",
+ "n_runs": 1,
+ "scored_with_code": {
+  "commit": "a9b572e7327f62f89d4c43646aa5081b3c02efed",
+  "dirty": false,
+  "checkpoint": "01M4N5FPCVHT22HXVK3PE6DZE1",
+  "checkpoint_commit": "a9b572e7327f62f89d4c43646aa5081b3c02efed",
+  "entire_url": "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/commit/a9b572e7327f62f89d4c43646aa5081b3c02efed",
+  "github_url": "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack/commit/a9b572e7327f62f89d4c43646aa5081b3c02efed"
+ },
+ "n_runs_incomplete": 0,
+ "incomplete_run_ids": [],
+ "n_runs_without_fallback": 1,
+ "planted_total": 5,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 5,
+   "min": 5,
+   "max": 5,
+   "n": 1
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 1,
+   "max": 1,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 25,
+   "min": 25,
+   "max": 25,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 12098,
+   "min": 12098,
+   "max": 12098,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 54572,
+   "min": 54572,
+   "max": 54572,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 269.0,
+   "min": 269.0,
+   "max": 269.0,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 5,
+   "min": 5,
+   "max": 5,
+   "n": 1
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 1,
+   "min": 1,
+   "max": 1,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 25,
+   "min": 25,
+   "max": 25,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 12098,
+   "min": 12098,
+   "max": 12098,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 54572,
+   "min": 54572,
+   "max": 54572,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 269.0,
+   "min": 269.0,
+   "max": 269.0,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1011-334cde",
+   "trace_id": "1008cc10f754587c5017599072f3cad4",
+   "git_sha": "61e39d8",
+   "code": {
+    "commit": "61e39d8a928147f144a121efe31b72fa8f1b5d70",
+    "dirty": false,
+    "checkpoint": "01M4N525ZQ174NPSPNEYSV321V",
+    "checkpoint_commit": "a16758f49c4aba2067662376de0b2b5932aed381",
+    "entire_url": "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/commit/a16758f49c4aba2067662376de0b2b5932aed381",
+    "github_url": "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack/commit/61e39d8a928147f144a121efe31b72fa8f1b5d70"
+   },
+   "tags": [
+    "sha:61e39d8",
+    "run:1011-334cde",
+    "variant:final-main-after-merge",
+    "evidence"
+   ],
+   "phase": "done",
+   "data_mode": "real",
+   "injected": [],
+   "dataset": "acme",
+   "ground_truth": "evals/ground_truth.json",
+   "planted_caught": 5,
+   "planted_total": 5,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_scanned": true,
+    "invoice_corrupt": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.484
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.498
+    },
+    "f_marketing": {
+     "status": "confirmed",
+     "confidence": 0.422
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 1,
+   "recovery_decisions": 11,
+   "recovery_non_default": 5,
+   "llm_calls": 25,
+   "llm_tokens_in": 12098,
+   "llm_tokens_out": 54572,
+   "llm_latency_s": 269.0,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 23,
+     "cached_calls": 0,
+     "tokens_in": 10978,
+     "tokens_out": 54162,
+     "latency_s": 264.14,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 2,
+     "cached_calls": 0,
+     "tokens_in": 1120,
+     "tokens_out": 410,
+     "latency_s": 4.88,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0,
+   "exit_code": 0,
+   "stderr_tail": ""
+  }
+ ],
+ "neatlogs_eval_trace_id": "4fc4f2d8f1a1365215e52fcbcf50eb5a"
+}

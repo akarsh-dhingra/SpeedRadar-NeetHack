@@ -1,0 +1,261 @@
+{
+ "created": "2026-10-11T14:58:16",
+ "variant": "cs05-after-fixture",
+ "evidence": true,
+ "git_sha": "bb2fb2f-dirty",
+ "n_runs": 1,
+ "n_runs_incomplete": 0,
+ "incomplete_run_ids": [],
+ "n_runs_without_fallback": 1,
+ "planted_total": 6,
+ "summary_all_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 2,
+   "min": 2,
+   "max": 2,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 26,
+   "min": 26,
+   "max": 26,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 12453,
+   "min": 12453,
+   "max": 12453,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 57625,
+   "min": 57625,
+   "max": 57625,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 254.3,
+   "min": 254.3,
+   "max": 254.3,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "summary_no_fallback_runs": {
+  "planted_caught": {
+   "mean": 6,
+   "min": 6,
+   "max": 6,
+   "n": 1
+  },
+  "false_alarms": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "unsupported_numbers_in_report": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "overturned": {
+   "mean": 0,
+   "min": 0,
+   "max": 0,
+   "n": 1
+  },
+  "downgraded": {
+   "mean": 2,
+   "min": 2,
+   "max": 2,
+   "n": 1
+  },
+  "recovery_decisions": {
+   "mean": 11,
+   "min": 11,
+   "max": 11,
+   "n": 1
+  },
+  "llm_calls": {
+   "mean": 26,
+   "min": 26,
+   "max": 26,
+   "n": 1
+  },
+  "llm_tokens_in": {
+   "mean": 12453,
+   "min": 12453,
+   "max": 12453,
+   "n": 1
+  },
+  "llm_tokens_out": {
+   "mean": 57625,
+   "min": 57625,
+   "max": 57625,
+   "n": 1
+  },
+  "llm_latency_s": {
+   "mean": 254.3,
+   "min": 254.3,
+   "max": 254.3,
+   "n": 1
+  },
+  "crustdata_credits": {
+   "mean": 0.0,
+   "min": 0.0,
+   "max": 0.0,
+   "n": 1
+  }
+ },
+ "runs": [
+  {
+   "run_id": "1011-2b916a",
+   "trace_id": "61f10e4d251c44b8674ac263b353efa2",
+   "git_sha": "bb2fb2f-dirty",
+   "tags": [
+    "sha:bb2fb2f-dirty",
+    "run:1011-2b916a",
+    "variant:cs05-after-fixture",
+    "evidence",
+    "fixture"
+   ],
+   "phase": "done",
+   "data_mode": "fixture",
+   "injected": [],
+   "dataset": "acme",
+   "ground_truth": "evals/ground_truth.json",
+   "planted_caught": 6,
+   "planted_total": 6,
+   "planted_detail": {
+    "budget_total_mismatch": true,
+    "invoice_total_mismatch": true,
+    "invoice_miscategorised": true,
+    "invoice_scanned": true,
+    "invoice_corrupt": true,
+    "fixture_sentry_marketing_x5": true
+   },
+   "false_alarms": 0,
+   "false_alarm_detail": [],
+   "people_cost_abs_pct_error": {
+    "engineering": 0.0,
+    "ml_ai": 0.0,
+    "sales": 0.0,
+    "marketing": 0.0,
+    "other": 0.0
+   },
+   "invoice_category_abs_pct_error": {
+    "infra_cloud": 0.0,
+    "ml_ai": 53.84,
+    "marketing": 44.08,
+    "sales": 0.0
+   },
+   "unsupported_numbers_in_report": 0,
+   "findings": {
+    "f_engineering": {
+     "status": "confirmed",
+     "confidence": 0.484
+    },
+    "f_ml_ai": {
+     "status": "downgraded",
+     "confidence": 0.0
+    },
+    "f_sales": {
+     "status": "confirmed",
+     "confidence": 0.498
+    },
+    "f_marketing": {
+     "status": "downgraded",
+     "confidence": 0.041
+    },
+    "f_totals_4": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_totals_5": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_cat_6": {
+     "status": "confirmed",
+     "confidence": 1.0
+    },
+    "f_infra_cloud": {
+     "status": "confirmed",
+     "confidence": 1.0
+    }
+   },
+   "overturned": 0,
+   "downgraded": 2,
+   "recovery_decisions": 11,
+   "recovery_non_default": 5,
+   "llm_calls": 26,
+   "llm_tokens_in": 12453,
+   "llm_tokens_out": 57625,
+   "llm_latency_s": 254.3,
+   "fallback_hops": 0,
+   "provider_mix": [
+    "gemini-3.5-flash-lite",
+    "gpt-5-nano"
+   ],
+   "llm_usage": {
+    "gpt-5-nano": {
+     "calls": 24,
+     "cached_calls": 0,
+     "tokens_in": 11333,
+     "tokens_out": 57215,
+     "latency_s": 248.54,
+     "fallback_hops": 0
+    },
+    "gemini-3.5-flash-lite": {
+     "calls": 2,
+     "cached_calls": 0,
+     "tokens_in": 1120,
+     "tokens_out": 410,
+     "latency_s": 5.79,
+     "fallback_hops": 0
+    }
+   },
+   "crustdata_credits": 0.0,
+   "exit_code": 0,
+   "stderr_tail": ""
+  }
+ ],
+ "neatlogs_eval_trace_id": "ce83aa93bb77f00b6cf433e217072c6b"
+}

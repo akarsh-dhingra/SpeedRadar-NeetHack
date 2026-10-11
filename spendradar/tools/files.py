@@ -9,7 +9,8 @@ import neatlogs
 from openpyxl import load_workbook
 from pydantic import BaseModel
 
-from spendradar import llm
+from spendradar import llm, prompts
+from spendradar.tracing import tool_errors
 
 MONEY = re.compile(r"(-?[\d,]+\.\d{2})\s*$")
 
@@ -19,6 +20,7 @@ class ToolError(Exception):
 
 
 @neatlogs.span(kind="TOOL", name="act:list_files", tool_name="list_files")
+@tool_errors
 def list_files(folder: str) -> list[dict]:
     root = Path(folder)
     # as_posix: on Windows str() gave "invoices\01.pdf", which silently disabled the plan-coverage check
@@ -27,6 +29,7 @@ def list_files(folder: str) -> list[dict]:
 
 
 @neatlogs.span(kind="TOOL", name="act:read_spreadsheet", tool_name="read_spreadsheet")
+@tool_errors
 def read_spreadsheet(path: str, sheet: str, first_row: int = 1, last_row: int | None = None) -> list[dict]:
     """Rows as dicts keyed by the header row, each with its 1-based sheet row number."""
     try:
@@ -35,7 +38,9 @@ def read_spreadsheet(path: str, sheet: str, first_row: int = 1, last_row: int | 
     except Exception as e:
         raise ToolError(f"cannot open {path}!{sheet}: {e}") from e
     rows = list(ws.iter_rows(values_only=True))
-    header_idx = next(i for i, r in enumerate(rows) if r and r[0] == "category")
+    header_idx = next((i for i, r in enumerate(rows) if r and r[0] == "category"), None)
+    if header_idx is None:
+        raise ToolError(f"{path}!{sheet}: no header row starting with 'category'")
     header = [str(h) if h is not None else "" for h in rows[header_idx]]
     out = []
     for i, r in enumerate(rows[header_idx + 1:], start=header_idx + 2):
@@ -107,6 +112,7 @@ def _open_error(p: Path) -> str | None:
 
 
 @neatlogs.span(kind="TOOL", name="act:read_pdf", tool_name="read_pdf")
+@tool_errors
 def read_pdf(path: str, mode: str = "text") -> dict:
     """mode='text': pdfplumber + deterministic parse. mode='llm': Gemini reads the PDF bytes."""
     p = Path(path)
@@ -132,11 +138,9 @@ def read_pdf(path: str, mode: str = "text") -> dict:
         if err := _open_error(p):
             raise ToolError(f"corrupt PDF, not sent to the LLM reader: {err}")
         try:
-            res = llm.complete(
-                "extract",
-                "Extract this invoice exactly as printed. Amounts as numbers without separators. "
-                "Do not compute or correct anything; copy the stated total as printed.",
-                schema=InvoiceExtract, attachments=[(data, "application/pdf")])
+            with prompts.use(prompts.PDF_EXTRACT) as (system, prompt):
+                res = llm.complete("extract", prompt, system=system or None,
+                                   schema=InvoiceExtract, attachments=[(data, "application/pdf")])
         except llm.LLMError as e:
             raise ToolError(f"LLM PDF reader failed: {str(e)[:160]}") from e
         return {"extract": res.parsed.model_dump(), "parser": f"llm:{res.model}",

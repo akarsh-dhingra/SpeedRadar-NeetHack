@@ -12,6 +12,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from typing import Any
 
 import neatlogs
@@ -38,6 +39,7 @@ KEY_PATTERNS = [
     re.compile(r"(?i)bearer\s+[0-9A-Za-z._\-]{16,}"),
 ]
 MASK = "***"
+MAX_IO = 10000
 
 
 def _secret_values() -> list[str]:
@@ -79,7 +81,52 @@ def set_io(span, input: Any = None, output: Any = None) -> None:
     custom spendradar.* attributes alone leave them empty, and detections match on these."""
     for key, val in (("input.value", input), ("output.value", output)):
         if val is not None:
-            span.set_attribute(key, val if isinstance(val, str) else json.dumps(val, default=str)[:10000])
+            text = val if isinstance(val, str) else json.dumps(val, default=str)
+            if len(text) > MAX_IO:  # keep it valid JSON (neatlogs renders it), never cut mid-structure
+                text = json.dumps({"truncated": True, "chars": len(text), "head": text[:MAX_IO - 200]})
+            span.set_attribute(key, text)
+
+
+def tool_errors(fn):
+    """Put a tool's exception into its span's Output pane (the TOOL span decorator marks ERROR
+    but leaves the output empty). Apply directly under @neatlogs.span so it runs inside the span."""
+    import functools
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            set_io(current_span(), output={"error": f"{type(e).__name__}: {str(e)[:500]}"})
+            raise
+
+    return wrapper
+
+
+def current_span():
+    """The active neatlogs span. neatlogs runs on a private TracerProvider, so OpenTelemetry's global
+    current span is a no-op inside its spans (checked 2026-10-11, neatlogs SDK installed here); the SDK
+    threads its parent through a private context key instead. Fall back to the global span if that
+    internal helper ever moves."""
+    from opentelemetry import trace as otel
+
+    try:
+        from neatlogs._wrap_utils import _current_neatlogs_parent
+
+        return _current_neatlogs_parent() or otel.get_current_span()
+    except ImportError:
+        return otel.get_current_span()
+
+
+def record_error(name: str, error: str, **inputs: Any) -> None:
+    """A GUARDRAIL span with ERROR status for a failure the agent caught and carried on from,
+    so caught failures stay visible in neatlogs instead of vanishing into a note."""
+    from opentelemetry.trace import Status, StatusCode
+
+    with neatlogs.trace(name, kind="GUARDRAIL") as span:
+        set_io(span, input=inputs or None, output={"error": error[:1000]})
+        span.set_attribute("spendradar.error", error[:500])
+        span.set_status(Status(StatusCode.ERROR, error[:200]))
 
 
 def git_sha() -> str:
@@ -95,6 +142,17 @@ def git_sha() -> str:
 def init_tracing(run_id: str, extra_tags: list[str] | None = None) -> list[str]:
     """Initialise neatlogs for one process (= one run). Tags are process-wide."""
     tags = [f"sha:{git_sha()}", f"run:{run_id}", *(extra_tags or [])]
+    if not os.environ.get("NEATLOGS_API_KEY"):
+        print("warning: NEATLOGS_API_KEY not set; running untraced", file=sys.stderr)
+        return tags
+    try:
+        _init(tags)
+    except Exception as e:  # tracing must never stop the agent; spans become no-ops
+        print(f"warning: neatlogs init failed ({type(e).__name__}: {e}); running untraced", file=sys.stderr)
+    return tags
+
+
+def _init(tags: list[str]) -> None:
     neatlogs.init(
         api_key=os.environ["NEATLOGS_API_KEY"],
         workflow_name="spendradar",
@@ -102,9 +160,11 @@ def init_tracing(run_id: str, extra_tags: list[str] | None = None) -> list[str]:
         tags=tags,
         mask=mask_secrets,
     )
-    return tags
 
 
 def shutdown_tracing() -> None:
-    neatlogs.flush()
-    neatlogs.shutdown()
+    try:
+        neatlogs.flush()
+        neatlogs.shutdown()
+    except Exception as e:  # never mask the run's own outcome with an export error
+        print(f"warning: neatlogs flush/shutdown failed ({type(e).__name__}: {e})", file=sys.stderr)

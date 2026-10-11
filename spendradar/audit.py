@@ -19,8 +19,8 @@ from typing import Literal
 import neatlogs
 from pydantic import BaseModel
 
-from spendradar import analysis, llm
-from spendradar.tracing import set_io
+from spendradar import analysis, llm, prompts
+from spendradar.tracing import record_error, set_io
 from spendradar.models import Finding, RunState
 
 NEWS_WORDS = ("layoff", "lay off", "laid off", "job cuts", "cuts jobs", "restructur", "hiring freeze",
@@ -66,6 +66,17 @@ def _sources_ok(state: RunState, f: Finding) -> tuple[bool, str]:
     return not missing, "all figures sourced" if not missing else f"unsourced figures: {missing}"
 
 
+AGREEMENT_MIN = 0.6  # below this, a competitor's independent signals for a category contradict each other
+
+
+def _disagreeing_competitors(state: RunState, f: Finding) -> list[str]:
+    if f.kind != "policy":
+        return []
+    return [p.name for p in state.competitors.values()
+            if analysis.category_range(p, f.category)
+            and (ag := analysis.signal_agreement(p, f.category)) is not None and ag < AGREEMENT_MIN]
+
+
 def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str]:
     ev = []
     if f.kind == "policy":
@@ -75,7 +86,7 @@ def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str
                 continue
             sigs = [s for s in p.signals if s.category == f.category]
             ag = analysis.signal_agreement(p, f.category)
-            if ag is not None and ag < 0.6:
+            if ag is not None and ag < AGREEMENT_MIN:
                 ev.append(f"{p.name} {f.category} signals disagree: " + "; ".join(
                     f"{s.name}={s.headcount:.0f} (as of {s.as_of})" for s in sigs))
         for n in news:
@@ -96,18 +107,10 @@ def _evidence_against(state: RunState, f: Finding, news: list[dict]) -> list[str
 
 def _judge(role: str, f: Finding, evidence: list[str], checks: list[str],
            exclude: tuple[str, ...] = ()) -> tuple[Verdict, llm.LLMResult]:
-    prompt = (f"FINDING ({f.category}, confidence {f.confidence}):\n{f.statement}\n\n"
-              f"DETERMINISTIC CHECKS:\n" + "\n".join(f"- {c}" for c in checks)
-              + "\n\nEVIDENCE THAT MIGHT CONTRADICT IT:\n" + ("\n".join(f"- {e}" for e in evidence) or "- none found")
-              + "\n\nTry to disprove the finding. 'overturn' = the evidence shows it is wrong or unsupported; "
-                "'downgrade' = it may hold but the evidence weakens it materially; 'confirm' = it survives. "
-                "For an invoice flagged as mis-categorised, decide from the LINE ITEMS: does the work belong to the "
-                "category of the cost centre it was billed to? The kind of work decides the category, not which "
-                "cost centre paid. If any invoice's line items do not match its cost centre, the flag is correct: "
-                "'confirm' and set corrected_category to the category the line items belong to. "
-                "Judge only from the evidence given; do not invent facts.")
-    res = llm.complete(role, prompt, schema=Verdict, exclude=exclude,
-                       system="You are a sceptical finance auditor checking an analyst's findings.")
+    with prompts.use(prompts.AUDIT_JUDGE, category=f.category, confidence=f.confidence, statement=f.statement,
+                     checks="\n".join(f"- {c}" for c in checks),
+                     evidence="\n".join(f"- {e}" for e in evidence) or "- none found") as (system, prompt):
+        res = llm.complete(role, prompt, schema=Verdict, exclude=exclude, system=system)
     return res.parsed, res
 
 
@@ -127,9 +130,23 @@ def self_audit(state: RunState) -> None:
                 span.set_attribute("spendradar.audit.verdict", "overturned (deterministic)")
                 set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
-            if not evidence and f.kind == "internal" and "mis-categorised" not in f.statement:
+            disagree = _disagreeing_competitors(state, f)
+            news_ev = [e for e in evidence if e.startswith("news ")]
+            if f.kind == "policy" and disagree and not news_ev:
+                # Case study 05: on identical data the LLM judge returned confirmed / downgraded / overturned
+                # across runs. Disagreeing competitor signals are a fact Python can see, and the honest verdict
+                # for them is always the same: the gap may be real, but it is not confirmed.
+                f.status = "downgraded"
+                f.confidence = round(f.confidence * 0.5, 3)
+                f.audit_notes.append(
+                    f"deterministic: competitor signals disagree for {', '.join(disagree)} "
+                    f"(agreement < {AGREEMENT_MIN}); the comparison cannot be confirmed, so it is downgraded")
+                span.set_attribute("spendradar.audit.verdict", "downgraded (deterministic)")
+                set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
+                continue
+            if not evidence and f.kind in ("internal", "policy") and "mis-categorised" not in f.statement:
                 f.status = "confirmed"
-                f.audit_notes.append("deterministic internal finding; no contradicting evidence")
+                f.audit_notes.append(f"deterministic {f.kind} finding; no contradicting evidence")
                 span.set_attribute("spendradar.audit.verdict", "confirmed (deterministic)")
                 set_io(span, output={"status": f.status, "how": "deterministic", "notes": f.audit_notes})
                 continue
@@ -139,6 +156,7 @@ def self_audit(state: RunState) -> None:
             except llm.LLMError as e:
                 f.status = "downgraded"
                 f.audit_notes.append(f"audit LLM unavailable ({str(e)[:80]}); downgraded to be safe")
+                span.set_attribute("spendradar.error", str(e)[:500])
                 set_io(span, output={"status": f.status, "how": "llm unavailable", "notes": f.audit_notes})
                 continue
             f.audit_notes.append(f"{res.model}: {v.verdict} — {v.reason}")
@@ -155,6 +173,12 @@ def self_audit(state: RunState) -> None:
                         final = "downgrade"  # disagreement between providers → soften, never silently confirm
                 except llm.LLMError as e:
                     f.audit_notes.append(f"second opinion unavailable: {str(e)[:80]}")
+                    record_error(f"audit:{f.id}:second_opinion", str(e), finding=f.id)
+            if f.kind == "policy" and disagree and final == "confirm":
+                # News sent this to the judge (trail #2 review finding), but disagreeing signals still rule out
+                # a clean confirm: the judge may overturn on the news, never upgrade past "downgrade".
+                final = "downgrade"
+                f.audit_notes.append(f"floored at downgrade: competitor signals disagree for {', '.join(disagree)}")
             f.status = {"confirm": "confirmed", "downgrade": "downgraded", "overturn": "overturned"}[final]
             if final != "confirm":
                 f.confidence = round(f.confidence * (0.5 if final == "downgrade" else 0.0), 3)

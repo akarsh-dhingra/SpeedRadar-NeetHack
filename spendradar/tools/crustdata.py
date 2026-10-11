@@ -15,6 +15,7 @@ import neatlogs
 import yaml
 
 from spendradar import faults
+from spendradar.tracing import set_io, tool_errors
 from spendradar.tools.files import ToolError
 
 BASE = "https://api.crustdata.com"
@@ -29,9 +30,12 @@ class CreditBudget:
     def __init__(self, cap: float):
         self.cap, self.spent = cap, 0.0
 
-    def charge(self, credits: float) -> None:
+    def check(self, credits: float) -> None:
         if self.spent + credits > self.cap:
             raise ToolError(f"crustdata credit cap reached ({self.spent:.2f}/{self.cap} credits)")
+
+    def charge(self, credits: float) -> None:
+        self.check(credits)
         self.spent += credits
 
 
@@ -47,7 +51,10 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
     """POST with cache → retries/backoff → stale-cache fallback. Returns {body, fetched_at, from_cache, ...}."""
     CACHE.mkdir(parents=True, exist_ok=True)
     cpath = CACHE / f"{_key(path, body)}.json"
-    cached = json.loads(cpath.read_text(encoding="utf-8")) if cpath.exists() else None
+    try:
+        cached = json.loads(cpath.read_text(encoding="utf-8")) if cpath.exists() else None
+    except (OSError, ValueError):  # a corrupt cache entry is a miss, not a crash
+        cached = None
     crustdata_fault_pending = any(f.startswith("crustdata:") for f in faults._active)
     if cached and not crustdata_fault_pending:
         return {**cached, "from_cache": True}
@@ -62,11 +69,14 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
                     raise httpx.HTTPStatusError("[injected] 429 Too Many Requests", request=None, response=None)
                 if faults.fire("crustdata:timeout"):
                     raise httpx.ReadTimeout("[injected] read timeout")
-                BUDGET.charge(est_credits)
+                BUDGET.check(est_credits)  # refuse before spending; charge only on success
                 r = httpx.post(BASE + path, json=body, headers=headers, timeout=60)
                 if r.status_code == 429 or r.status_code >= 500:
                     raise httpx.HTTPStatusError(f"{r.status_code}", request=r.request, response=r)
-                r.raise_for_status()
+                if r.status_code >= 400:  # 400/401/403/404 will not change on retry: fail fast
+                    set_io(span, input={"endpoint": path, "attempt": attempt}, output={"status": r.status_code})
+                    raise ToolError(f"crustdata {path} returned {r.status_code}: {r.text[:160]}")
+                BUDGET.charge(est_credits)
                 out = {"body": r.json(), "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                        "endpoint": path, "request_id": r.headers.get("x-request-id", ""), "credits": est_credits}
                 cpath.write_text(json.dumps(out), encoding="utf-8")
@@ -77,16 +87,20 @@ def _post(path: str, body: dict, est_credits: float) -> dict:
             except (httpx.HTTPStatusError, httpx.TransportError) as e:
                 errors.append(str(e)[:120])
                 span.set_attribute("spendradar.outcome", f"retryable: {str(e)[:120]}")
+                set_io(span, input={"endpoint": path, "attempt": attempt}, output={"retryable_error": str(e)[:200]})
         if attempt < CFG["retries"]:
             time.sleep((2 ** attempt) * 1.0 + random.random())
     if cached:  # recovery: stale cache beats nothing
         with neatlogs.trace("recover:crustdata_cache_fallback", kind="CHAIN") as span:
             span.set_attribute("spendradar.errors", json.dumps(errors))
+            set_io(span, input={"endpoint": path, "errors": errors},
+                   output={"used_cache_fetched_at": cached.get("fetched_at"), "stale": True})
         return {**cached, "from_cache": True, "stale_fallback": True, "errors": errors}
     raise ToolError(f"crustdata {path} failed after {CFG['retries'] + 1} attempts: {errors[-1]}")
 
 
 @neatlogs.span(kind="TOOL", name="act:crustdata_company", tool_name="crustdata_company")
+@tool_errors
 def crustdata_company(domain: str) -> dict:
     fx = FIXTURE_DIR / f"{domain}.json" if FIXTURE_DIR else None
     if fx and fx.exists():
@@ -103,6 +117,7 @@ def crustdata_company(domain: str) -> dict:
 
 
 @neatlogs.span(kind="TOOL", name="act:crustdata_jobs", tool_name="crustdata_jobs")
+@tool_errors
 def crustdata_jobs(domain: str, since: str, category: str | None = None, limit: int = 60) -> dict:
     conds = [{"field": "company.basic_info.primary_domain", "type": "=", "value": domain},
              {"field": "metadata.date_added", "type": "=>", "value": since}]

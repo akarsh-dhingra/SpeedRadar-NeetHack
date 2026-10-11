@@ -20,8 +20,8 @@ import neatlogs
 import yaml
 from pydantic import BaseModel
 
-from spendradar import analysis, audit, faults, llm, report, verify
-from spendradar.tracing import set_io
+from spendradar import analysis, audit, faults, llm, prompts, report, verify
+from spendradar.tracing import record_error, set_io
 from spendradar.models import Check, Figure, Finding, RecoveryDecision, RunState, Source, Task
 from spendradar.tools import classify, crustdata, files
 from spendradar.tools.files import ToolError
@@ -84,7 +84,20 @@ def save(state: RunState) -> None:
 
 
 def load(run_id: str) -> RunState:
-    return RunState.model_validate_json(state_path(run_id).read_text(encoding="utf-8"))
+    from pydantic import ValidationError
+
+    from spendradar.tools import crustdata
+
+    path = state_path(run_id)
+    if not path.exists():
+        raise SystemExit(f"no saved state for run {run_id!r} at {path}")
+    try:
+        state = RunState.model_validate_json(path.read_text(encoding="utf-8"))
+    except (ValidationError, ValueError) as e:
+        raise SystemExit(f"cannot resume {run_id}: state.json is corrupt or from an incompatible version "
+                         f"({type(e).__name__}: {str(e)[:200]})") from e
+    crustdata.BUDGET.spent = state.crustdata_credits  # the per-run credit cap survives a resume
+    return state
 
 
 def new_run_id() -> str:
@@ -114,18 +127,14 @@ def _usage(state: RunState, res: llm.LLMResult | dict | None) -> None:
 def plan(state: RunState) -> None:
     listing = files.list_files(state.input_dir)
     comps = yaml.safe_load((Path(state.input_dir) / "competitors.yaml").read_text(encoding="utf-8"))
-    prompt = (
-        f"GOAL: {state.goal}\n\nINPUT FOLDER ({state.input_dir}):\n"
-        + "\n".join(f"- {f['path']} ({f['bytes']} bytes)" for f in listing)
-        + "\n\nCOMPETITORS:\n" + "\n".join(f"- {c['name']} ({c['domain']})" for c in comps["competitors"])
-        + "\n\nTOOLS:\n" + "\n".join(f"- {k}: {v}" for k, v in TOOL_DOCS.items())
-        + "\n\nWrite the task list. Paths are relative to the input folder. Read every finance file once "
-          "(invoices default to mode 'text'; ignore README/competitors.yaml), fetch every competitor, fetch jobs "
-          "and classify titles for every competitor (needed for ML/AI), and order tasks so inputs exist before "
-          "they are needed. One task per file or competitor action.")
+    variables = {
+        "goal": state.goal, "input_dir": state.input_dir,
+        "files": "\n".join(f"- {f['path']} ({f['bytes']} bytes)" for f in listing),
+        "competitors": "\n".join(f"- {c['name']} ({c['domain']})" for c in comps["competitors"]),
+        "tools": "\n".join(f"- {k}: {v}" for k, v in TOOL_DOCS.items())}
     with neatlogs.trace("plan", kind="AGENT") as span:
-        res = llm.complete("reason", prompt, schema=Plan,
-                           system="You are the planner of a finance analysis agent. Be complete and concrete.")
+        with prompts.use(prompts.PLAN, **variables) as (system, prompt):
+            res = llm.complete("reason", prompt, schema=Plan, system=system)
         _usage(state, res)
         p: Plan = res.parsed
         state.plan_rationale = p.rationale
@@ -136,6 +145,10 @@ def plan(state: RunState) -> None:
             args = {k: v for k, v in t.model_dump().items() if k not in ("tool", "reason") and v is not None}
             if "path" in args:
                 args["path"] = _normalise_path(state.input_dir, args["path"])
+                if not _inside(state.input_dir, args["path"]):  # never read outside the input folder
+                    state.notes.append(f"planner path outside the input folder dropped: {args['path']!r}")
+                    record_error("verify:plan_path", "planner path outside the input folder", path=args["path"])
+                    continue
             if args.get("domain") in known:
                 args["name"] = known[args["domain"]]
             state.queue.append(Task(id=f"t{i + 1:02d}", tool=t.tool, args=args, reason=t.reason))
@@ -144,6 +157,11 @@ def plan(state: RunState) -> None:
         _verify_plan(state, listing, comps)
     state.phase = "execute"
     save(state)
+
+
+def _inside(input_dir: str, rel: str) -> bool:
+    root = Path(input_dir).resolve()
+    return (root / rel).resolve().is_relative_to(root)
 
 
 def _normalise_path(input_dir: str, path: str) -> str:
@@ -164,6 +182,10 @@ def _verify_plan(state: RunState, listing: list[dict], comps: dict) -> None:
         missing: list[Task] = []
         for f in listing:
             path = f["path"]
+            if path.startswith("invoices/") and not path.lower().endswith(".pdf"):
+                if all(n["input"] != path for n in state.not_analysed):
+                    state.not_analysed.append({"input": path, "reason": "not a PDF invoice"})
+                continue
             if path.startswith("invoices/") and path not in planned_paths:
                 missing.append(Task(id="", tool="read_invoice", args={"path": path, "mode": "text"},
                                     reason="added by plan coverage check"))
@@ -207,7 +229,8 @@ def act(state: RunState, task: Task) -> list[Check]:
         return []
     if task.tool == "read_salary_table":
         with open(Path(state.input_dir) / a["path"], encoding="utf-8", newline="") as f:
-            state.salary = {r["category"]: float(r["loaded_annual_cost_usd"]) for r in csv.DictReader(f)}
+            state.salary = {r["category"]: _num(r["loaded_annual_cost_usd"], f"{a['path']} {r.get('category')}")
+                            for r in csv.DictReader(f)}
         return []
     if task.tool == "fetch_competitor":
         return _act_competitor(state, a["name"], a["domain"])
@@ -216,6 +239,18 @@ def act(state: RunState, task: Task) -> list[Check]:
     if task.tool == "classify_titles":
         return _act_classify(state, a["domain"])
     raise ToolError(f"unknown tool {task.tool}")
+
+
+def _num(value, where: str) -> float:
+    """A spreadsheet/CSV number: accepts 1234, "1,234.00", "$1,234"; anything else is a clear tool error."""
+    if isinstance(value, (int, float)) and value == value:  # value == value rejects NaN
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", "").replace("$", "").strip())
+        except ValueError:
+            pass
+    raise files.ToolError(f"{where}: expected a number, found {value!r} (empty cell or uncached formula?)")
 
 
 def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list[Check]:
@@ -233,13 +268,13 @@ def _act_budget(state: RunState, path: str, only_row: int | None = None) -> list
     for r in rows:
         cat, loc = r["category"], f"People!row {r['_row']}"
         if r["metric"] == "headcount":
-            b[1][cat] = r[months[-1]]
+            b[1][cat] = _num(r[months[-1]], f"{path} {loc} {months[-1]}")
             state.figures[f"hc_{cat}"] = Figure(id=f"hc_{cat}", label=f"{co} {cat} headcount (end FY27)",
                                                 value=r[months[-1]], unit="people", category=cat,
                                                 sources=[_src_file(state, path, f"{loc}, {months[-1]}")])
         elif r["metric"] == "people_cost":
-            parts = [float(r[m]) for m in months]
-            chk = verify.totals_check(f"budget:{cat}", parts, float(r["FY total"]))
+            parts = [_num(r[m], f"{path} {loc} {m}") for m in months]
+            chk = verify.totals_check(f"budget:{cat}", parts, _num(r["FY total"], f"{path} {loc} FY total"))
             chk.detail = f"{path} {loc}: {chk.detail}"
             checks.append(chk)
             # The line items are primary; a mismatching stated total is never used.
@@ -406,12 +441,9 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
     tools = [{"name": o, "description": RECOVERY[o], "parameters": {
         "type": "object", "properties": {"reason": {"type": "string", "description": "one line"}},
         "required": ["reason"]}} for o in options]
-    prompt = (f"A step of the finance agent failed verification.\nTask: {task.tool} {json.dumps(task.args)}\n"
-              f"Failure: {failure}\nDetail: {detail}\nAttempts so far: {task.attempts}\n"
-              f"Previous decisions for this task: "
-              f"{[d.chosen for d in state.decisions if d.task_id in (task.id, task.parent)]}\n"
-              "Pick the recovery action most likely to produce a correct, sourced number. "
-              "Do not repeat an action that already failed for this task.")
+    variables = {"task": f"{task.tool} {json.dumps(task.args)}", "failure": failure, "detail": detail,
+                 "attempts": task.attempts,
+                 "previous": [d.chosen for d in state.decisions if d.task_id in (task.id, task.parent)]}
     with neatlogs.trace("decide:recovery", kind="AGENT") as span:
         span.set_attribute("spendradar.recovery.options", json.dumps(options))
         span.set_attribute("spendradar.recovery.default", default)
@@ -419,12 +451,14 @@ def decide_recovery(state: RunState, task: Task, failure: str, detail: str) -> s
         set_io(span, input={"task": task.id, "tool": task.tool, "failure": failure, "detail": detail[:500],
                             "options": options, "default": default})
         try:
-            choice = llm.choose("reason", prompt, tools,
-                                system="You choose recovery actions for a finance analysis agent.")
+            with prompts.use(prompts.RECOVERY, **variables) as (system, prompt):
+                choice = llm.choose("reason", prompt, tools, system=system)
             _usage(state, choice.result)
             chosen, reason, model = choice.name, choice.args.get("reason", ""), choice.result.model
         except llm.LLMError as e:
             chosen, reason, model = default, f"LLM unavailable, rule default used: {str(e)[:120]}", "rule"
+            span.set_attribute("spendradar.error", str(e)[:500])
+        reason = str(reason)  # a model may return a non-string reason
         span.set_attribute("spendradar.recovery.chosen", chosen)
         span.set_attribute("spendradar.recovery.reason", reason[:300])
         span.set_attribute("spendradar.recovery.differs_from_default", chosen != default)
@@ -490,6 +524,7 @@ def execute(state: RunState) -> None:
         task = state.queue.pop(0)
         task.attempts += 1
         if task.attempts > MAX_ATTEMPTS:
+            neatlogs.log("task {task} hit the retry cap; not analysed", level="warning", task=task.id)
             task.status = "failed"
             state.not_analysed.append({"input": task.args.get("path") or task.args.get("domain"),
                                        "reason": f"retry cap ({MAX_ATTEMPTS}) reached"})
@@ -514,6 +549,9 @@ def execute(state: RunState) -> None:
         bad = [c for c in checks if not c.passed]
         if failure is None and bad:
             failure = f"{bad[0].name} failed"
+        neatlogs.log("task {task} {tool}: {outcome}", level="warning" if failure else "info",
+                     task=task.id, tool=task.tool, outcome=(failure or "verified")[:200],
+                     attempt=task.attempts, queue_left=len(state.queue))
         if failure:
             detail = failure if failure.startswith("tool_error") else "; ".join(f"{c.target}: {c.detail}" for c in bad)
             with neatlogs.trace(f"verify:{task.tool}", kind="GUARDRAIL") as span:
@@ -600,18 +638,16 @@ def _line_item_check(state: RunState) -> None:
     if not invs:
         return
     flagged_vendors = {fl["target"] for fl in state.flags if "mis-categorised" in fl["issue"]}
-    prompt = ("For each invoice, say which budget category the WORK in its line items belongs to: "
-              "engineering, ml_ai, sales, marketing or infra_cloud ('unclear' if you cannot tell). Judge only from "
-              "the line items, not from the cost centre or vendor name.\n\n"
-              + "\n".join(f"- {i['number']} | vendor {i['vendor']} | lines: "
-                          + "; ".join(line["description"] for line in i["lines"]) for i in invs))
+    invoices = "\n".join(f"- {i['number']} | vendor {i['vendor']} | lines: "
+                         + "; ".join(line["description"] for line in i["lines"]) for i in invs)
     with neatlogs.trace("verify:line_items_vs_cost_centre", kind="GUARDRAIL") as span:
         try:
-            res = llm.complete("extract", prompt, schema=LineItemReview,
-                               system="You classify invoice line items into budget categories.")
-        except llm.LLMError as e:
-            state.checks.append(Check(name="verify:line_items", target="invoices", passed=True,
-                                      detail=f"not run: {str(e)[:80]}"))
+            with prompts.use(prompts.LINE_ITEMS, invoices=invoices) as (system, prompt):
+                res = llm.complete("extract", prompt, schema=LineItemReview, system=system)
+        except llm.LLMError as e:  # not run is not passed: note it, keep confidence honest
+            state.notes.append(f"line-item vs cost-centre check not run: {str(e)[:120]}")
+            set_io(span, output={"ran": False, "error": str(e)[:500]})
+            span.set_attribute("spendradar.error", str(e)[:500])
             return
         _usage(state, res)
         by_number = {j.invoice_number.strip(): j for j in res.parsed.invoices}
@@ -634,42 +670,57 @@ def _line_item_check(state: RunState) -> None:
 
 def build_findings(state: RunState) -> None:
     ours_all = analysis.our_position(state.budget)
+    if not ours_all["_total"]:
+        state.notes.append("No verified budget headcount, so no competitor comparison was possible (see Not analysed).")
+        record_error("verify:budget_headcount", "no usable headcount in the verified budget",
+                     budget_keys=sorted(state.budget))
     profiles = list(state.competitors.values())
-    rules = {r["category"]: r for r in state.policy.get("rules", [])}
+    rules = {r["category"]: r for r in state.policy.get("rules", []) if isinstance(r, dict) and "category" in r}
+    if not rules:
+        state.notes.append("No usable policy rules, so no policy findings (check policy.yaml).")
     state.findings = []
     for cat in ("engineering", "ml_ai", "sales", "marketing"):
-        rule = rules.get(cat)
-        shares = analysis.competitor_shares(profiles, cat)
-        if not rule or cat not in ours_all:
-            continue
-        res = analysis.compare({**ours_all[cat], "_total": ours_all["_total"]}, shares, rule, state.salary.get(cat, 0))
-        if res["status"] != "ok":
-            state.notes.append(f"{cat}: no competitor data for comparison")
-            continue
-        n_sig = [s["signals"] for s in shares]
-        agreements = [a for p in profiles if (a := analysis.signal_agreement(p, cat)) is not None]
-        ages = [analysis.days_old(s.as_of) for p in profiles for s in p.signals if s.category == cat]
-        rel = [c for c in state.checks if c.target.endswith(f":{cat}") or c.target == f"budget:{cat}"]
-        conf, inputs = verify.confidence(sum(c.passed for c in rel), len(rel), min(n_sig),
-                                         min(agreements) if agreements else None, max(ages) if ages else 0)
-        fid = f"f_{cat}"
-        state.figures[f"{fid}_median"] = Figure(
-            id=f"{fid}_median", label=f"Competitor median {cat} share of headcount", unit="share",
-            value=res["median_mid"], category=cat, estimate=True,
-            sources=[s.source for p in profiles for s in p.signals if s.category == cat])
-        g0, g1 = res["gap_usd"]
-        verdict = "violates" if res["violated"] else "meets"
-        state.findings.append(Finding(
-            id=fid, category=cat, kind="policy",
-            statement=(f"{state.company} {cat} is {res['our_share']:.1%} of headcount vs competitor median "
-                       f"{res['median_low']:.1%}–{res['median_high']:.1%} ({res['n_competitors']} companies); "
-                       f"{verdict} policy '{rule['text']}'. "
-                       f"{_gap_sentence(res['gap_heads'], (g0, g1), state.company)}"),
-            ours=ours_all[cat]["share"], theirs_low=res["median_low"], theirs_high=res["median_high"],
-            policy_violated=res["violated"], figure_ids=[f"hc_{cat}", f"cost_{cat}", f"{fid}_median"],
-            confidence=conf, confidence_inputs=inputs))
+        try:
+            _policy_finding(state, cat, ours_all, profiles, rules.get(cat))
+        except Exception as e:  # one bad rule/date/signal must not lose the other categories or the report
+            state.notes.append(f"{cat}: finding not built ({type(e).__name__}: {str(e)[:120]})")
+            record_error(f"finding:{cat}", f"{type(e).__name__}: {e}", category=cat, rule=rules.get(cat))
     _internal_findings(state)
     save(state)
+
+
+def _policy_finding(state: RunState, cat: str, ours_all: dict, profiles: list, rule: dict | None) -> None:
+    shares = analysis.competitor_shares(profiles, cat)
+    if not rule or cat not in ours_all:
+        return
+    if cat not in state.salary:
+        state.notes.append(f"{cat}: no loaded salary in salary_table.csv, so the USD gap shows $0 (heads gap still valid)")
+    res = analysis.compare({**ours_all[cat], "_total": ours_all["_total"]}, shares, rule, state.salary.get(cat, 0))
+    if res["status"] != "ok":
+        state.notes.append(f"{cat}: no competitor data for comparison")
+        return
+    n_sig = [s["signals"] for s in shares]
+    agreements = [a for p in profiles if (a := analysis.signal_agreement(p, cat)) is not None]
+    ages = [analysis.days_old(s.as_of) for p in profiles for s in p.signals if s.category == cat]
+    rel = [c for c in state.checks if c.target.endswith(f":{cat}") or c.target == f"budget:{cat}"]
+    conf, inputs = verify.confidence(sum(c.passed for c in rel), len(rel), min(n_sig),
+                                     min(agreements) if agreements else None, max(ages) if ages else 0)
+    fid = f"f_{cat}"
+    state.figures[f"{fid}_median"] = Figure(
+        id=f"{fid}_median", label=f"Competitor median {cat} share of headcount", unit="share",
+        value=res["median_mid"], category=cat, estimate=True,
+        sources=[s.source for p in profiles for s in p.signals if s.category == cat])
+    g0, g1 = res["gap_usd"]
+    verdict = "violates" if res["violated"] else "meets"
+    state.findings.append(Finding(
+        id=fid, category=cat, kind="policy",
+        statement=(f"{state.company} {cat} is {res['our_share']:.1%} of headcount vs competitor median "
+                   f"{res['median_low']:.1%}–{res['median_high']:.1%} ({res['n_competitors']} companies); "
+                   f"{verdict} policy '{rule['text']}'. "
+                   f"{_gap_sentence(res['gap_heads'], (g0, g1), state.company)}"),
+        ours=ours_all[cat]["share"], theirs_low=res["median_low"], theirs_high=res["median_high"],
+        policy_violated=res["violated"], figure_ids=[f"hc_{cat}", f"cost_{cat}", f"{fid}_median"],
+        confidence=conf, confidence_inputs=inputs))
 
 
 def _gap_sentence(heads: tuple[float, float], usd: tuple[float, float], company: str = "Our company") -> str:
@@ -727,12 +778,27 @@ def _internal_findings(state: RunState) -> None:
 # ----------------------------------------------------------------------------- driver
 
 def run_phases(state: RunState) -> RunState:
-    with neatlogs.trace("spendradar_run", kind="WORKFLOW", session_id=state.run_id) as root:
+    # End user = the (fictional) customer company whose files are analysed: neatlogs groups runs per
+    # customer, which is the unit the cfo.ai plan prices. Session = run id, so a resumed run joins its first trace.
+    customer = Path(state.input_dir).name
+    with neatlogs.trace("spendradar_run", kind="WORKFLOW", session_id=state.run_id,
+                        end_user_id=f"customer:{customer}",
+                        end_user_metadata={"dataset": customer, "data_mode": state.data_mode,
+                                           "fictional": True}) as root:
         tid = format(root.get_span_context().trace_id, "032x")
         state.trace_id = state.trace_id or tid
         state.trace_ids.append(tid)
         root.set_attribute("spendradar.run_id", state.run_id)
         root.set_attribute("spendradar.resumed_at_phase", state.phase)
+        for k in ("commit", "checkpoint", "entire_url"):  # trace → code → the agent session that wrote it
+            if state.code.get(k):
+                root.set_attribute(f"spendradar.code.{k}", str(state.code[k]))
+        set_io(root, input={"goal": state.goal, "input_dir": state.input_dir, "run_id": state.run_id,
+                            "resumed_at_phase": state.phase, "data_mode": state.data_mode,
+                            "injected_faults": faults.active(),
+                            "code_commit": state.code.get("commit", ""),
+                            "entire_checkpoint": state.code.get("checkpoint", "")})
+        neatlogs.log("run {run_id} starting at phase {phase}", run_id=state.run_id, phase=state.phase)
         if state.phase == "plan":
             plan(state)
         if state.phase == "execute":
@@ -752,6 +818,15 @@ def run_phases(state: RunState) -> RunState:
         # injected run (e.g. 1011-13475c, 1011-ac099b) stored and reported "fired: none".
         _record_faults(state)
         save(state)
+        set_io(root, output={
+            "phase": state.phase, "report": f"runs/{state.run_id}/report.md",
+            "findings": {f.id: f.status for f in state.findings},
+            "not_analysed": [n["input"] for n in state.not_analysed],
+            "recovery_decisions": len(state.decisions),
+            "recovery_non_default": sum(d.chosen != d.default for d in state.decisions),
+            "faults_fired": state.faults_fired, "crustdata_credits": state.crustdata_credits})
+        neatlogs.log("run {run_id} finished at phase {phase} with {n} findings",
+                     run_id=state.run_id, phase=state.phase, n=len(state.findings))
     return state
 
 
@@ -760,6 +835,25 @@ def _record_faults(state: RunState) -> None:
     state.faults_fired = sorted(set(state.faults_fired) | set(faults.fired))  # a resumed run keeps earlier ones
 
 
+def validate_inputs(input_dir: str) -> None:
+    """Fail before any spend, with a clear message, on inputs the run cannot work without."""
+    root = Path(input_dir)
+    if not root.is_dir():
+        raise SystemExit(f"input folder not found: {input_dir}")
+    comp = root / "competitors.yaml"
+    try:
+        comps = yaml.safe_load(comp.read_text(encoding="utf-8"))
+        assert isinstance(comps, dict) and comps.get("competitors"), "needs a non-empty 'competitors' list"
+        for c in comps["competitors"] + (comps.get("substitutes") or []):
+            assert isinstance(c, dict) and c.get("name") and c.get("domain"), f"each entry needs name and domain: {c!r}"
+    except FileNotFoundError:
+        raise SystemExit(f"{comp} is missing") from None
+    except (yaml.YAMLError, AssertionError) as e:
+        raise SystemExit(f"{comp} is invalid: {e}") from None
+
+
 def new_state(input_dir: str, tags: list[str], sha: str, run_id: str) -> RunState:
-    return RunState(run_id=run_id, goal=GOAL, input_dir=input_dir, git_sha=sha, tags=tags,
+    from spendradar.provenance import code_provenance
+
+    return RunState(run_id=run_id, goal=GOAL, input_dir=input_dir, git_sha=sha, tags=tags, code=code_provenance(),
                     injected=faults.active())

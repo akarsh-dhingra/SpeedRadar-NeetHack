@@ -1,0 +1,37 @@
+{
+  "id": "trail-security",
+  "display_name": "Security Review",
+  "enabled": true,
+  "scope": "trail",
+  "runtime": {
+    "kind": "prompt_runner",
+    "agent": "claude",
+    "timeout_ms": 300000,
+    "sandbox": {
+      "base_template": "claude",
+      "repo_token": "read"
+    }
+  },
+  "automation": {
+    "kind": "trail_prompt"
+  },
+  "prompt": {
+    "template": "You are a security risk evaluator. Analyze the changes on branch \"{{branch}}\" compared to \"{{base_branch}}\".\n\nRun `git diff origin/{{base_branch}}...HEAD` to see the changes, then score **security risk** from 0 to 100 (review adversarially; higher = more suspicious or insecure).\n\nThis is a Python LLM agent that ingests finance files (spreadsheets, invoice PDFs, policy) and calls external APIs (LLM providers, a company-data API). Check for:\n- Committed or logged secrets: API keys/tokens in code, config.yaml, .env (must be git-ignored; only .env.example), traces, reports, screenshots, or evidence files; credentials echoed in error messages or usage output.\n- Prompt injection: untrusted content from PDFs, spreadsheets, or fetched web/API data flowing into LLM prompts and influencing tool calls or policy verdicts without guards (see llm.py guards); LLM output used to select actions, paths, or commands without validation.\n- Unsafe parsing/execution: eval/exec, shell=True, subprocess with untrusted input, pickle/yaml.load of untrusted data, path traversal when reading input folders or writing runs/ and cache/.\n- Data exposure: real customer finance data sent to free-tier LLM providers (only fictional data and public facts are allowed); PII in traces.\n- Network: unvalidated URLs, disabled TLS verification, SSRF via fetched sources, missing timeouts.\n- Supply chain: new or unpinned dependencies, scripts that download and run code.\n\nBands: 0-15 = no security-relevant surface touched; 16-40 = minor hygiene issues; 41-70 = unvalidated untrusted input reaching LLM/tools or file paths; 71-100 = leaked secrets, code execution, or real data sent to external providers.\n\nOutput ONLY this JSON object as the very last line of your response:\n\n{\"value\": <number 0-100>, \"rationale\": \"<1-2 sentence explanation>\"}"
+  },
+  "select": {
+    "trigger_types": [
+      "api",
+      "push"
+    ]
+  },
+  "output": {
+    "adapter": "last_json_line",
+    "result_type": "trail_monitor",
+    "trail_monitor": {
+      "key": "security",
+      "label": "Security",
+      "value_type": "percent",
+      "polarity": "lower_is_better"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "trail-confidence",
+  "display_name": "Confidence Eval",
+  "enabled": true,
+  "scope": "trail",
+  "runtime": {
+    "kind": "prompt_runner",
+    "agent": "claude",
+    "timeout_ms": 300000,
+    "sandbox": {
+      "base_template": "claude",
+      "repo_token": "read"
+    }
+  },
+  "automation": {
+    "kind": "trail_prompt"
+  },
+  "prompt": {
+    "template": "You are a confidence evaluator. Analyze the changes on branch \"{{branch}}\" compared to \"{{base_branch}}\".\n\nRun `git diff origin/{{base_branch}}...HEAD` to see the changes, then score **confidence** from 0 to 100 (higher = more confident the changes are correct and well-tested).\n\nThis repo is Spend Radar, a Python finance-analysis agent (spendradar/: agent loop, llm client, rules; tests/ with pytest) that must show sources for every number and try to disprove its own findings. Weigh:\n- Do changes to spendradar/agent.py, spendradar/llm.py, or rule/policy logic come with matching updates in tests (e.g. test_agent_rules, test_llm_guard)? Untested changes to these hot files lower confidence sharply.\n- Are all reported numbers computed from data and tied to a source (file+sheet/row/page, or API endpoint+field+fetch time)? Hardcoded or invented metrics, confidence scores, or placeholders replaced with unmeasured values lower confidence.\n- Are failure/recovery paths (LLM errors, rate limits, malformed or missing data, fallbacks) handled and verified, and is the self-verification/overturn step preserved?\n- Are business/cost calculations (business/*.py and generated unit_costs outputs) consistent with their inputs and regenerated together?\n- Is behavior deterministic enough to check (fixtures, generated Acme data) rather than relying on live network or free-tier LLM calls?\n\nBands: 85-100 = narrow, well-tested change with sources and recovery paths intact; 60-84 = plausible and partly tested, some paths unverified; 30-59 = core agent/LLM/rules logic changed with little or no test coverage, or unverifiable numbers; 0-29 = likely broken, fabricated metrics, or removes verification/recovery.\n\nOutput ONLY this JSON object as the very last line of your response:\n\n{\"value\": <number 0-100>, \"rationale\": \"<1-2 sentence explanation>\"}"
+  },
+  "select": {
+    "trigger_types": [
+      "api",
+      "push"
+    ]
+  },
+  "output": {
+    "adapter": "last_json_line",
+    "result_type": "trail_monitor",
+    "trail_monitor": {
+      "key": "confidence",
+      "label": "Confidence",
+      "value_type": "percent",
+      "polarity": "higher_is_better"
+    }
+  }
+}

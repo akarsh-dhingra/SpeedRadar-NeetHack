@@ -16,7 +16,7 @@ TOLERANCE = 0.01  # line items must sum to the stated total within 1%
 
 def totals_check(target: str, parts: list[float], stated: float) -> Check:
     s = sum(parts)
-    diff = abs(s - stated) / stated if stated else (0 if s == 0 else 1)
+    diff = abs(s - stated) / abs(stated) if stated else (0 if s == 0 else 1)  # abs: credit notes are negative
     return Check(name="verify:totals", target=target, passed=diff <= TOLERANCE,
                  detail=f"line items sum {s:,.2f} vs stated {stated:,.2f} ({diff:.2%} off)")
 

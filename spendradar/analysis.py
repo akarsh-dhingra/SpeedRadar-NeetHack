@@ -110,9 +110,12 @@ def days_old(as_of: str, today: date | None = None) -> int:
 
 def our_position(budget: dict) -> dict:
     """budget = {'headcount_end': {cat: n}, 'people_cost': {cat: usd}} from the verified spreadsheet."""
-    total = sum(budget["headcount_end"].values())
-    return {cat: {"headcount": hc, "share": hc / total, "people_cost": budget["people_cost"].get(cat)}
-            for cat, hc in budget["headcount_end"].items()} | {"_total": total}
+    hcs = {c: hc for c, hc in budget.get("headcount_end", {}).items() if isinstance(hc, (int, float)) and hc >= 0}
+    total = sum(hcs.values())
+    if not total:  # no usable headcount: no shares to compare (caller notes it)
+        return {"_total": 0}
+    return {cat: {"headcount": hc, "share": hc / total, "people_cost": budget.get("people_cost", {}).get(cat)}
+            for cat, hc in hcs.items()} | {"_total": total}
 
 
 def competitor_shares(profiles: list[CompetitorProfile], cat: str) -> list[dict]:
