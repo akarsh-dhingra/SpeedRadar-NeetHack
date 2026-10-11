@@ -15,20 +15,23 @@ const TL = JSON.parse(fs.readFileSync(path.join(BUILD, "timeline.json"), "utf8")
 const clipsIdx = path.join(BUILD, "clips", "index.json");
 const CLIPS = fs.existsSync(clipsIdx) ? JSON.parse(fs.readFileSync(clipsIdx, "utf8")) : {};
 const FFMPEG = process.env.FFMPEG || "ffmpeg";
+const DATA = { run: JSON.parse(fs.readFileSync(path.join(HERE, "film/src/data/run.json"), "utf8")), facts: JSON.parse(fs.readFileSync(path.join(HERE, "film/src/data/facts.json"), "utf8")) };
+const OW = 2560, OH = 1440; // output size; the film is drawn in 1920x1080 units and scaled up crisply
 
 const browser = await puppeteer.launch({
-  headless: true,
+  headless: true, executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
   args: ["--no-sandbox", "--allow-file-access-from-files", "--force-color-profile=srgb", "--disable-web-security"],
 });
 const page = await browser.newPage();
-await page.setViewport({ width: 1920, height: 1080, deviceScaleFactor: 1 });
-await page.evaluateOnNewDocument((tl, clips) => { window.__TL = tl; window.__CLIPS = clips; }, TL, CLIPS);
+await page.setViewport({ width: OW, height: OH, deviceScaleFactor: 1 });
+await page.evaluateOnNewDocument((tl, clips, data) => { window.__TL = tl; window.__CLIPS = clips; window.__DATA = data; }, TL, CLIPS, DATA);
 page.on("pageerror", (e) => console.error("page error:", e.message));
 await page.goto(pathToFileURL(path.join(HERE, "comp", "index.html")).href, { waitUntil: "networkidle0" });
 await page.evaluate(() => window.__fontsReady);
 await page.waitForFunction(() => window.__ready === true);
 
-const shot = async (t) => { await page.evaluate((tt) => window.__render(tt), t); return page.screenshot({ type: "jpeg", quality: 93, optimizeForSpeed: true }); };
+// lossless frames: PNG straight from the canvas pixels
+const shot = async (t) => { await page.evaluate((tt) => window.__render(tt), t); return page.screenshot({ type: "png", optimizeForSpeed: true, clip: { x: 0, y: 0, width: OW, height: OH } }); };
 
 if (arg("--cues")) {
   fs.writeFileSync(path.join(BUILD, "cues.json"), JSON.stringify(await page.evaluate(() => window.__cues())));
@@ -46,8 +49,8 @@ if (arg("--cues")) {
   const total = Math.round(TL.duration * TL.fps), per = Math.ceil(total / shards);
   const f0 = shard * per, f1 = Math.min(total, f0 + per);
   const out = path.join(BUILD, `seg_${shard}.mp4`);
-  const ff = spawn(FFMPEG, ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(TL.fps), "-c:v", "mjpeg", "-i", "-",
-    "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-r", String(TL.fps), out], { stdio: ["pipe", "inherit", "inherit"] });
+  const ff = spawn(FFMPEG, ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(TL.fps), "-c:v", "png", "-i", "-",
+    "-c:v", "libx264", "-preset", "slow", "-crf", "15", "-tune", "animation", "-pix_fmt", "yuv420p", "-r", String(TL.fps), out], { stdio: ["pipe", "inherit", "inherit"] });
   const t0 = Date.now();
   for (let f = f0; f < f1; f++) {
     const buf = await shot(f / TL.fps);

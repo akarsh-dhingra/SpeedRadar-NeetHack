@@ -17,7 +17,13 @@ for sc in script["scenes"]:
             d = 0.12 + 0.045 * len(w)
             words_out.append({"w": w, "t0": round(t, 3), "t1": round(t + d, 3)})
             t += d + (0.25 if w[-1] in ".,!?" else 0.03)
-        lines.append({"id": l["id"], "scene": sc["id"], "start": start, "dur": round(t - start, 3), "cap": l["cap"], "say": l["say"], "score": 1, "words": words_out})
+        dur_l = round(t - start, 3)
+        tot = sum(len(w["w"]) for w in words_out) or 1
+        acc, prog = 0, [[0.0, 0.0]]
+        for w in words_out:
+            acc += len(w["w"]); prog.append([round(w["t1"] - start, 3), round(acc / tot, 4)])
+        prog.append([dur_l, 1.0])
+        lines.append({"id": l["id"], "scene": sc["id"], "start": start, "dur": dur_l, "cap": l["cap"], "say": l["say"], "score": 1, "words": words_out, "big": bool(l.get("big")), "progress": prog})
         t += 0.16 if i < len(sc["lines"]) - 1 else 0
     t += sc.get("pad_after", 0.25)
     scenes.append({"id": sc["id"], "start": round(s0, 3), "end": round(t, 3)})
@@ -28,5 +34,5 @@ for l in lines:
         for f in range(int(w["t0"] * FPS), int(w["t1"] * FPS)):
             env[f] = 0.75
 (ROOT / "build").mkdir(exist_ok=True)
-(ROOT / "build" / "timeline.json").write_text(json.dumps({"fps": FPS, "duration": dur, "scenes": scenes, "lines": lines, "env": env, "dev": True}))
+(ROOT / "build" / "timeline.json").write_text(json.dumps({"fps": FPS, "bpm": script.get("bpm", 118), "duration": dur, "scenes": scenes, "lines": lines, "env": env, "dev": True}))
 print(f"dev timeline: {dur:.1f}s, {len(lines)} lines")

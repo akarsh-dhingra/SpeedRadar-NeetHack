@@ -1,247 +1,260 @@
 {
- "_about": "Narration for the Spend Radar demo film (v2). `say` is what the voice reads (spelled for pronunciation); `cap` is the on-screen caption. `exag` sets the voice's expressiveness for that line (0.5 calm .. 0.75 lively). Every number comes from the evidence named in `src`. Scene visuals live in film/src/scenes; their length follows the narration.",
+ "_about": "Narration for the Spend Radar demo film (v3: the papery cartoon world, comp/comp.js). `say` is what the voice reads (spelled for pronunciation); `cap` is the on-screen caption; `big` lines are drawn as huge kinetic type. `exag` = expressiveness for that line. Every number comes from the evidence named in `src`.",
  "voice": {
   "engine": "chatterbox",
   "reference": "LibriSpeech dev-clean reader 1673 (CC BY 4.0)",
-  "exaggeration": 0.6,
-  "cfg_weight": 0.45,
-  "tempo": 1.1
+  "exaggeration": 0.8,
+  "cfg_weight": 0.35,
+  "tempo": 1.12
  },
+ "bpm": 118,
  "scenes": [
   {
    "id": "hook",
-   "pad_before": 0.3,
-   "pad_after": 0.25,
+   "pad_before": 0.25,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "hook1",
-     "say": "Your competitor just doubled their em ell team.",
-     "cap": "Your competitor just doubled their ML team.",
-     "exag": 0.7
+     "say": "Your competitor just doubled their em ell team!",
+     "cap": "Your competitor just doubled their ML team!",
+     "big": true,
+     "exag": 0.9
     },
     {
      "id": "hook2",
      "say": "And you'll find out... next quarter.",
      "cap": "And you'll find out… next quarter.",
-     "exag": 0.7
+     "big": true,
+     "exag": 0.85
     },
     {
      "id": "hook3",
-     "say": "Unless your agent finds out first.",
-     "cap": "Unless your agent finds out first.",
-     "exag": 0.75
+     "say": "Unless your agent finds out first!",
+     "cap": "Unless your agent finds out first!",
+     "big": true,
+     "exag": 0.95
     }
    ]
   },
   {
    "id": "title",
-   "pad_before": 0.15,
-   "pad_after": 0.3,
+   "pad_before": 0.1,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "title1",
-     "say": "This is Spend Radar. It reads your finance files, checks the market with real data, and then tries to prove itself wrong.",
-     "cap": "This is Spend Radar. It reads your finance files, checks the market with real data — then tries to prove itself wrong."
+     "say": "Meet Spend Radar! It reads your books, checks the market, and then tries to prove itself wrong.",
+     "cap": "Meet Spend Radar! It reads your books, checks the market — then tries to prove itself wrong.",
+     "exag": 0.9
     }
    ]
   },
   {
    "id": "run",
-   "pad_before": 0.15,
-   "pad_after": 0.25,
+   "pad_before": 0.1,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "run1",
-     "say": "Let's watch a real run, on Acme's files.",
-     "cap": "Let's watch a real run, on Acme's files.",
-     "src": "runs/1011-777bb7 (data mode: real)",
-     "exag": 0.65
+     "say": "Let's watch a real run!",
+     "cap": "Let's watch a real run!",
+     "big": true,
+     "exag": 0.9,
+     "src": "runs/1011-777bb7 (data mode: real)"
     },
     {
      "id": "run2",
-     "say": "The model writes a plan. Then the agent works through it, one tool call at a time.",
-     "cap": "The model writes a plan. The agent works through it, one tool call at a time.",
-     "src": "runs/1011-777bb7/state.json plan_rationale, done (41 tasks)"
+     "say": "The model writes the plan. Then it's one tool call at a time.",
+     "cap": "The model writes the plan. Then: one tool call at a time.",
+     "src": "runs/1011-777bb7/state.json plan_rationale, done (41)"
     },
     {
      "id": "run3",
-     "say": "Budget, policy, salaries, invoices. Then real headcount for five competitors, from Crust-data.",
-     "cap": "Budget, policy, salaries, invoices. Then real headcount for 5 competitors, from Crustdata.",
-     "src": "state.json done t01-t31; competitors: 5"
+     "say": "Budget, invoices, policy, then real headcount from Crust-data.",
+     "cap": "Budget, invoices, policy — then real headcount from Crustdata.",
+     "src": "state.json done; competitors (5)"
     },
     {
      "id": "run4",
-     "say": "Python checks every result. Seventy-one checks. Here, a budget row is off by one point four five percent.",
-     "cap": "Python checks every result: 71 checks. Here, a budget row is off by 1.45%.",
-     "src": "state.json checks (71), decisions[t01].failed_check"
+     "say": "Python checks all seventy-one results. Uh oh, a budget row doesn't add up!",
+     "cap": "Python checks all 71 results. Uh-oh — a budget row doesn't add up!",
+     "exag": 0.9,
+     "src": "state.json checks (71); decisions[t01] 1.45% off"
     },
     {
      "id": "run5",
-     "say": "The rule says, mark it low confidence. The model chose to re-read the exact row instead.",
-     "cap": "The rule says: mark it low confidence. The model chose to re-read the exact row instead.",
-     "src": "state.json decisions[t01]: default mark_low_confidence, chosen narrow_range",
-     "exag": 0.65
+     "say": "The rule says, mark it low confidence. The model says, re-read that row!",
+     "cap": "Rule: mark it low confidence. Model: re-read that row!",
+     "exag": 0.9,
+     "src": "decisions[t01]: default mark_low_confidence, chosen narrow_range"
     },
     {
      "id": "run6",
-     "say": "A scanned invoice? Read it another way. A corrupt one? Try a second parser, then list it as not analysed.",
-     "cap": "Scanned invoice? Read it another way. Corrupt one? Second parser, then listed as not analysed.",
-     "src": "state.json decisions t15 (reparse_alt), t16/t16r (reparse_alt, skip), not_analysed"
+     "say": "Scanned PDF? Read it another way. Corrupt PDF? Flag it and move on.",
+     "cap": "Scanned PDF? Read it another way. Corrupt PDF? Flag it, move on.",
+     "src": "decisions t15 reparse_alt; t16/t16r reparse_alt, skip; not_analysed"
     },
     {
      "id": "run7",
-     "say": "Half of its ten recovery calls beat the default rule.",
-     "cap": "5 of its 10 recovery calls beat the default rule.",
-     "src": "frontend_data run 1011-777bb7 metrics: recovery_decisions 10, recovery_non_default 5"
+     "say": "Five of its ten recovery calls beat the rule!",
+     "cap": "5 of its 10 recovery calls beat the rule!",
+     "big": true,
+     "exag": 0.9,
+     "src": "run 1011-777bb7 metrics recovery_non_default 5 / recovery_decisions 10"
     }
    ]
   },
   {
    "id": "audit",
-   "pad_before": 0.2,
-   "pad_after": 0.3,
+   "pad_before": 0.1,
+   "pad_after": 0.25,
    "lines": [
     {
      "id": "aud1",
-     "say": "Then comes the self-audit, our favourite part.",
-     "cap": "Then comes the self-audit — our favourite part.",
-     "exag": 0.7
+     "say": "And now, the best part.",
+     "cap": "And now… the best part.",
+     "big": true,
+     "exag": 0.85
     },
     {
      "id": "aud2",
-     "say": "It flagged a gap of up to five point two eight million dollars in Acme's em ell team.",
-     "cap": "It flagged a gap of up to $5.28M in Acme's ML team.",
+     "say": "It flagged a five point two eight million dollar gap in Acme's em ell team.",
+     "cap": "It flagged a $5.28M gap in Acme's ML team.",
      "src": "run 1011-777bb7 finding f_ml_ai"
     },
     {
      "id": "aud3",
-     "say": "Then it argued with itself, and overturned its own claim.",
-     "cap": "Then it argued with itself — and overturned its own claim.",
-     "exag": 0.7
+     "say": "Then it argued with itself, and overturned it!",
+     "cap": "Then it argued with itself — and overturned it!",
+     "exag": 0.95
     },
     {
      "id": "aud4",
      "say": "Wrong claims never reach the report.",
-     "cap": "Wrong claims never reach the report."
-    },
-    {
-     "id": "aud5",
-     "say": "What's left is a report where every number links to its source.",
-     "cap": "What's left: a report where every number links to its source.",
-     "src": "runs/1011-777bb7/report.md"
+     "cap": "Wrong claims never reach the report.",
+     "big": true
     }
    ]
   },
   {
    "id": "general",
-   "pad_before": 0.15,
-   "pad_after": 0.25,
+   "pad_before": 0.1,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "gen1",
      "say": "Seven companies. Six it had never seen before.",
      "cap": "7 companies. 6 it had never seen before.",
-     "src": "summary.companies = 7, held_out_companies = 6"
+     "src": "summary.companies 7, held_out_companies 6"
     },
     {
      "id": "gen2",
-     "say": "Every planted error, caught. Zero false alarms. Even with the APIs rate-limited on purpose.",
-     "cap": "Every planted error caught. Zero false alarms — even with the APIs rate-limited on purpose.",
-     "exag": 0.7,
-     "src": "summary.latest_runs_all_caught = 7, latest_runs_false_alarms = 0; injected_runs crustdata:429 + llm:429"
+     "say": "Every planted error, caught. Zero false alarms!",
+     "cap": "Every planted error caught. Zero false alarms!",
+     "big": true,
+     "exag": 0.9,
+     "src": "summary.latest_runs_all_caught 7, latest_runs_false_alarms 0"
     }
    ]
   },
   {
    "id": "neatlogs",
-   "pad_before": 0.15,
-   "pad_after": 0.25,
+   "pad_before": 0.1,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "nl1",
-     "say": "Every call, every retry, every decision, traced in neet logs.",
-     "cap": "Every call, every retry, every decision — traced in neatlogs."
+     "say": "We debugged all of it in neet logs.",
+     "cap": "We debugged all of it in neatlogs.",
+     "exag": 0.85
     },
     {
      "id": "nl2",
-     "say": "One trace showed it throwing away three of five competitors. The fix kept all five, and cut credits from twenty-six point six to five point four.",
-     "cap": "One trace: 3 of 5 competitors thrown away. The fix: all 5 kept, credits 26.6 → 5.4.",
+     "say": "One trace caught it dumping three of five competitors. The fix kept all five, and cut credits from twenty-six point six to five point four!",
+     "cap": "One trace: 3 of 5 competitors dumped. The fix: all 5 kept, credits 26.6 → 5.4!",
      "src": "evidence/case-studies/02-competitor-substitution.md"
     },
     {
      "id": "nl3",
-     "say": "Another showed the same data getting three different verdicts. Now, it's one. Every time.",
-     "cap": "Same data, 3 different verdicts. Now: 1. Every time.",
-     "exag": 0.65,
+     "say": "Same data, three different verdicts? Now, just one.",
+     "cap": "Same data, 3 different verdicts? Now: just 1.",
+     "exag": 0.9,
      "src": "evidence/case-studies/05-audit-verdict-variance.md"
     }
    ]
   },
   {
    "id": "entire",
-   "pad_before": 0.15,
-   "pad_after": 0.25,
+   "pad_before": 0.1,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "ent1",
-     "say": "Entire gave our coding agent a memory. More than sixty checkpoints, each tying a commit to the prompt that wrote it.",
-     "cap": "Entire gave our coding agent a memory: 60+ checkpoints, each tying a commit to the prompt that wrote it.",
+     "say": "Entire gave our coding agent a memory. Sixty-nine checkpoints!",
+     "cap": "Entire gave our coding agent a memory: 69 checkpoints!",
+     "exag": 0.9,
      "src": "evidence/frontend_data.json entire.checkpoints = 69"
     },
     {
      "id": "ent2",
-     "say": "Click any neet logs span, and explain walks back to the line of code, the commit, and the exact prompt behind it.",
-     "cap": "Click any neatlogs span → the code line → the commit → the exact prompt behind it.",
+     "say": "Click any trace, and follow it back to the code, the commit, and the prompt that wrote it.",
+     "cap": "Click any trace → the code → the commit → the prompt that wrote it.",
      "src": "evidence/explain/5fcef2f7f2f8-decide-recovery.md"
     },
     {
      "id": "ent3",
-     "say": "And Entire's review runners caught two real bugs, before we merged.",
-     "cap": "Entire's review runners caught two real bugs — before we merged.",
-     "src": "evidence/frontend_data.json entire.trails: findings a16758f (medium), 62c6b69 (low), both resolved"
+     "say": "Its review runners even caught two bugs before merge!",
+     "cap": "Its review runners even caught 2 bugs before merge!",
+     "exag": 0.9,
+     "src": "frontend_data.json entire.trails findings: a16758f, 62c6b69"
     }
    ]
   },
   {
    "id": "cfo",
-   "pad_before": 0.15,
-   "pad_after": 0.25,
+   "pad_before": 0.1,
+   "pad_after": 0.2,
    "lines": [
     {
      "id": "cfo1",
-     "say": "And CFO dot AI turned our measured costs into a real plan.",
-     "cap": "And cfo.ai turned our measured costs into a real plan."
+     "say": "And CFO dot AI built the business plan from our real costs.",
+     "cap": "And cfo.ai built the business plan from our real costs.",
+     "exag": 0.85
     },
     {
      "id": "cfo2",
-     "say": "Under three cents of ay eye per run. Competitor data is ninety-nine percent of the cost.",
+     "say": "Under three cents of AI per run. Competitor data is ninety-nine percent of the cost.",
      "cap": "Under 3¢ of AI per run. Competitor data: ~99% of the cost.",
-     "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt; Assumptions LLM cost per run $0.0285"
+     "src": "cfo.ai Assumptions: LLM cost per run $0.0285; judge summary: Crustdata ~99% of COGS"
     },
     {
      "id": "cfo3",
-     "say": "Base case: cash-flow positive by January twenty twenty-eight. Next move: test the Team plan at four hundred ninety-five dollars.",
-     "cap": "Base case: cash-flow positive Jan 2028. Next: test Team at $495.",
-     "src": "business/cfoai/round2/cfoai_judge_summary_2026-10-11.txt"
+     "say": "Six scenarios. Base case: cash-flow positive by January twenty twenty-eight!",
+     "cap": "6 scenarios. Base case: cash-flow positive by Jan 2028!",
+     "exag": 0.9,
+     "src": "business/cfoai/mcp_export_2026-10-11.json"
     }
    ]
   },
   {
    "id": "outro",
-   "pad_before": 0.2,
-   "pad_after": 1.8,
+   "pad_before": 0.15,
+   "pad_after": 2.0,
    "lines": [
     {
      "id": "out1",
-     "say": "Spend Radar. Every number has a source.",
-     "cap": "Spend Radar. Every number has a source.",
-     "exag": 0.65
+     "say": "Spend Radar. Every number has a source!",
+     "cap": "Spend Radar. Every number has a source!",
+     "big": true,
+     "exag": 0.9
     },
     {
      "id": "out2",
      "say": "Team kwep. Hashtag neet hack!",
      "cap": "team qwep · #neatHack",
-     "exag": 0.75
+     "big": true,
+     "exag": 0.95
     }
    ]
   }

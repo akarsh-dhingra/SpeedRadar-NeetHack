@@ -32,6 +32,60 @@ track = np.zeros(SR * 300)  # 5 minutes is far more than the film needs
 scenes, out_lines = [], []
 
 
+def rms_db(y, sr, win=0.01):
+    n = max(1, int(win * sr))
+    frames = len(y) // n
+    r = np.sqrt(np.mean(y[: frames * n].reshape(frames, n) ** 2, axis=1) + 1e-12)
+    return 20 * np.log10(r / (np.max(r) + 1e-12)), n
+
+
+def clean_take(y, sr, words):
+    """Trim to the voice itself and shorten long pauses, so lines join without stutters or dead air.
+    Head/tail follow loudness around Whisper's first/last word (never cutting a word, never keeping a trailing
+    syllable the model added after it); pauses over 0.45 s inside the take shrink to 0.28 s. Word times follow."""
+    db, n = rms_db(y, sr)
+    quiet = db < -38
+    if words:
+        i0 = int(words[0]["start"] * sr / n)
+        loud = np.nonzero(~quiet)[0]
+        if len(loud):
+            i0 = max(i0, int(loud[0]) - 1)  # Whisper often reports 0.0 for the first word: start at the first sound
+        while i0 > 0 and not quiet[i0 - 1] and words[0]["start"] - (i0 - 1) * n / sr < 0.12:
+            i0 -= 1
+        i1 = min(len(db) - 1, int(words[-1]["end"] * sr / n))
+        while i1 < len(db) - 1 and not quiet[i1 + 1] and (i1 + 1) * n / sr - words[-1]["end"] < 0.12:
+            i1 += 1
+        a, b = max(0.0, i0 * n / sr - 0.02), min(len(y) / sr, (i1 + 1) * n / sr + 0.03)
+    else:
+        a, b = 0.0, len(y) / sr
+    y = y[int(a * sr):int(b * sr)].copy()
+    w = [{"w": x["w"], "start": max(0.0, x["start"] - a), "end": max(0.05, x["end"] - a)} for x in words]
+    # shorten long internal pauses (only between words, never inside one)
+    db, n = rms_db(y, sr)
+    quiet = db < -38
+    cuts, k = [], 0
+    while k < len(quiet):
+        if quiet[k]:
+            j = k
+            while j < len(quiet) and quiet[j]:
+                j += 1
+            s0, s1 = k * n / sr, j * n / sr
+            inside_word = any(x["start"] < s0 + 0.01 and x["end"] > s1 - 0.01 for x in w)
+            if s1 - s0 > 0.45 and 0 < k and j < len(quiet) and not inside_word:
+                cuts.append((s0 + 0.14, s1 - 0.14))
+            k = j
+        else:
+            k += 1
+    for c0, c1 in reversed(cuts):
+        y = np.concatenate([y[: int(c0 * sr)], y[int(c1 * sr):]])
+        d = c1 - c0
+        for x in w:
+            if x["start"] >= c1:
+                x["start"] -= d
+                x["end"] -= d
+    return y, w, 0.0
+
+
 def place(samples, at):
     i = int(round(at * SR))
     track[i:i + len(samples)] += samples
@@ -44,14 +98,12 @@ for sc in script["scenes"]:
         meta = json.loads((LINES / f"{l['id']}.json").read_text())
         y, sr = sf.read(str(LINES / f"{l['id']}.wav"))
         words = meta["words"]
-        a = max(0.0, words[0]["start"] - 0.06) if words else 0.0
-        b = min(len(y) / sr, words[-1]["end"] + 0.14) if words else len(y) / sr
-        y = y[int(a * sr):int(b * sr)]
+        y, words, a = clean_take(y, sr, words)
         y = speed_up(y, sr)
         words = [{"w": w["w"], "start": (w["start"] - a) / TEMPO + a, "end": (w["end"] - a) / TEMPO + a} for w in words]
-        fade = int(0.012 * sr)
-        y[:fade] *= np.linspace(0, 1, fade)
-        y[-fade:] *= np.linspace(1, 0, fade)
+        fi, fo = int(0.015 * sr), int(0.04 * sr)
+        y[:fi] *= np.linspace(0, 1, fi)
+        y[-fo:] *= np.linspace(1, 0, fo) ** 2
         y48 = resample_poly(y, SR, sr)
         start = round(t * FPS) / FPS
         place(y48, start)
@@ -60,7 +112,17 @@ for sc in script["scenes"]:
             "id": l["id"], "scene": sc["id"], "start": round(start, 3), "dur": round(dur, 3),
             "cap": l["cap"], "say": l["say"], "score": meta["score"],
             "words": [{"w": w["w"], "t0": round(start + w["start"] - a, 3), "t1": round(start + w["end"] - a, 3)} for w in words],
+            "big": bool(l.get("big")),
         })
+        # progress curve for captions: [seconds into the line, fraction of the spoken text said by then]
+        ln = out_lines[-1]
+        total = sum(len(w["w"]) for w in ln["words"]) or 1
+        acc, prog = 0, [[0.0, 0.0]]
+        for w in ln["words"]:
+            acc += len(w["w"])
+            prog.append([round(w["t1"] - start, 3), round(acc / total, 4)])
+        prog.append([round(dur, 3), 1.0])
+        ln["progress"] = prog
         t = start + dur + (GAP if i < len(sc["lines"]) - 1 else 0)
     t += sc.get("pad_after", 0.25)
     scenes.append({"id": sc["id"], "start": round(s0 - sc.get("pad_before", 0.2), 3), "end": round(t, 3)})
@@ -80,7 +142,7 @@ for r in rms:
     v = r if r > v else v * 0.72 + r * 0.28
     env.append(round(float(min(1.0, max(0.0, (v - 0.06) / 0.94))), 3))
 
-tl = {"fps": FPS, "duration": dur, "scenes": scenes, "lines": out_lines, "env": env}
+tl = {"fps": FPS, "bpm": script.get("bpm", 118), "duration": dur, "scenes": scenes, "lines": out_lines, "env": env}
 (ROOT / "build" / "timeline.json").write_text(json.dumps(tl))
 print(f"duration {dur:.2f}s, {len(out_lines)} lines")
 for l in out_lines:

@@ -68,6 +68,12 @@ for l in mine:
         words = [{"w": w.word.strip(), "start": round(w.start, 3), "end": round(w.end, 3)} for s in segs for w in s.words]
         heard = " ".join(w["w"] for w in words)
         score = difflib.SequenceMatcher(None, norm(l["say"]), norm(heard)).ratio()
+        # a stutter shows up as a word repeated back-to-back that the script doesn't repeat
+        toks = [re.sub(r"[^a-z0-9]", "", x["w"].lower()) for x in words]
+        said = [re.sub(r"[^a-z0-9]", "", x.lower()) for x in l["say"].split()]
+        reps = sum(1 for i in range(1, len(toks)) if toks[i] and toks[i] == toks[i - 1]) - sum(1 for i in range(1, len(said)) if said[i] and said[i] == said[i - 1])
+        if reps > 0:
+            score -= 0.15 * reps
         print(f"  {l['id']} seed {seed}: score {score:.3f} in {time.time() - t0:.0f}s | heard: {heard}")
         if best is None or score > best["score"]:
             best = {"id": l["id"], "say": l["say"], "exag": exag, "seed": seed, "score": round(score, 3), "heard": heard, "words": words, "sr": model.sr}
