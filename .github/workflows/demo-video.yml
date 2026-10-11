@@ -27,8 +27,9 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq espeak-ng ffmpeg fonts-dejavu-core
       - name: Python packages (CPU only)
         run: |
-          pip install -q --index-url https://download.pytorch.org/whl/cpu torch==2.5.1
-          pip install -q kokoro soundfile scipy numpy
+          pip install -q --index-url https://download.pytorch.org/whl/cpu torch
+          pip install -q --extra-index-url https://download.pytorch.org/whl/cpu kokoro soundfile scipy numpy
+          python -c "import torch, transformers; from kokoro import KPipeline; print('torch', torch.__version__, 'transformers', transformers.__version__)"
       - name: Narration (Kokoro, local model)
         run: python tts.py
       - name: Music bed
