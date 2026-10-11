@@ -302,7 +302,7 @@
   function same(xs) { return xs.every(function (v) { return v === xs[0]; }); }
   function newResults() {
     var R = D.real_invoices, cs = (D.comparisons || []).filter(function (c) { return c.per_run && c.before.length >= 5; })[0];
-    var held = R && (R.summary || []).filter(function (g) { return g.invoice_set === "held out"; });
+    var held = R && (R.summary || []).filter(function (g) { return g.invoice_set === "held out" && /v1|v2/.test(g.variant); });
     var tiles = "";
     if (cs) {
       var b = cs.per_run.values[cs.before[0]], a = cs.per_run.values[cs.after[0]];
@@ -821,12 +821,14 @@
     var passes = (R.passes || []).map(function (x) {
       return "<tr><td>" + esc(x.variant) + "</td><td>" + esc(x.invoice_set || "") + '</td><td class="ac-code">' + esc(x.created) + '</td><td class="ac-code">' + esc(x.git_sha) + "</td><td>" + n(x.total_correct) + " / " + n(x.n_invoices) + "</td><td>" + n(x.silent_misses) + '</td><td class="ac-code">' + esc(String(x.neatlogs_trace_id || "").slice(0, 12)) + "…</td></tr>";
     }).join("");
-    var VLABEL = { "real-before-prompt-v2": "Old prompt", "real-after-prompt-v2": "New prompt (gross total)",
-      "heldout-prompt-v1": "Old prompt", "heldout-prompt-v2": "New prompt (gross total)" };
+    var VLABEL = { "real-before-prompt-v2": "v1 · copy the stated total", "real-after-prompt-v2": "v2 · gross total",
+      "heldout-prompt-v1": "v1 · copy the stated total", "heldout-prompt-v2": "v2 · gross total",
+      "tuned-v3": "v3 · gross total + printed net", "heldout-v3": "v3 · gross total + printed net",
+      "third-v2": "v2 · gross total", "third-v3": "v3 · gross total + printed net" };
     var summary = (R.summary || []).map(function (g) {
       var bad = g.silent_misses.some(function (v) { return v > 0; });
       return "<tr><td><b>" + esc(VLABEL[g.variant] || g.variant) + '</b><div class="sr-muted" style="font-size:12px">' + esc(g.variant) + "</div></td><td>" + esc(g.invoice_set) + "</td><td>" + n(g.passes) + "</td>" +
-        '<td class="ac-code">' + g.total_correct.map(function (v) { return v + " / " + g.n_invoices; }).join(" · ") + '</td><td class="ac-code ' + (bad ? "ac-down" : "ac-up") + '">' + g.silent_misses.join(" · ") + "</td></tr>";
+        '<td class="ac-code">' + g.total_correct.map(function (v) { return v + " / " + g.n_invoices; }).join(" · ") + '</td><td class="ac-code ' + (bad ? "ac-down" : "ac-up") + '">' + g.silent_misses.join(" · ") + '</td><td class="ac-code">' + (g.flagged_correct || []).join(" · ") + "</td></tr>";
     }).join("");
     var money = function (v) { return v == null ? "—" : "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
     var rows = R.invoices.map(function (x) {
@@ -844,10 +846,10 @@
         stat("Line items add up", n(R.agent_totals_check_passed) + " / " + n(R.read_ok), "the rest are flagged for a human", 2) +
         stat("Wrong and not flagged", '<span class="' + (silent ? "ac-down" : "ac-up") + '">' + n(silent) + "</span>", "a wrong total whose line items still add up: the only kind a human would not be warned about", 3) +
       "</div>" +
-      (summary ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">A bug these real invoices exposed, and the fix</h3><span class="ac-card-meta">each number is one full pass over the set</span></div>' +
-        '<p style="margin:0 0 var(--space-4);color:var(--text-secondary);max-width:80ch">Real TV-ad invoices print a <b>Gross Total</b>, then subtract an agency commission to give a <b>Net Amount Due</b>. The old extraction prompt said only "copy the stated total", and the model often copied the net figure. The new prompt asks for the gross total. "Held out" is a second set of 12 real invoices picked after the fix was written, so the fix could not have been tuned to them.</p>' +
-        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Prompt</th><th>Invoice set</th><th>Passes</th><th>Totals correct, per pass</th><th>Wrong and not flagged, per pass</th></tr></thead><tbody>' + summary + "</tbody></table></div></section>" : "") +
-      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Invoice by invoice (latest pass, new prompt)</h3><span class="ac-card-meta">neatlogs trace <span class="sr-mono">' + esc(String(R.neatlogs_trace_id || "").slice(0, 12)) + "…</span>" + (R.neatlogs_trace_id ? copyBtn(R.neatlogs_trace_id, "trace ID") : "") + "</span></div>" +
+      (summary ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Bugs these real invoices exposed, and the fixes</h3><span class="ac-card-meta">each number is one full pass over the set</span></div>' +
+        '<p style="margin:0 0 var(--space-4);color:var(--text-secondary);max-width:80ch">Real TV-ad invoices print a <b>Gross Total</b>, then subtract an agency commission to give a <b>Net Amount Due</b>. The old extraction prompt said only "copy the stated total", and the model often copied the net figure. v2 asks for the gross total. v3 also accepts line items that add up to the printed net amount due. "Held out" is 12 more invoices picked after v2 was written; "third, fresh" is 12 more picked after v3. On the third set v3 is no clear improvement over v2: the differences are within run-to-run noise.</p>' +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Version</th><th>Invoice set</th><th>Passes</th><th>Totals correct, per pass</th><th>Wrong and not flagged</th><th>Correct but flagged</th></tr></thead><tbody>' + summary + "</tbody></table></div></section>" : "") +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Invoice by invoice (latest held-out pass, v3)</h3><span class="ac-card-meta">neatlogs trace <span class="sr-mono">' + esc(String(R.neatlogs_trace_id || "").slice(0, 12)) + "…</span>" + (R.neatlogs_trace_id ? copyBtn(R.neatlogs_trace_id, "trace ID") : "") + "</span></div>" +
         '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Advertiser / agency</th><th>Verified total</th><th>Agent read</th><th>Total</th><th>Line items add up?</th><th>How it was read</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
         '<p class="sr-chart-note">Source: <a class="ac-link" href="' + esc(R.source) + '" target="_blank" rel="noopener">amazon/ConfBench</a> · ' + esc(R.license) + ' Scorecard: <a class="ac-link" href="' + BLOB + esc(R.scorecard) + '" target="_blank" rel="noopener">' + esc(R.scorecard) + "</a> · commit " + esc(R.git_sha) + "</p>" + (R.what_changed ? '<p class="sr-chart-note"><b>' + esc(R.what_changed) + "</b></p>" : "") + "</section>" +
       (passes ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Every pass over the 12 invoices</h3><span class="ac-card-meta">each pass is a fresh set of real model calls</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Variant</th><th>Invoice set</th><th>When</th><th>Commit</th><th>Total correct</th><th>Wrong and not flagged</th><th>neatlogs trace</th></tr></thead><tbody>' + passes + "</tbody></table></div></section>" : "")

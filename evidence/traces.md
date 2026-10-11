@@ -56,3 +56,18 @@ One line per important trace: date (IST) · trace id · what it shows. Dashboard
 - 2026-10-11 21:55 IST · `28cbcce7f2808041468d0f67e65f3b03` · real invoices, heldout-prompt-v2 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 06).
 - 2026-10-11 21:56 IST · `9e9a2708a2fe2759df60f4a31749a574` · real invoices, heldout-prompt-v2 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 06).
 - 2026-10-11 21:57 IST · `7182ef015c37b912412faf51363a10f9` · real invoices, heldout-prompt-v2 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 23:13 IST · `cf55d24ac3f01006d112520a22cd57db` · real invoices, third-v2 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:14 IST · `fb6a8835526576f1dd45e1407523541a` · real invoices, third-v2 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:15 IST · `1bf5ec7534603b06e47966cbef5711bd` · real invoices, third-v2 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:16 IST · `340027bf9eaa50f6c9f58f50e87e6b48` · real invoices, third-v3 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:17 IST · `f292a68bebee0164874bc62f26671155` · real invoices, third-v3 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:18 IST · `043440bbf840a96878de2dafcdb14fa7` · real invoices, third-v3 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:19 IST · `fca38dfdeefc437117cc4650ed3b9578` · real invoices, tuned-v3 (real_invoices_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:20 IST · `5ce4da1caa71da22076242a88807f342` · real invoices, tuned-v3 (real_invoices_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:21 IST · `4d729b6277ec53f5aaa71f12c5b3192f` · real invoices, tuned-v3 (real_invoices_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:22 IST · `7918b737c9aba2024f7bb996c2480599` · real invoices, heldout-v3 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:23 IST · `11f7b26851b67a1be786c8067b692686` · real invoices, heldout-v3 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:24 IST · `38356fb2ad0cfc6dee50fbf231b5bb81` · real invoices, heldout-v3 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 17:42 · `1ffa27413826a1a487d5d996f88b1111` · run 1011-c4ebfc (Acme Observability Inc., evidence): agent fixes v3 + title unwrap (30ab6c9); 5/5 planted, 0 fallback hops.
+- 2026-10-11 17:47 · `fb99e7d209c06e4d89a628fa6f6238d0` · run 1011-2a8424 (Acme Observability Inc., evidence): agent fixes v3 + title unwrap (30ab6c9); 5/5 planted, 0 fallback hops.
+- 2026-10-11 17:54 · `b29772f60503b18971ef87ba99da5c1c` · run 1011-2a9596 (Acme Observability Inc., evidence): agent fixes v3 + title unwrap (30ab6c9); 5/5 planted, 0 fallback hops.

@@ -217,3 +217,28 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 **Posted:** —  
 **Link:** —
+
+## Post R — tested on real invoices (Sun night / Mon)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> Our test companies are fictional. So tonight Spend Radar read 36 REAL invoices: public FCC political-ad bills (amazon/ConfBench, verified totals). #neatHack
+>
+> First pass: 7 of 12 totals right. The bug: TV invoices print Gross Total, then Agency Commission, then Net Amount Due, and the model kept copying the net.
+>
+> Fixed the prompt, then checked it on 12 invoices picked AFTER the fix:
+> totals right: 6-7 of 12 -> 12 of 12 (3 passes each)
+> wrong totals nobody was warned about: 4 per pass -> 0
+>
+> A second fix (accept line items that match the printed net) cut false review flags from 7 to 2 per pass on that set. On a third fresh set it made no clear difference, and I'm saying so.
+>
+> Every pass is a @neatlogs trace. The measured 17.6% review rate is now a scenario in our cfo.ai plan: checking flags ourselves costs ~5 points of gross margin.
+
+**Image:** the site's Real invoices page (before/after table) next to one neatlogs trace of a pass.
+
+**Sources:** `evidence/case-studies/06-real-invoices-gross-vs-net.md`, `evidence/case-studies/07-printed-net-line-items.md`, `evidence/real-invoices/*.json`, `business/cfoai/managed_review_2026-10-11.json`.
+
+**Posted:** —  
+**Link:** —

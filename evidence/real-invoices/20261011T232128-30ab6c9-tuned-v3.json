@@ -1,0 +1,220 @@
+{
+ "created": "2026-10-11T23:21:28",
+ "git_sha": "30ab6c9",
+ "run_id": "real-1011-232030",
+ "variant": "tuned-v3",
+ "gt_file": "evals/real_invoices_gt.json",
+ "neatlogs_trace_id": "4d729b6277ec53f5aaa71f12c5b3192f",
+ "source": "https://huggingface.co/datasets/amazon/ConfBench",
+ "license": "CC BY-NC 4.0 (evaluation/benchmark use only). The original FCC invoice documents are public records.",
+ "n_invoices": 12,
+ "read_ok": 12,
+ "total_correct": 12,
+ "agent_totals_check_passed": 11,
+ "invoices": [
+  {
+   "file": "03f65053aea282ad8d5e759a9f18bdbb__original.pdf",
+   "agency": "Ackerman McQueen (2852)",
+   "advertiser": "NRA-National Rifle Association (72938)",
+   "verified_gross_total": 17000.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 17000.0,
+   "total_correct": true,
+   "lines_extracted": 2,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 17,000.00 vs stated 17,000.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "26372a567adab41e404cab267067d73f__original.pdf",
+   "agency": "American Media & Advocacy Group",
+   "advertiser": "POL/Donald Trump/R/PRES",
+   "verified_gross_total": 6495.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 6495.0,
+   "total_correct": true,
+   "lines_extracted": 6,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 6,495.00 vs stated 6,495.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "52f1588f1bedc25f07c5cb6981e5f7dd__original.pdf",
+   "agency": "WTHI",
+   "advertiser": "POL/Committee to Elect Judge John Roach",
+   "verified_gross_total": 450.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 450.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 450.00 vs stated 450.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "75986ca8ed4b97420672b7782390c742__original.pdf",
+   "agency": "Buying Time, LLC (2536)003706749",
+   "advertiser": "Poll/Iss/Presente.org (A)(18749)",
+   "verified_gross_total": 3900.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 3900.0,
+   "total_correct": true,
+   "lines_extracted": 5,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 3,900.00 vs stated 3,900.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "77e4c8dfae992bc561e181c9a0fb4251__original.pdf",
+   "agency": "Waterfront Strategies",
+   "advertiser": "ISS/Afscme People-A",
+   "verified_gross_total": 150.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 150.0,
+   "total_correct": true,
+   "lines_extracted": 2,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 150.00 vs stated 150.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "a501c2b139c99cc56e6d41a8f9df17a1__original.pdf",
+   "agency": "Greer Margolis Mitchell",
+   "advertiser": "POL/Hillary Clinton/D/PRES",
+   "verified_gross_total": 60.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 60.0,
+   "total_correct": true,
+   "lines_extracted": 2,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 60.00 vs stated 60.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "033f718b16cb597c065930410752c294__original.pdf",
+   "agency": "American Media & Advocacy Group",
+   "advertiser": "National Rifle Association",
+   "verified_gross_total": 15185.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 15185.0,
+   "total_correct": true,
+   "lines_extracted": 10,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 15,185.00 vs stated 15,185.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "0d0fc87f34a2263cdd4b96cdac891240__original.pdf",
+   "agency": "Waterfront Strategies",
+   "advertiser": "ISS/HOUSE MAJ PAC",
+   "verified_gross_total": 94700.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 94700.0,
+   "total_correct": true,
+   "lines_extracted": 57,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 94,700.00 vs stated 94,700.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "cd3fc7791eda2953c2ef8364bd17418c__original.pdf",
+   "agency": "viamedia",
+   "advertiser": "Cuomo 2014",
+   "verified_gross_total": 8814.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 18,553.46 vs stated 4,869.73 (281.00% off)",
+   "extracted_total": 8814.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 8,814.00 vs stated 8,814.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "e0e8f4257b2fc8144b5d1d30d7bfb2ae__original.pdf",
+   "agency": "KATU TV",
+   "advertiser": "Monnes Anderson for OR S",
+   "verified_gross_total": 8675.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 8675.0,
+   "total_correct": true,
+   "lines_extracted": 7,
+   "agent_totals_check": {
+    "passed": false,
+    "detail": "line items sum 10,175.00 vs stated 8,675.00 (17.29% off)"
+   }
+  },
+  {
+   "file": "b839a844556a9c3414f0cc8c3f386ebd__original.pdf",
+   "agency": "COX MEDIA WEST POLITICAL",
+   "advertiser": "CHARLIE PHILLIPS COUNTY CLERK",
+   "verified_gross_total": 611.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 1,833.00 vs stated 91.65 (1900.00% off)",
+   "extracted_total": 611.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 611.00 vs stated 611.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "d6523f5ba0b04167641f296bd3991e7f__original.pdf",
+   "agency": "Strategic Media Services, Inc",
+   "advertiser": "Donald J. Trump for President",
+   "verified_gross_total": 16000.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 16000.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 16,000.00 vs stated 16,000.00 (0.00% off)"
+   }
+  }
+ ]
+}

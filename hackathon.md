@@ -160,6 +160,15 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **Not done:** Entire trails not refreshed (the `entire` CLI is not logged in on this machine; `entire login` needed). cfo.ai model unchanged since the site snapshot (latest change-log entry 279211, read-only check).
 - **Checked:** pytest 104 passed; ruff clean on changed files (other findings pre-date this session); headless Chrome on every page at 1440 and 390 px, no page errors, no horizontal overflow.
 
+### 2026-10-11 22:45–23:35 IST — design-system pass, two agent fixes, cfo.ai Managed review (logged 2026-10-11 23:35 IST)
+- **Planned:** make the new site parts match the Audit Console design system; fix what the real invoices and the neatlogs screenshot showed; put the measured review rate into cfo.ai; push everything for Akarsh.
+- **Done, site:** new parts rebuilt from the system's components and vocabulary (Override / Rule, confirmed / downgraded / overturned, `6 / 12`); no gradients, coloured left borders or extra motion; the Verdict opens the site again; walkthrough data computed in the export ("show, never compute"); Overview "Latest results"; Real invoices page shows all three sets and versions.
+- **Done, agent (`398b322`):** `verify.invoice_totals_check` accepts line items that add up to the printed net amount due (Python arithmetic; unchanged without a printed net); `read_pdf_llm` v3; job-title classifier unwraps a schema-echoed reply (2 of 10 case-study-02 runs had lost a competitor's ML/AI estimate to it). Case study 07: correct-but-flagged 7 → 2 per pass held out; on a third fresh set no clear difference (stated as such). Acme with v3: 5/5 in 3 of 3 runs, 0 fallback hops.
+- **Done, cfo.ai:** inputs for invoice review and an *Invoice review cost* line in COGS (0 in Main, so Main did not change); new scenario *Managed review* with the measured 17.59% flag rate: month-24 gross margin 52.9% vs 57.7%, lowest cash $6,127 vs $7,149, still cash-positive from month 15. First version charged a review per run and overstated it (margin −11.3%); corrected to per new invoice before saving the snapshot.
+- **Done, docs:** case study 07, README, `docs/HANDOFF-akarsh.md`, post R draft.
+- **Not done:** Entire trails (CLI not logged in here); demo video.
+- **Checked:** pytest 106 passed; headless Chrome on every page at 1440 and 390 px.
+
 ## Demo
 - Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
 - Evidence site (live): https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ (deployed from `site/`; built from `evidence/frontend_data.json`).

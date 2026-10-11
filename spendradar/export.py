@@ -89,22 +89,36 @@ BUSINESS_HEADLINES = {
 
 # The live cfo.ai workspace, read over the cfo.ai MCP with read-only tools (list_orgs, inspect_*) on 11 Oct.
 CFOAI_MCP_EXPORT = "business/cfoai/mcp_export_2026-10-11.json"
+CFOAI_MANAGED_REVIEW = "business/cfoai/managed_review_2026-10-11.json"  # scenario added later the same night
 
 
 def _cfoai_model(root):
-    """Six scenarios' key metrics and 24-month ending cash from the cfo.ai MCP export, or None if absent."""
+    """The scenarios' key metrics and 24-month ending cash from the cfo.ai MCP export, or None if absent."""
     p = Path(root) / CFOAI_MCP_EXPORT
     if not p.exists():
         return None
     d = json.loads(p.read_text(encoding="utf-8"))
     ser = d["series"]
     months = ser[next(k for k in ser if not k.startswith("_"))]["months"]
+    scen = [{"name": "Base" if x["name"] == "Main Scenario" else x["name"],
+             **{k: x["metrics"].get(k) for k in ("first_cash_flow_positive_month", "lowest_ending_cash", "lowest_ending_cash_month",
+                                                 "ending_cash_month_24", "revenue_month_24", "gross_margin_month_24", "customers_month_24")},
+             "ending_cash": [round(v) for v in ser[x["name"]]["Ending cash"]]} for x in d["scenarios"]]
+    mr = Path(root) / CFOAI_MANAGED_REVIEW
+    if mr.exists():  # added 11 Oct 23:26 IST over the cfo.ai MCP; values as cfo.ai returned them
+        m = json.loads(mr.read_text(encoding="utf-8"))
+        r, base = m["Managed review"], next(s for s in scen if s["name"] == "Base")
+        low = min(r["Ending cash"])
+        first = next(i for i, v in enumerate(r["Net cash flow"]) if v > 0)
+        scen.append({"name": "Managed review", "first_cash_flow_positive_month": f"{m['months'][first]} (month {first + 1})",
+                     "lowest_ending_cash": low, "lowest_ending_cash_month": m["months"][r["Ending cash"].index(low)],
+                     "ending_cash_month_24": r["Ending cash"][-1], "revenue_month_24": base["revenue_month_24"],
+                     "gross_margin_month_24": r["Gross margin"][-1], "customers_month_24": base["customers_month_24"],
+                     "ending_cash": [round(v) for v in r["Ending cash"]],
+                     "note": "We review flagged invoices ourselves: measured flag rate 17.59% (real FCC invoices)."})
     return {
-        "source": CFOAI_MCP_EXPORT, "read_only": True, "months": months,
-        "scenarios": [{"name": "Base" if x["name"] == "Main Scenario" else x["name"],
-                       **{k: x["metrics"].get(k) for k in ("first_cash_flow_positive_month", "lowest_ending_cash", "lowest_ending_cash_month",
-                                                           "ending_cash_month_24", "revenue_month_24", "gross_margin_month_24", "customers_month_24")},
-                       "ending_cash": [round(v) for v in ser[x["name"]]["Ending cash"]]} for x in d["scenarios"]],
+        "source": CFOAI_MCP_EXPORT, "read_only": True, "months": months, "scenarios_added": CFOAI_MANAGED_REVIEW,
+        "scenarios": scen,
         "pages": [pg.get("title") for pg in d.get("pages", [])],
         "changelog_entries": d.get("history", {}).get("total_entries"),
         "canvas_blocks": len(d.get("canvas_blocks", [])),
@@ -309,14 +323,18 @@ def _real_invoices() -> dict | None:
                    and (x.get("agent_totals_check") or {}).get("passed"))
 
     passes = [{"variant": c.get("variant", "real-invoices"), "created": c["created"], "git_sha": c["git_sha"],
-               "invoice_set": "held out" if "heldout" in c.get("gt_file", "") else "tuned on",
+               "flagged_correct": sum(1 for x in c["invoices"] if x["total_correct"]
+                                      and not (x.get("agent_totals_check") or {}).get("passed")),
+               "invoice_set": ("held out" if "heldout" in c.get("gt_file", "") else
+                               "third, fresh" if "third" in c.get("gt_file", "") else "tuned on"),
                "n_invoices": c["n_invoices"], "total_correct": c["total_correct"], "silent_misses": silent(c),
                "neatlogs_trace_id": c.get("neatlogs_trace_id"), "scorecard": q.as_posix()} for q, c in loaded]
     groups: dict[str, list[dict]] = {}
     for x in passes:
         groups.setdefault(x["variant"], []).append(x)
     summary = [{"variant": v, "invoice_set": xs[0]["invoice_set"], "passes": len(xs), "n_invoices": xs[0]["n_invoices"],
-                "total_correct": [x["total_correct"] for x in xs], "silent_misses": [x["silent_misses"] for x in xs]}
+                "total_correct": [x["total_correct"] for x in xs], "silent_misses": [x["silent_misses"] for x in xs],
+                "flagged_correct": [x["flagged_correct"] for x in xs]}
                for v, xs in groups.items() if v in REAL_INVOICES_VARIANTS]
     summary.sort(key=lambda g: REAL_INVOICES_VARIANTS.index(g["variant"]))
     main = [pc for pc in loaded if pc[1].get("variant") == REAL_INVOICES_MAIN] or loaded
@@ -329,8 +347,9 @@ def _real_invoices() -> dict | None:
 
 # Real-invoice comparison: the variants in before/after order (same script, only the extraction prompt differs),
 # the variant whose latest pass fills the invoice-by-invoice table, and one line on what changed.
-REAL_INVOICES_VARIANTS = ["real-before-prompt-v2", "real-after-prompt-v2", "heldout-prompt-v1", "heldout-prompt-v2"]
-REAL_INVOICES_MAIN = "real-after-prompt-v2"
+REAL_INVOICES_VARIANTS = ["real-before-prompt-v2", "real-after-prompt-v2", "tuned-v3", "heldout-prompt-v1", "heldout-prompt-v2",
+                          "heldout-v3", "third-v2", "third-v3"]
+REAL_INVOICES_MAIN = "heldout-v3"
 REAL_INVOICES_NOTE = None
 
 
