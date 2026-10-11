@@ -75,6 +75,9 @@ flowchart LR
 ### Entire: context for the coding agent
 - Every commit by the coding agent carries an `Entire-Checkpoint` trailer that links it to the prompt and transcript behind it. Checkpoints are pushed with the repo.
 - `entire graph search` / `impact` were used to locate and size changes, e.g. the callers of `decide_recovery` before changing the recovery menu.
+- **`spendradar explain <trace_id | run_id>`: from a neatlogs span to the agent session that wrote the code.** For each failing span (or `--span decide:recovery`) it writes a dossier. Each dossier holds the span's input, output and error; the exact code line (refined to the line that raises that error); `entire why` (commit, Entire checkpoint, coding-agent session, model, and the prompt that produced the line, secret-scrubbed); and `entire graph impact` (callers that a fix would affect). Auto-instrumented LLM spans resolve through their parent span. On the corrupt-PDF bug the chain closes: neatlogs auto-triage flagged the Gemini 400 → `read_pdf` → the guard at `files.py:139` → checkpoint `01M4K4TJ…`, whose prompt *is* the neatlogs triage task. Dossiers: [`evidence/explain/`](evidence/explain/).
+- **Code provenance on every run.** Report headers, the neatlogs root span (`spendradar.code.*`) and eval scorecards record the commit and the nearest Entire checkpoint, so a number links to its source, the source to its trace, and the trace to the code and the session that wrote it.
+- **Trails and runners.** Each work item since 11 Oct gets a branch and a trail on the Entire-hosted mirror. Six runners (risk, confidence, drift, security, review, summary), tailored to this repo with `entire runner setup`, review every trail. The trail body carries the eval scorecard for that change. Example: trail #1 (provenance), "Agent review found no blocking issues".
 - Evidence: [`evidence/entire/`](evidence/entire/).
 
 ### cfo.ai: a business plan from measured costs

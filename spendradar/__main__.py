@@ -55,6 +55,10 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--evidence", action="store_true", help="LLM cache off; tagged as an evidence run")
         p.add_argument("--crash-after-step", type=int, default=None, help="simulate a crash (resume demo)")
         p.add_argument("--fixtures", default=None, help="EVALS ONLY: folder of altered Crustdata fixtures")
+    x = sub.add_parser("explain", help="neatlogs span -> code line -> Entire checkpoint/session/prompt (evidence/explain/)")
+    x.add_argument("target", help="neatlogs trace id, or a run id (its first trace is used)")
+    x.add_argument("--span", action="append", help="explain spans with this exact name (default: failing spans)")
+    x.add_argument("--max", type=int, default=6, help="at most this many spans")
     sub.add_parser("ledger")
     sub.add_parser("export", help="write evidence/frontend_data.json for a front end (docs/frontend-data.md)")
     e = sub.add_parser("eval")
@@ -79,6 +83,18 @@ def main(argv: list[str] | None = None) -> None:
         print(f"wrote {export.build()}")
         return
 
+    if args.cmd == "explain":
+        import re
+        from pathlib import Path
+
+        from spendradar import explain
+
+        trace_id = args.target
+        if re.fullmatch(r"\d{4}-[0-9a-f]{6}", trace_id):
+            state = json.loads(Path(f"runs/{trace_id}/state.json").read_text(encoding="utf-8"))
+            trace_id = state["trace_id"]
+        print(f"dossier: {explain.explain(trace_id, args.span, args.max)}")
+        return
     if args.cmd == "eval":
         from spendradar import evals
 
