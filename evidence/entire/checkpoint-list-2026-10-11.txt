@@ -1,0 +1,119 @@
+# entire checkpoint list, 2026-10-11 10:21 IST, after fetching refs/entire/checkpoints/* from origin (40 refs on GitHub)
+
+  branch       main
+  checkpoints  38
+
+● 01M4MMGAWRFS4D3XWN7ME86NXJ  "Read-only task in cfo.ai org 103087 (org_id 103087 on eve..."
+  10-11 10:15 (34d83f8) step 15: cfo.ai one-page summary (prompt 4) read over MCP and checked; cap vs...
+
+● 01M4MMBEGRGRXFE750JF0WY6EM  "So in a way what's now remaining in our project roadmap ??"
+  10-11 10:13 (37299b9) evidence: neatlogs triage 2cd5e9df resolved from trace 953bb991; post 3 marke...
+
+● 01M4KDEMQ8N68WWR4N7NCFPK7C  "In the new session, ask: \"run entire session list and ent..."
+  10-10 22:53 (21de57c) step 9: held-out eval on 3 new companies; duplicate-invoice and line-item checks
+
+● 01M4K6NQP2Y6PP6M3WZPN74T8S  "Connect to the neatlogs mcp server and continue"
+  10-10 20:55 (771deef) evidence: corrupt-PDF precheck evidence run 1010-7309e6 (5/5, invoice 13 with...
+
+● 01M4K4TJNC7JY16812XTZKSBKA  "<pasted_content id=\"2c2b\">\n# Task\n\nAddress the following ..."
+  10-10 20:22 (8d11308) step 8: corrupt PDF fails fast without an LLM call (neatlogs triage 2cd5e9df)
+
+● 01M4JZW05Z03VA8P7SGS8YDZG1  "go ahead, let me know when the fixture run finishes"
+  10-10 18:56 (a9a0d0e) step 13: cost per run n=5 on gpt-5-nano ($0.0285 mean); update cfo.ai inputs ...
+
+● 01M4JZ529FG2045C5XP8CK487R  "What's the update?"
+  10-10 18:43 (e896b86) evidence: gpt-5-nano batch 5/5 x3 with 0 fallback hops; fixture 6/6; case stu...
+
+● 01M4JXPWV4B5WMP4PP1FBQZ384  "I've added an OpenAi key this was provided to me for free..."
+  10-10 18:18 (bb61e37) add OpenAI gpt-5-nano as primary model; generic key redaction; audit asks abo...
+
+● 01M4JX8Y13X0K681K5XADYRXPB  log: secret-handling incident caught before push
+  10-10 18:10 (416ce17) log: secret-handling incident caught before push
+
+● 01M4JWSQ9CW096WTRDMEVG1PTW  "Is anything running right now ??"
+  10-10 18:02 (ba81cb0) case study 03: after-fix numbers (0/3 crashes; mis-categorised flag overturne...
+
+● 01M4JSW14YAJ4Z6JZ1D8XYA1E0  "<task-notification>\n<task-id>bwkufcy44</task-id>\n<tool-us..."
+  10-10 17:11 (6edff38) case study 03: re-ask keeps the role's models; normalise planner paths; a tas...
+
+● 01M4JQSRBXVJBAF7FAG6250N4H  "<agent-message from=\"a05c6e068082d548f\">\n[Subagent hand-b..."
+  10-10 16:35 (d1ff728) step 14: architecture diagram PNG rendered from the README Mermaid source
+
+● 01M4JQRXJNFCF1WR51ABWTXCHC  "<agent-message from=\"a903a24e4706b2838\">\n[Subagent hand-b..."
+  10-10 16:34 (40ac970) title-classifier eval (29/30) finds and fixes dropped whitespace titles; more...
+
+● 01M4JQPP44T581AFZR0R22P9WA  "whats the current status of the build"
+  10-10 16:33 (fd9a4ef) llm: use AI Studio's per-model free-tier limits; add gemini-3.7-flash and gem...
+
+● 01M4JGGNNT59CQN89NFRFS0VB9  draft post 3; build log update
+  10-10 14:27 (aba5e3f) draft post 3; build log update
+
+● 01M4JGG0D4YP5CD16SXYP3XNRM  step 14: HTML report rendering; commit sample reports fro...
+  10-10 14:27 (e7638e1) step 14: HTML report rendering; commit sample reports from evidence and fixtu...
+
+● 01M4JGEEG8DRCJSXDYCBE1PY5D  step 11: second opinion must use a different model; skip ...
+  10-10 14:26 (15d1109) step 11: second opinion must use a different model; skip LLM when only one re...
+
+● 01M4JG8JF3290Z94NX3CN969V3  step 14: README draft with architecture, focus areas, too...
+  10-10 14:23 (6bc76af) step 14: README draft with architecture, focus areas, tool usage, results and...
+
+● 01M4JG74XKDN5D5TXZD4MP0SMC  step 13: paid-equivalent unit costs from evidence run and...
+  10-10 14:22 (bc88b46) step 13: paid-equivalent unit costs from evidence run and cfo.ai input sheet
+
+● 01M4JG41EQ2QQ6H0GFPZCZ61RE  report: state headcount/cost gaps in plain words instead ...
+  10-10 14:20 (d2daa0a) report: state headcount/cost gaps in plain words instead of signed dollars
+
+● 01M4JG322GGJ1BQ5AHPCS5865S  step 8: record fired faults with spans; recovery evidence...
+  10-10 14:20 (45849e8) step 8: record fired faults with spans; recovery evidence table (natural + in...
+
+● 01M4JG0H1Q70RRGBT8HJEP6Y54  step 12: demo resume after simulated crash; keep one trac...
+  10-10 14:18 (67fb8fd) step 12: demo resume after simulated crash; keep one trace id per process
+
+● 01M4JFVPWYP358R82RVSJF34QM  "<task-notification>\n<task-id>b05w0yxyi</task-id>\n<tool-us..."
+  10-10 14:16 (0658e56) step 10: case studies 01 (latency) and 02 (substitution) with before/after ru...
+
+● 01M4JFK1GNHBW9GS8KFBSQFYM3  step 11: add eval-only competitor fixture (Sentry marketi...
+  10-10 14:11 (28c52aa) step 11: add eval-only competitor fixture (Sentry marketing x5) with evals/ g...
+
+● 01M4JFHCQAWZT03JAVJZBY9K7Q  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:10 (883da19) draft build-in-public post 2 from run 1010-b31657
+
+● 01M4JFGJ5GX0T12TCB27JFYGRY  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:10 (75e1346) add Entire checkpoint and graph evidence
+
+● 01M4JFF4MFD8JXHPRACJWBJ944  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:09 (22f00b0) step 10: route around known-exhausted models without counting a fallback; rec...
+
+● 01M4JF9GX2X04GJMNPF1CZ5ED3  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:06 (13effec) step 10: stop dropping competitors over one weak category; extra signal fetch...
+
+● 01M4JF7GF17WW5BX461EVE78MD  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:05 (02d7f40) step 9: add eval harness scoring runs against ground truth (scorecards with t...
+
+● 01M4JF53ME3NBZYHR6V4PFY4R0  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:03 (8747783) step 5: stop counting cached LLM calls as spend; add agent rule tests
+
+● 01M4JF3MC0VP8STJD2CY50GYM6  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 14:03 (11a5108) step 5: add agent loop, state/resume, self-audit, report; bound gemini call l...
+
+● 01M4JE6SV45JHZXJSB59W5W7GF  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:47 (d96e16f) step 4: add file, crustdata, classifier tools and deterministic analysis with...
+
+● 01M4JE09Q44Y4G399W1HMPV6BF  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:43 (2a4542e) step 3: generate fictional Acme finance folder with planted errors and ground...
+
+● 01M4JDXEJ0VATSWYP54MQAP13M  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:42 (0bc2467) fix build-log timestamps to match commit times; add timestamp rule
+
+● 01M4JDWTA7NRVV3B15TN012G2F  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:41 (69f443a) step 2: add llm.py with free-model guard, quota ledger, fallback chain, fault...
+
+● 01M4JDRYHQ28YZ5403GCE91C1V  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:39 (d72a4db) step 2: add gitleaks + .env-value pre-commit secret scan
+
+● 01M4JDQKNKBHTY67DVBEKH164A  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:39 (92ccce6) step 2: add neatlogs tracing with client-side secret masking, tests and probe
+
+● 01M4JDGXGF5QKQGDT0B4DFG6WB  "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)\n\nYou ..."
+  10-10 13:35 (effc24d) step 1: record crustdata coverage findings, pick competitor set, add python p...
+
