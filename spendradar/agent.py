@@ -422,10 +422,8 @@ def _options_for(task: Task, failure: str) -> tuple[list[str], str]:
         # Disagreeing role vs function headcount: no extra source exists for it; flag it.
         return ["mark_low_confidence"], "mark_low_confidence"
     if task.tool in ("fetch_competitor", "classify_titles"):
-        # One weak category never justifies dropping a competitor's other categories.
-        extra_done = task.parent is not None and task.reason.startswith("recovery: re-estimate")
-        return (["mark_low_confidence"] if extra_done else ["fetch_more_signal", "mark_low_confidence"]), \
-            "mark_low_confidence"
+        # ABLATION (case study 02 rerun): pre-13effec menu; a weak category may drop the whole competitor.
+        return ["fetch_more_signal", "mark_low_confidence", "substitute_competitor"], "mark_low_confidence"
     if task.tool == "fetch_jobs":
         return ["mark_low_confidence", "skip"], "mark_low_confidence"
     return ["mark_low_confidence", "skip"], "skip"
@@ -483,8 +481,9 @@ def apply_recovery(state: RunState, task: Task, chosen: str, detail: str) -> Non
                    parent=task.id, attempts=task.attempts)
     elif chosen == "fetch_more_signal":
         dom = a.get("domain")
-        fix = Task(id=f"{task.id}m", tool="fetch_jobs", args={"domain": dom, "sample": "engineering_2y"},
-                   reason="recovery: fetch_more_signal (different sample: engineering postings, 2 years)",
+        # ABLATION (case study 02 rerun): pre-13effec behaviour re-runs the identical jobs query.
+        fix = Task(id=f"{task.id}m", tool="fetch_jobs", args={"domain": dom},
+                   reason="recovery: fetch_more_signal",
                    parent=task.id, attempts=task.attempts)
         state.queue.insert(0, Task(id=f"{task.id}mc", tool="classify_titles", args={"domain": dom},
                                    reason="recovery: re-estimate after extra signal", parent=task.id,
