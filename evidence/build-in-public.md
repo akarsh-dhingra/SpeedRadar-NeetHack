@@ -131,11 +131,11 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 >
 > Overturned claims go in the report, not in the bin.
 >
-> Across every run with an exported audit log: 5 findings overturned and 31 downgraded before reporting. The latest: a $5,280,000 ML/AI gap its own auditor threw out (run 1011-777bb7).
+> Across every run with an exported audit log: 16 findings overturned and 73 downgraded before reporting. The latest: a $5,280,000 ML/AI gap its own auditor threw out (run 1011-777bb7).
 
 **Image:** the report's "Overturned claims" section next to the `audit:f_ml_ai` span (trace `af0df27e2d3433e0c608fb28a018a22d`).
 
-**Sources:** `evidence/frontend_data.json` (`summary.findings_overturned` 5, `findings_downgraded` 31; run 1011-777bb7 finding f_ml_ai), `README.md` (Limitations), `evidence/traces.md` (trace `36362eb966cdbb85dcb2fb1b280e1034`, run 1010-9e86fc), commit `15d1109`.
+**Sources:** `evidence/frontend_data.json` (`summary.findings_overturned` 16, `findings_downgraded` 73, as of 12 Oct; run 1011-777bb7 finding f_ml_ai), `README.md` (Limitations), `evidence/traces.md` (trace `36362eb966cdbb85dcb2fb1b280e1034`, run 1010-9e86fc), commit `15d1109`.
 
 **Posted:** —  
 **Link:** —
@@ -159,14 +159,16 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 > `spendradar explain <trace>` follows a failing neatlogs span to the code line, runs `entire why`, and returns the commit, checkpoint, session and prompt behind it, plus `entire graph impact` for what a fix would touch.
 > On our corrupt-PDF bug the chain closed on itself: the prompt behind the fix was neatlogs' own auto-triage report.
 >
-> 3/ Every change gets reviewed before it merges
+> 3/ Every change gets reviewed
 > Each change goes on a trail. 6 runners tailored to this repo (risk, confidence, drift, security, review, summary) know what matters here: secrets, zero spend, unsourced numbers.
-> They caught 2 real issues before merge:
+> They've caught 4 real issues so far:
 > - my self-audit fix silently skipped news evidence (layoffs, acquisitions)
 > - a trace-reading loop that could run forever
-> Both fixed, tested and resolved on the trail.
+> - an export that would crash if a cash-flow scenario never turned positive
+> - a page label that hardcoded a count instead of computing it
+> All four fixed, tested and resolved on their trails.
 >
-> 69 checkpoints · 3 trails · 6 runners · 2 bugs caught before merge
+> 91 checkpoints · 6 trails · 6 runners · 4 bugs caught, 4 fixed
 >
 > The agent got more consistent, and every change to it now has to survive review first.
 >
@@ -178,7 +180,7 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 3. The site's Entire page: the stats row and the "Closed loop" callout.
 4. The `spendradar explain` dossier for trace f8b07091…, cropped to Code → Commit · checkpoint → Prompt (`evidence/explain/f8b07091ded7-errors.md`).
 
-**Sources:** `evidence/frontend_data.json` (`entire`: checkpoints 69, trails 3, runners 6, 2 findings resolved); trails 1–3 on entire.io; `evidence/explain/`; `evidence/case-studies/05-audit-verdict-variance.md`.
+**Sources:** `evidence/frontend_data.json` (`entire`: checkpoints 91, trails 6, runners 6, 4 findings resolved, as of 12 Oct); trails 1–6 on entire.io; `evidence/explain/`; `evidence/case-studies/05-audit-verdict-variance.md`.
 
 **Before posting, check:**
 - [ ] Entire's handle on X (`@EntireHQ` is not verified)
