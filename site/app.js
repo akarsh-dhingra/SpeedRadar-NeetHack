@@ -269,7 +269,7 @@
           n((N.prompts || []).length) + " prompt templates, versioned on every LLM span"]) +
         card("entire", "Entire", n(E.checkpoints), "checkpoints", [
           "Every run links to the checkpoint and agent session behind its code",
-          n((E.trails || []).length) + " trails reviewed by " + n((E.runners || []).length) + " repo-tailored runners; " + n(caught) + " real issues caught before merge",
+          n((E.trails || []).length) + " trails reviewed by " + n((E.runners || []).length) + " repo-tailored runners; " + n(caught) + " real issues caught",
           "<span class=\"ac-code\">spendradar explain</span>: neatlogs span \u2192 code \u2192 checkpoint \u2192 prompt",
           "entire-graph search / impact used to locate and size changes"]) +
         card("business", "cfo.ai", esc(B.llm_cost_per_run || ""), "LLM cost per run, measured", [
@@ -751,6 +751,7 @@
         (fs ? '<ul class="sr-findings">' + fs + "</ul>" : '<p class="sr-empty" style="margin:0">No findings.</p>') + "</section>";
     }).join("");
     var caught = (E.trails || []).reduce(function (a, t) { return a + (t.findings || []).length; }, 0);
+    var fixed = (E.trails || []).reduce(function (a, t) { return a + (t.findings || []).filter(function (f) { return f.status === "resolved"; }).length; }, 0);
     var dossiers = (E.explain || []).map(function (d) {
       var spans = (d.spans || []).filter(function (s) { return s.commit_checkpoint; }).slice(0, 3).map(function (s) {
         var cp = /checkpoint \[`([^`]+)`\]\(([^)]+)\)/.exec(s.commit_checkpoint || "");
@@ -770,7 +771,7 @@
       '<div class="ac-stats sr-section" data-enter>' +
         stat("Checkpoints", n(E.checkpoints), "commits linked to the agent session behind them") +
         stat("Trails", n((E.trails || []).length), "one per change, each reviewed by runners") +
-        stat("Issues runners caught", n(caught), "both fixed before merge") +
+        stat("Issues runners caught", n(caught), n(fixed) + " of " + n(caught) + " fixed") +
         stat("Runners", n((E.runners || []).length), esc((E.runners || []).join(", "))) +
       "</div>" +
       '<div class="sr-callout" data-enter>Closed loop on the corrupt-PDF bug: neatlogs auto-triage flagged a Gemini 400 \u2192 <span class="ac-code">read_pdf</span> \u2192 the guard at <span class="ac-code">files.py:139</span> \u2192 Entire checkpoint <span class="ac-code">01M4K4TJ\u2026</span>, whose prompt <b>is the neatlogs triage task</b>.<small>From <span class="ac-code">spendradar explain</span>; dossiers below.</small></div>' +

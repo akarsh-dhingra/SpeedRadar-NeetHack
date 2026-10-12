@@ -109,8 +109,9 @@ def _cfoai_model(root):
         m = json.loads(mr.read_text(encoding="utf-8"))
         r, base = m["Managed review"], next(s for s in scen if s["name"] == "Base")
         low = min(r["Ending cash"])
-        first = next(i for i, v in enumerate(r["Net cash flow"]) if v > 0)
-        scen.append({"name": "Managed review", "first_cash_flow_positive_month": f"{m['months'][first]} (month {first + 1})",
+        first = next((i for i, v in enumerate(r["Net cash flow"]) if v > 0), None)  # None: never positive in the window
+        scen.append({"name": "Managed review",
+                     "first_cash_flow_positive_month": f"{m['months'][first]} (month {first + 1})" if first is not None else None,
                      "lowest_ending_cash": low, "lowest_ending_cash_month": m["months"][r["Ending cash"].index(low)],
                      "ending_cash_month_24": r["Ending cash"][-1], "revenue_month_24": base["revenue_month_24"],
                      "gross_margin_month_24": r["Gross margin"][-1], "customers_month_24": base["customers_month_24"],
