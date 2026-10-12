@@ -41,12 +41,13 @@ def _read(path: Path) -> dict:
     """Text parser first. If it errors, or its result fails verify:totals, take the reparse_alt recovery
     (the LLM reader), as the agent does for invoices (run 1011-334cde chose reparse_alt for both cases)."""
     from spendradar.tools.files import ToolError, read_pdf
-    from spendradar.verify import totals_check
+    from spendradar.verify import invoice_totals_check
 
     try:
         r = read_pdf(str(path), "text")
         ex = r["extract"]
-        chk = totals_check(path.name, [ln["amount"] for ln in ex["lines"]], ex["stated_total"])
+        chk = invoice_totals_check(path.name, [ln["amount"] for ln in ex["lines"]], ex["stated_total"],
+                                   ex.get("agency_commission"), ex.get("net_amount_due"))
         if chk.passed:
             return {"route": "text", **r}
         first_error = f"verify:totals failed: {chk.detail}"
@@ -70,7 +71,7 @@ def main(argv: list[str] | None = None) -> None:
     import neatlogs
 
     from spendradar.tracing import git_sha, init_tracing, shutdown_tracing
-    from spendradar.verify import TOLERANCE, totals_check
+    from spendradar.verify import TOLERANCE, invoice_totals_check
 
     gt = json.loads(Path(args.gt).read_text(encoding="utf-8"))
     items = gt["invoices"][: args.limit] if args.limit else gt["invoices"]
@@ -93,7 +94,8 @@ def main(argv: list[str] | None = None) -> None:
                     got = ex["stated_total"]
                     row["extracted_total"] = got
                     row["total_correct"] = bool(truth) and abs(got - truth) <= TOLERANCE * abs(truth)
-                    chk = totals_check(inv["file"], [ln["amount"] for ln in ex["lines"]], got)
+                    chk = invoice_totals_check(inv["file"], [ln["amount"] for ln in ex["lines"]], got,
+                                               ex.get("agency_commission"), ex.get("net_amount_due"))
                     row["lines_extracted"] = len(ex["lines"])
                     row["agent_totals_check"] = {"passed": chk.passed, "detail": chk.detail}
                 else:
