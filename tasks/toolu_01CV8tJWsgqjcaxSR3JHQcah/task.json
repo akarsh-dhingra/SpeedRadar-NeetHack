@@ -1,0 +1,19 @@
+{
+  "tool_use_id": "toolu_01CV8tJWsgqjcaxSR3JHQcah",
+  "agent_id": "a66059fc82bbb595b",
+  "subagent_type": "web-fetch",
+  "task_description": "Verify Live2D sample model license terms",
+  "files": [
+    "demo-video/comp/comp.js",
+    "scripts/pre-commit"
+  ],
+  "token_usage": {
+    "input_tokens": 8,
+    "cache_creation_tokens": 80586,
+    "cache_read_tokens": 91362,
+    "output_tokens": 43,
+    "api_call_count": 4
+  },
+  "started_at": "2026-10-12T10:03:05.7863844+05:30",
+  "completed_at": "2026-10-12T10:03:05.7890348+05:30"
+}
