@@ -1,0 +1,128 @@
+{
+ "source": "https://huggingface.co/datasets/amazon/ConfBench",
+ "license": "CC BY-NC 4.0 (evaluation/benchmark use only). The original FCC invoice documents are public records.",
+ "what": "Real broadcast-advertising invoices from FCC political ad files; ground truth verified by Amazon (re-annotated RealKIE FCC subset). Only the clean __original.pdf files are used.",
+ "pdf_url": "https://huggingface.co/datasets/amazon/ConfBench/resolve/main/pdfs/{file}",
+ "invoices": [
+  {
+   "file": "03f65053aea282ad8d5e759a9f18bdbb__original.pdf",
+   "pages": 1,
+   "agency": "Ackerman McQueen (2852)",
+   "advertiser": "NRA-National Rifle Association (72938)",
+   "gross_total": 17000.0,
+   "agency_commission": 2550.0,
+   "net_amount_due": 14450.0,
+   "line_items": 1
+  },
+  {
+   "file": "26372a567adab41e404cab267067d73f__original.pdf",
+   "pages": 1,
+   "agency": "American Media & Advocacy Group",
+   "advertiser": "POL/Donald Trump/R/PRES",
+   "gross_total": 6495.0,
+   "agency_commission": 974.25,
+   "net_amount_due": 5520.75,
+   "line_items": 6
+  },
+  {
+   "file": "52f1588f1bedc25f07c5cb6981e5f7dd__original.pdf",
+   "pages": 1,
+   "agency": "WTHI",
+   "advertiser": "POL/Committee to Elect Judge John Roach",
+   "gross_total": 450.0,
+   "agency_commission": 67.5,
+   "net_amount_due": 382.5,
+   "line_items": 3
+  },
+  {
+   "file": "75986ca8ed4b97420672b7782390c742__original.pdf",
+   "pages": 1,
+   "agency": "Buying Time, LLC (2536)003706749",
+   "advertiser": "Poll/Iss/Presente.org (A)(18749)",
+   "gross_total": 3900.0,
+   "agency_commission": 585.0,
+   "net_amount_due": 3315.0,
+   "line_items": 4
+  },
+  {
+   "file": "77e4c8dfae992bc561e181c9a0fb4251__original.pdf",
+   "pages": 1,
+   "agency": "Waterfront Strategies",
+   "advertiser": "ISS/Afscme People-A",
+   "gross_total": 150.0,
+   "agency_commission": 22.5,
+   "net_amount_due": 127.5,
+   "line_items": 2
+  },
+  {
+   "file": "a501c2b139c99cc56e6d41a8f9df17a1__original.pdf",
+   "pages": 1,
+   "agency": "Greer Margolis Mitchell",
+   "advertiser": "POL/Hillary Clinton/D/PRES",
+   "gross_total": 60.0,
+   "agency_commission": 9.0,
+   "net_amount_due": 51.0,
+   "line_items": 2
+  },
+  {
+   "file": "033f718b16cb597c065930410752c294__original.pdf",
+   "pages": 2,
+   "agency": "American Media & Advocacy Group",
+   "advertiser": "National Rifle Association",
+   "gross_total": 15185.0,
+   "agency_commission": 2277.75,
+   "net_amount_due": 12907.25,
+   "line_items": 10
+  },
+  {
+   "file": "0d0fc87f34a2263cdd4b96cdac891240__original.pdf",
+   "pages": 2,
+   "agency": "Waterfront Strategies",
+   "advertiser": "ISS/HOUSE MAJ PAC",
+   "gross_total": 94700.0,
+   "agency_commission": 14205.0,
+   "net_amount_due": 80495.0,
+   "line_items": 57
+  },
+  {
+   "file": "cd3fc7791eda2953c2ef8364bd17418c__original.pdf",
+   "pages": 2,
+   "agency": "viamedia",
+   "advertiser": "Cuomo 2014",
+   "gross_total": 8814.0,
+   "agency_commission": 1322.1,
+   "net_amount_due": 4869.73,
+   "line_items": 23
+  },
+  {
+   "file": "e0e8f4257b2fc8144b5d1d30d7bfb2ae__original.pdf",
+   "pages": 2,
+   "agency": "KATU TV",
+   "advertiser": "Monnes Anderson for OR S",
+   "gross_total": 8675.0,
+   "agency_commission": 1301.25,
+   "net_amount_due": 7373.75,
+   "line_items": 8
+  },
+  {
+   "file": "b839a844556a9c3414f0cc8c3f386ebd__original.pdf",
+   "pages": 3,
+   "agency": "COX MEDIA WEST POLITICAL",
+   "advertiser": "CHARLIE PHILLIPS COUNTY CLERK",
+   "gross_total": 611.0,
+   "agency_commission": null,
+   "net_amount_due": 91.65,
+   "line_items": 24
+  },
+  {
+   "file": "d6523f5ba0b04167641f296bd3991e7f__original.pdf",
+   "pages": 3,
+   "agency": "Strategic Media Services, Inc",
+   "advertiser": "Donald J. Trump for President",
+   "gross_total": 16000.0,
+   "agency_commission": 2400.0,
+   "net_amount_due": 11832.0,
+   "line_items": 1
+  }
+ ]
+}

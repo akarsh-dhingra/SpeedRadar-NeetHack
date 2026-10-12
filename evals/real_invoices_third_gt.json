@@ -1,0 +1,128 @@
+{
+ "source": "https://huggingface.co/datasets/amazon/ConfBench",
+ "license": "CC BY-NC 4.0 (evaluation/benchmark use only). The original FCC invoice documents are public records.",
+ "what": "Real broadcast-advertising invoices from FCC political ad files; ground truth verified by Amazon (re-annotated RealKIE FCC subset). Only the clean __original.pdf files are used. THIRD SET: the next 12 originals by id (positive GrossTotal, <= 4 pages) not in the first two sets, chosen after prompt v3 and the printed-net rule were written; never used to tune either.",
+ "pdf_url": "https://huggingface.co/datasets/amazon/ConfBench/resolve/main/pdfs/{file}",
+ "invoices": [
+  {
+   "file": "bd6cfc5de633f9ded20312a2b2169b3f__original.pdf",
+   "pages": 3,
+   "agency": "GREER MARGOUS MITCHELL BURN",
+   "advertiser": "HILLARY FOR AMERICA 2016 PROJ 200112",
+   "gross_total": 1400.0,
+   "agency_commission": 210.0,
+   "net_amount_due": 1035.3,
+   "line_items": 1
+  },
+  {
+   "file": "c179dadf6e00d237dbd773f2625979ca__original.pdf",
+   "pages": 4,
+   "agency": "GREER MARGOLIS MITCHELL BURNS",
+   "advertiser": "Hillary for America",
+   "gross_total": 17750.0,
+   "agency_commission": 2662.5,
+   "net_amount_due": 13126.09,
+   "line_items": 21
+  },
+  {
+   "file": "c2c347be879f649389d51e143c7d2b90__original.pdf",
+   "pages": 4,
+   "agency": "Old Towne Media",
+   "advertiser": "Bernie Sanders for President",
+   "gross_total": 4160.0,
+   "agency_commission": 624.0,
+   "net_amount_due": 3076.31,
+   "line_items": 22
+  },
+  {
+   "file": "c37905bd2051f90731a3cfbbd6214119__original.pdf",
+   "pages": 4,
+   "agency": "WXII-ME TV",
+   "advertiser": "Priorities USA Action",
+   "gross_total": 1835.0,
+   "agency_commission": 275.25,
+   "net_amount_due": 1559.75,
+   "line_items": 11
+  },
+  {
+   "file": "c86d3402da034360ee3b62f8183c3e17__original.pdf",
+   "pages": 3,
+   "agency": "GREENSTRIPE MEDIA, INC",
+   "advertiser": "Yes on 55- Californians for Budget Stability",
+   "gross_total": 591.0,
+   "agency_commission": null,
+   "net_amount_due": 502.35,
+   "line_items": 22
+  },
+  {
+   "file": "c904ae14f36aceb1151d976d74e39e9a__original.pdf",
+   "pages": 4,
+   "agency": "ADVERTISING & MKTG SOLUTIONS",
+   "advertiser": "JACK WAGNER FOR MAYOR",
+   "gross_total": 39080.0,
+   "agency_commission": 5862.0,
+   "net_amount_due": 33218.0,
+   "line_items": 12
+  },
+  {
+   "file": "caa7473ca2633d4a48445cd1d0ef2881__original.pdf",
+   "pages": 3,
+   "agency": "BUYING TIME, LLC",
+   "advertiser": "POLI/M HETNZ/D/CON/AZ",
+   "gross_total": 14850.0,
+   "agency_commission": null,
+   "net_amount_due": null,
+   "line_items": 15
+  },
+  {
+   "file": "cb4e0286d5b42a83c5d505d29d8a775b__original.pdf",
+   "pages": 4,
+   "agency": "ADELSTEIN & ASSOCIATES",
+   "advertiser": "Friends of Sam Yingling/cci",
+   "gross_total": 8900.0,
+   "agency_commission": null,
+   "net_amount_due": 6581.55,
+   "line_items": 72
+  },
+  {
+   "file": "dc1df85e4e29cc5406286fc8d909f17c__original.pdf",
+   "pages": 1,
+   "agency": "GMMB",
+   "advertiser": "Hillary For America 2016",
+   "gross_total": 143186.49,
+   "agency_commission": 21477.97,
+   "net_amount_due": 105886.41,
+   "line_items": 1
+  },
+  {
+   "file": "e8dcdc39047de03f648321f61583b10f__original.pdf",
+   "pages": 4,
+   "agency": "Targeted Platform Media",
+   "advertiser": "Priorities USA Action",
+   "gross_total": 18575.0,
+   "agency_commission": 2786.25,
+   "net_amount_due": 15788.75,
+   "line_items": 16
+  },
+  {
+   "file": "f07820a290eb3f3ff606b0153c9f38f1__original.pdf",
+   "pages": 1,
+   "agency": "THE G MEDIA GROUP, INC.",
+   "advertiser": "FRANK CAROLLO FOR CITY COMMISSIONER",
+   "gross_total": 500.0,
+   "agency_commission": 75.0,
+   "net_amount_due": 425.0,
+   "line_items": 1
+  },
+  {
+   "file": "fa1d6b17927c2218ccd0abc33e001c3f__original.pdf",
+   "pages": 2,
+   "agency": "BUYING TIME, LLC",
+   "advertiser": "POLI/T HEJHAL/D/STR/IA",
+   "gross_total": 13770.0,
+   "agency_commission": null,
+   "net_amount_due": null,
+   "line_items": 8
+  }
+ ]
+}

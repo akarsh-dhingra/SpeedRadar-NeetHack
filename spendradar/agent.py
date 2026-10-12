@@ -295,7 +295,8 @@ def _act_invoice(state: RunState, path: str, mode: str) -> list[Check]:
         _usage(state, out["llm"])
     ex = out["extract"]
     parts = [line["amount"] for line in ex["lines"]]
-    chk = verify.totals_check(path, parts, ex["stated_total"])
+    chk = verify.invoice_totals_check(path, parts, ex["stated_total"], ex.get("agency_commission"),
+                                      ex.get("net_amount_due"))
     cat = CC_TO_CATEGORY.get(ex["cost_centre"].strip().lower(), "unmapped")
     state.invoices = [i for i in state.invoices if i["path"] != path]
     state.invoices.append({"path": path, "vendor": ex["vendor"], "number": ex["invoice_number"],

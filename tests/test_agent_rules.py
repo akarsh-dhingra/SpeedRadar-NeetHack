@@ -110,7 +110,7 @@ def test_llm_pdf_reader_reports_its_fallback_hop(monkeypatch):
     from spendradar.tools import files
 
     ex = files.InvoiceExtract(invoice_number="1", vendor="v", cost_centre="c", invoice_date="d", lines=[],
-                              stated_total=0.0)
+                              stated_total=0.0, agency_commission=None, net_amount_due=None)
     monkeypatch.setattr(llm, "complete", lambda *a, **k: _fallback_result(ex))
     out = files.read_pdf("data/acme/invoices/12_nimbus_2026-10.pdf", mode="llm")
     s = RunState(run_id="x", goal="g", input_dir="d")
