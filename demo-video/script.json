@@ -52,8 +52,8 @@
    "lines": [
     {
      "id": "title1",
-     "say": "This is Spend Radar. It reads your books, checks the market, and then, before it tells you anything, it tries to prove itself wrong.",
-     "cap": "This is Spend Radar. It reads your books, checks the market — and before it tells you anything, it tries to prove itself wrong."
+     "say": "This is Spend Radar. It reads your books, checks the market, then tries to prove itself wrong.",
+     "cap": "This is Spend Radar. It reads your books, checks the market, then tries to prove itself wrong."
     }
    ]
   },
@@ -71,8 +71,8 @@
     },
     {
      "id": "run2",
-     "say": "First, the model writes a plan. Then the agent works through it, one tool call at a time.",
-     "cap": "First, the model writes a plan. Then the agent works through it, one tool call at a time.",
+     "say": "The model writes a plan, and the agent works through it, one tool call at a time.",
+     "cap": "The model writes a plan, and the agent works through it, one tool call at a time.",
      "src": "runs/1011-777bb7/state.json plan_rationale, done (41)"
     },
     {
@@ -147,8 +147,8 @@
    "lines": [
     {
      "id": "gen1",
-     "say": "We tested it on seven companies. Six of them, it had never seen before.",
-     "cap": "We tested it on 7 companies. 6 of them, it had never seen before.",
+     "say": "Seven companies. Six it had never seen.",
+     "cap": "Seven companies. Six it had never seen.",
      "src": "summary.companies 7, held_out_companies 6"
     },
     {
@@ -168,25 +168,39 @@
    "lines": [
     {
      "id": "nl1",
-     "say": "We found and fixed our bugs in neet logs.",
-     "cap": "We found and fixed our bugs in neatlogs."
+     "say": "When it broke, neet logs found the incidents for us.",
+     "cap": "When it broke, neatlogs found the incidents for us.",
+     "src": "neatlogs Traces view (screenshot 12 Oct): Execution Failed detections"
+    },
+    {
+     "id": "nlA",
+     "say": "It saw a spike in failed executions, over a hundred times normal, and raised an incident on its own.",
+     "cap": "It saw a spike in failed executions — over 100× normal — and raised an incident on its own.",
+     "src": "neatlogs incident (screenshot 12 Oct): Detection spike 13 negative detections, baseline 0.1, 108.5x, group Execution Failed; Raised by Neatlogs"
+    },
+    {
+     "id": "nlB",
+     "say": "Its investigation found the root cause: a corrupt invoice, passed to Gemini anyway.",
+     "cap": "Its investigation found the root cause: a corrupt invoice, passed to Gemini anyway.",
+     "src": "neatlogs incident Investigation v1 root cause: read_pdf falls back to mode llm on 13_brightloop_2026-10.pdf (PdfminerException); before trace 36362eb966cdbb85dcb2fb1b280e1034 (Gemini 400)"
+    },
+    {
+     "id": "nlC",
+     "say": "We sent it to Claude Code, shipped the fix, and the incident closed. Now that file fails in under a millisecond, with no model call.",
+     "cap": "We sent it to Claude Code, shipped the fix, and the incident closed. Now that file fails in under 1 ms, with no model call.",
+     "exag": 0.75,
+     "src": "incident: Sent to Claude Code, status Resolved; fix 8d11308 (triage 2cd5e9df); after trace 953bb991e2547b1591bb2bb6adb555b8: 0.8 ms, no LLM span (evidence/traces.md)"
     },
     {
      "id": "nl2",
-     "say": "In five runs before one fix, the agent threw away three of its five competitors, every time. After the fix, it kept all five, every time.",
-     "cap": "Before one fix: 3 of 5 competitors thrown away, in 5 runs out of 5. After it: all 5 kept, every time.",
+     "say": "Traces caught more. Before one fix, the agent dropped three of its five competitors. After it, it kept all five, in five runs out of five.",
+     "cap": "Traces caught more. Before one fix, the agent dropped 3 of its 5 competitors. After it, it kept all 5 — in 5 runs out of 5.",
      "src": "evidence/case-studies/02-competitor-substitution.md, rerun n = 5 per side"
     },
     {
-     "id": "nl3",
-     "say": "Another showed the same data getting three different verdicts. Now, it gets one, every time.",
-     "cap": "Another: the same data got 3 different verdicts. Now it gets 1, every time.",
-     "src": "evidence/case-studies/05-audit-verdict-variance.md"
-    },
-    {
      "id": "nl4",
-     "say": "Then we tried twenty-four real, public invoices. The reader was copying the net amount instead of the total. After the fix, zero silent wrong totals.",
-     "cap": "Then: 24 real public invoices. The reader copied the net amount, not the total. After the fix: 0 silent wrong totals.",
+     "say": "And on twenty-four real invoices, the reader copied the net amount, not the total. After the fix, zero silent wrong totals.",
+     "cap": "And on 24 real invoices, the reader copied the net amount, not the total. After the fix: zero silent wrong totals.",
      "src": "evidence/case-studies/06-real-invoices-gross-vs-net.md (12 tuned-on + 12 held-out, n = 3 passes: 2 and 4 per pass -> 0)"
     }
    ]
@@ -204,8 +218,8 @@
     },
     {
      "id": "ent2",
-     "say": "So you can start from any trace, and follow it back to the code, the commit, and the exact prompt that wrote it.",
-     "cap": "Start from any trace, and follow it back to the code, the commit, and the exact prompt that wrote it.",
+     "say": "So any trace leads back to the code, the commit, and the prompt that wrote it.",
+     "cap": "So any trace leads back to the code, the commit, and the prompt that wrote it.",
      "src": "evidence/explain/5fcef2f7f2f8-decide-recovery.md"
     },
     {
@@ -234,8 +248,8 @@
     },
     {
      "id": "cfo3",
-     "say": "Across seven scenarios, the base case turns cash-flow positive in January twenty twenty-eight. Even paying for a human to review flagged invoices, it still does.",
-     "cap": "Across 7 scenarios, the base case turns cash-flow positive in January 2028 — even paying a human to review flagged invoices.",
+     "say": "Across seven scenarios, the base case turns cash-flow positive in January twenty twenty-eight. Even with human review, it still does.",
+     "cap": "Across 7 scenarios, the base case turns cash-flow positive in January 2028. Even with human review, it still does.",
      "src": "frontend_data.json business.cfoai_model: Base first positive 2028-01; Managed review 2028-01 (month 15)"
     }
    ]

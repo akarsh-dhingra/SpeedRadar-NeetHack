@@ -91,7 +91,15 @@
     arc(x + r, y + r, PI); edge(x + r, y, x + w - r, y);
     return pts;
   }
-  function inkRR(g, x, y, w, h, r, fill, lw, stroke) { inkPath(g, rrPts(x, y, w, h, r), true, fill, stroke, lw); }
+  function inkRR(g, x, y, w, h, r, fill, lw, stroke) { inkPath(g, rrPts(x, y, w, h, r), true, fill, stroke, lw); if (CHK && g === X) chkRect("box", g, x, y, w, h); }
+  // overflow check (window.__CHECK): every box and every text run, as screen rectangles in 1920x1080 units
+  var CHK = !!window.__CHECK, CHKLOG = [];
+  function chkRect(kind, g, x, y, w, h, label) {
+    var m = g.getTransform(), pts = [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].map(function (p) { return [(m.a * p[0] + m.c * p[1] + m.e) / SC, (m.b * p[0] + m.d * p[1] + m.f) / SC]; });
+    var xs = pts.map(function (p) { return p[0]; }), ys = pts.map(function (p) { return p[1]; });
+    CHKLOG.push({ kind: kind, x0: Math.min.apply(null, xs), y0: Math.min.apply(null, ys), x1: Math.max.apply(null, xs), y1: Math.max.apply(null, ys), label: label, a: g.globalAlpha });
+  }
+  window.__checkFrame = function (t) { CHKLOG = []; frame(t); return CHKLOG; };
   function circPts(cx, cy, rx, ry, n) { var p = []; n = n || 28; for (var i = 0; i < n; i++) { var a = i / n * TAU; p.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * (ry || rx)]); } return p; }
   function inkCircle(g, cx, cy, r, fill, lw, ry, stroke) { inkPath(g, circPts(cx, cy, r, ry), true, fill, stroke, lw); }
   function inkLine(g, x0, y0, x1, y1, lw, col) { var pts = []; for (var i = 0; i <= 6; i++) pts.push([lerp(x0, x1, i / 6), lerp(y0, y1, i / 6)]); inkPath(g, pts, false, null, col, lw); }
@@ -104,6 +112,7 @@
   var FONT = "'Fredoka', 'Baloo 2', system-ui, sans-serif", COMIC = "'Bangers', 'Fredoka', sans-serif", MONO = "'Geist Mono', ui-monospace, monospace";
   function txt(g, s, x, y, size, opts) {
     opts = opts || {};
+    if (opts.maxW) { var mw0 = measure(s, size, opts.font, opts.weight); if (mw0 > opts.maxW) size = size * opts.maxW / mw0; }
     g.save(); g.translate(x, y); if (opts.rot) g.rotate(opts.rot); if (opts.scale) g.scale(opts.scale, opts.scale);
     g.font = (opts.weight || 700) + " " + size + "px " + (opts.font || FONT);
     g.textAlign = opts.align || "left"; g.textBaseline = opts.base || "alphabetic";
@@ -111,6 +120,7 @@
     if (opts.stroke !== false && opts.stroke !== undefined) { g.lineJoin = "round"; g.strokeStyle = opts.stroke; g.lineWidth = opts.sw || size * .16; g.strokeText(s, 0, 0); }
     if (opts.shadow) { g.fillStyle = opts.shadow; g.fillText(s, opts.sx || 5, opts.sy || 6); }
     g.fillStyle = opts.fill || C.ink; g.fillText(s, 0, 0);
+    if (CHK && g === X && s && String(s).trim()) { var mw = g.measureText(s).width, ax = g.textAlign === "center" ? -mw / 2 : g.textAlign === "right" ? -mw : 0; chkRect("text", g, ax, -size * .78, mw, size * .98, String(s)); }
     g.restore();
   }
   function measure(s, size, font, weight) { X.font = (weight || 700) + " " + size + "px " + (font || FONT); return X.measureText(s).width; }
@@ -229,6 +239,282 @@
     g.restore();
   }
 
+  // ── Sora: the presenter. A 2D anime girl drawn in the same boiling-ink, papery style as the cast. ──
+  // sora(g, x, y, s, o): (x, y) = between her feet on the ground; s = scale (1 → about 560 px tall).
+  // o.pose: idle | wave | point | present | cheer | think   o.at: [x, y] screen point to aim a "point" at
+  // o.expr: smile | wow | grin | wink | think               o.face: 1 (faces right) or -1 (faces left)
+  // o.walk: true while walking   o.hop: time of a hop (squash and stretch)   o.talk: false to keep her quiet
+  // Her mouth follows the narration: how wide comes from the voice loudness at that frame (envAt), its shape
+  // from the letter being spoken in the current word (Whisper word times): A, E/I, O/U, M/B/P, F/V.
+  var SORA = { hair: "#8a7ae6", hairD: "#5c4fb8", hairL: "#c3b9ff", skin: "#ffe1cf", skinD: "#f3b9a2", jacket: C.mint, jacketD: C.mintD,
+    skirt: "#3b4380", sock: "#fffaf0", shoe: "#2a2433", iris: "#2f9c94", irisD: "#1d5f5a", ribbon: C.red };
+  function viseme(t) {
+    var l = lineAt(t); if (!l || !l.words) return "rest";
+    for (var i = 0; i < l.words.length; i++) {
+      var w = l.words[i]; if (t < w.t0 || t > w.t1 + .02) continue;
+      var s = String(w.w).toLowerCase().replace(/[^a-z]/g, ""); if (!s) return "A";
+      var c = s.charAt(Math.min(s.length - 1, Math.floor((t - w.t0) / Math.max(.05, w.t1 - w.t0) * s.length)));
+      if ("mbp".indexOf(c) >= 0) return "M";
+      if ("fv".indexOf(c) >= 0) return "F";
+      if ("o".indexOf(c) >= 0) return "O";
+      if ("uw".indexOf(c) >= 0) return "U";
+      if ("iy".indexOf(c) >= 0) return "I";
+      if (c === "e") return "E";
+      return "A";
+    }
+    return "rest";
+  }
+  function hopY(t0, amp) { if (t0 == null) return 0; var d = T - t0; if (d < 0 || d > .55) return 0; return -Math.sin(d / .55 * PI) * (amp || 60); }
+  function limb(g, x0, y0, a1, l1, a2, l2, w, col, colD) { // two-segment limb from (x0, y0); angles from straight down
+    var x1 = x0 + Math.sin(a1) * l1, y1 = y0 + Math.cos(a1) * l1, x2 = x1 + Math.sin(a2) * l2, y2 = y1 + Math.cos(a2) * l2;
+    g.lineCap = "round"; g.lineJoin = "round";
+    g.strokeStyle = C.ink; g.lineWidth = w + 10; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+    g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.lineTo(x2, y2); g.stroke();
+    if (colD) { g.strokeStyle = colD; g.lineWidth = w * .35; g.beginPath(); g.moveTo(x1 - 2, y1); g.lineTo(x2 - 2, y2); g.stroke(); }
+    return [x2, y2];
+  }
+  // smooth ink outline through points (Catmull-Rom), with a gentler boil than the props
+  function inkSmooth(g, pts, close, fill, stroke, lw, amp) {
+    var P = pts.map(function (p) { return jit(p[0], p[1], amp == null ? .9 : amp); }), n = P.length;
+    g.beginPath(); g.moveTo(P[0][0], P[0][1]);
+    var last = close ? n : n - 1;
+    for (var i = 0; i < last; i++) {
+      var p0 = P[(i - 1 + n) % n], p1 = P[i], p2 = P[(i + 1) % n], p3 = P[(i + 2) % n];
+      if (!close) { if (i === 0) p0 = p1; if (i + 2 >= n) p3 = p2; }
+      g.bezierCurveTo(p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6, p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6, p2[0], p2[1]);
+    }
+    if (close) g.closePath();
+    if (fill) { g.fillStyle = fill; g.fill(); }
+    if (stroke !== false) { g.strokeStyle = stroke || C.ink; g.lineWidth = lw || 4.5; g.lineJoin = "round"; g.lineCap = "round"; g.stroke(); }
+  }
+  function sora(g, x, y, s, o) {
+    o = o || {}; var face = o.face || 1, pose = o.pose || "idle", ex = o.expr || "smile";
+    if (CHK && g === X) CHKLOG.push({ kind: "charStart" });
+    var talk = o.talk === false ? 0 : envAt(T), vis = o.talk === false ? "rest" : viseme(T);
+    var hop = hopY(o.hop, 70), land = o.hop != null ? T - o.hop : 9, sq = land > .5 && land < .68 ? 1 - Math.sin((land - .5) / .18 * PI) * .07 : 1;
+    var breathe = 1 + Math.sin(T * 2.2) * .015, sway = Math.sin(T * 1.6 + (o.phase || 0)) * .03;
+    var walkPh = o.walk ? T * 9 : 0, bob = o.walk ? -Math.abs(Math.sin(walkPh)) * 8 : 0;
+    g.save(); g.translate(x, y); g.scale(s, s);
+    g.fillStyle = C.shadow; g.beginPath(); g.ellipse(0, 4, 80 + hop * .25, 14, 0, 0, TAU); g.fill();
+    g.translate(0, hop + bob); g.scale(face, 1); g.scale(1 / sq, sq);
+    // legs: short chibi legs with socks and round shoes (walk swings them)
+    [-1, 1].forEach(function (side) {
+      var ph = walkPh + (side > 0 ? PI : 0), sw2 = o.walk ? Math.sin(ph) * .42 : 0;
+      var f = limb(g, side * 22, -150, sw2, 70, sw2 * .5 - (o.walk ? Math.max(0, Math.sin(ph)) * .45 : 0), 66, 30, SORA.skin);
+      g.save(); g.translate(f[0], f[1]); inkSmooth(g, [[-16, -38], [16, -38], [17, -8], [-17, -8]], true, SORA.sock, null, 4);
+      inkSmooth(g, [[-18, -12], [8, -16], [30, -6], [28, 8], [-18, 8]], true, SORA.shoe, null, 4); g.restore();
+    });
+    // skirt with soft pleats
+    var sk = Math.sin(T * 2.6) * 4;
+    inkSmooth(g, [[-48, -232], [48, -232], [74 + sk, -150], [40 + sk, -136], [0 + sk, -142], [-40 + sk, -136], [-74 + sk, -150]], true, SORA.skirt, null, 4.5);
+    for (var p = -2; p <= 2; p++) inkLine(g, p * 13, -226, p * 26 + sk, -146, 2.5, "rgba(255,255,255,.22)");
+    // torso: rounded jacket, sailor collar, ribbon (breathing)
+    g.save(); g.translate(0, -230); g.scale(1, breathe);
+    inkSmooth(g, [[-48, 2], [-56, -60], [-46, -106], [0, -116], [46, -106], [56, -60], [48, 2], [0, 8]], true, SORA.jacket, null, 5);
+    g.save(); g.beginPath(); g.rect(-58, -118, 116, 126); g.clip(); wash(g, -58, -40, 116, 48, SORA.jacketD, .35); g.restore();
+    inkSmooth(g, [[-34, -108], [0, -62], [34, -108], [0, -112]], true, C.white, null, 3.5);
+    inkSmooth(g, [[0, -74], [-22, -88], [-24, -64]], true, SORA.ribbon, null, 3); inkSmooth(g, [[0, -74], [22, -88], [24, -64]], true, SORA.ribbon, null, 3);
+    inkCircle(g, 0, -74, 6, SORA.ribbon, 3);
+    g.restore();
+    // arms (angles from straight down); "point" aims at a screen point, worked out in her own local space
+    var shY = -330, shX = 46, wv = Math.sin(T * 10) * .35;
+    // + angle swings toward her front (local +x); her back arm (-shX) opens outward with negative angles
+    var A = { idle: [[-.2, -.08], [.2, .08]], wave: [[-.2, -.08], [2.5, 2.95 + wv]], present: [[-.2, -.08], [1.35, 1.05]],
+      cheer: [[-2.2 + wv * .3, -2.6], [2.2 - wv * .3, 2.6]], think: [[.45, 2.7], [.2, .08]], point: [[-.2, -.08], [1.6, 1.6]] }[pose] || [[-.2, -.08], [.2, .08]];
+    if (pose === "point" && o.at) {
+      var inv = g.getTransform().inverse(), px = o.at[0] * SC, py = o.at[1] * SC;
+      var lx = inv.a * px + inv.c * py + inv.e, ly = inv.b * px + inv.d * py + inv.f;
+      var ang = Math.atan2(lx - shX, ly - shY); A[1] = [ang, ang];
+    }
+    if (o.walk && pose === "idle") { A[0] = [-.1 + Math.sin(walkPh) * .4, Math.sin(walkPh) * .25]; A[1] = [.1 - Math.sin(walkPh) * .4, -Math.sin(walkPh) * .25]; }
+    var hL = limb(g, -shX, shY, A[0][0], 58, A[0][1], 54, 22, SORA.jacket, SORA.jacketD);
+    var hR = limb(g, shX, shY, A[1][0], 58, A[1][1], 54, 22, SORA.jacket, SORA.jacketD);
+    inkCircle(g, hL[0], hL[1], 11, SORA.skin, 3.5); inkCircle(g, hR[0], hR[1], 11, SORA.skin, 3.5);
+    if (pose === "point") { var a1 = A[1][1]; inkLine(g, hR[0], hR[1], hR[0] + Math.sin(a1) * 18, hR[1] + Math.cos(a1) * 18, 7, C.ink); }
+    // neck + big head (tilts and nods while she talks)
+    inkRR(g, -11, -352, 22, 30, 7, SORA.skin, 3.5);
+    g.save(); g.translate(0, -440); g.rotate(sway + (talk > .2 ? Math.sin(T * 7) * .035 : 0) + (pose === "think" ? .13 : 0));
+    // twin tails (swing)
+    var tail = Math.sin(T * 2.4) * .12 + (o.walk ? Math.sin(walkPh) * .1 : 0) - hop * .002;
+    [-1, 1].forEach(function (side) {
+      g.save(); g.translate(side * 78, -40); g.rotate(side * (.25 + tail));
+      inkSmooth(g, [[-14, 0], [16, 4], [30, 60], [24, 130], [6, 178], [-10, 140], [-22, 70]], true, SORA.hair, null, 4.5);
+      inkSmooth(g, [[2, 24], [10, 80], [6, 140]], false, null, SORA.hairL, 4);
+      inkCircle(g, 0, 2, 11, SORA.ribbon, 3.5);
+      g.restore();
+    });
+    // back hair
+    inkSmooth(g, [[-86, -30], [-82, -84], [-46, -118], [0, -128], [46, -118], [82, -84], [86, -30], [80, 50], [-80, 50]], true, SORA.hairD, null, 4.5);
+    // face: round with a soft chin
+    inkSmooth(g, [[-72, -40], [-74, 10], [-56, 52], [-24, 74], [0, 80], [24, 74], [56, 52], [74, 10], [72, -40], [0, -70]], true, SORA.skin, null, 4.5);
+    g.fillStyle = hexa(C.rose, .5); g.beginPath(); g.ellipse(-46, 30, 15, 8, 0, 0, TAU); g.ellipse(46, 30, 15, 8, 0, 0, TAU); g.fill();
+    // eyes: tall anime eyes, gradient iris, two highlights, lash line with a flick; blink / wink / happy
+    var blink = (T * .9 + (o.phase || 0)) % 3.1 < .11;
+    function eye(cx, closed, flip) {
+      if (closed) { inkSmooth(g, [[cx - 20, 4], [cx, -10], [cx + 20, 4]], false, null, null, 5.5); return; }
+      var big = ex === "wow" ? 1.15 : 1;
+      inkSmooth(g, circPts(cx, 2, 20 * big, 26 * big, 18), true, C.white, null, 3);
+      var ir = g.createLinearGradient(0, -22, 0, 26); ir.addColorStop(0, SORA.irisD); ir.addColorStop(1, SORA.iris);
+      g.fillStyle = ir; g.beginPath(); g.ellipse(cx + flip * 2, 5, 15 * big, 21 * big, 0, 0, TAU); g.fill();
+      g.fillStyle = "#123c39"; g.beginPath(); g.ellipse(cx + flip * 2, 6, 7, 10, 0, 0, TAU); g.fill();
+      g.fillStyle = C.white; g.beginPath(); g.ellipse(cx + flip * 2 + 6, -5, 6, 7, 0, 0, TAU); g.fill(); g.beginPath(); g.arc(cx + flip * 2 - 5, 15, 3, 0, TAU); g.fill();
+      g.strokeStyle = C.ink; g.lineCap = "round"; g.lineWidth = 6.5; g.beginPath(); g.moveTo(cx - 22, -14); g.quadraticCurveTo(cx, -30 * big, cx + 22, -16); g.stroke();
+      g.lineWidth = 4; g.beginPath(); g.moveTo(cx + flip * 22, -16); g.lineTo(cx + flip * 30, -22); g.stroke(); // lash flick
+      g.lineWidth = 2.5; g.beginPath(); g.moveTo(cx - 10, 30); g.lineTo(cx + 10, 30); g.stroke();
+    }
+    var happy = ex === "grin";
+    eye(-34, blink || happy, -1); eye(34, blink || happy || ex === "wink", 1);
+    var bu = ex === "wow" ? -10 : ex === "think" ? -4 : 0;
+    inkSmooth(g, [[-50, -34 + bu], [-36, -40 + bu], [-20, -38 + bu]], false, null, SORA.hairD, 4);
+    inkSmooth(g, [[20, -38 + bu + (ex === "think" ? 6 : 0)], [36, -40 + bu], [50, -34 + bu]], false, null, SORA.hairD, 4);
+    inkLine(g, 0, 34, 2, 38, 2.5, SORA.skinD);
+    // mouth: viseme shape, opened by the voice loudness
+    var op = Math.min(1, talk * 1.3);
+    g.save(); g.translate(0, 54);
+    if (ex === "wow" && op < .3) { op = .6; vis = "O"; }
+    if (op < .08 || vis === "rest" || vis === "M") {
+      if (vis === "M" && op > .08) inkLine(g, -8, 0, 8, 0, 3.5);
+      else inkSmooth(g, [[-11, -2], [0, 5], [11, -2]], false, null, null, 3.5);
+    } else if (vis === "O") {
+      inkSmooth(g, circPts(0, 2, 5 + 4 * op, 6 + 8 * op, 12), true, "#7a2e3a", null, 3);
+    } else if (vis === "E") {
+      inkSmooth(g, [[-13, -2], [13, -2], [9, 4 + 6 * op], [-9, 4 + 6 * op]], true, "#7a2e3a", null, 3); g.fillStyle = C.white; g.fillRect(-10, -1, 20, 3.5);
+    } else if (vis === "F") {
+      inkSmooth(g, [[-11, -2], [11, -2], [8, 5], [-8, 5]], true, "#7a2e3a", null, 3); g.fillStyle = C.white; g.fillRect(-9, -1, 18, 3.5);
+    } else {
+      inkSmooth(g, circPts(0, 3, 9 + 4 * op, 4 + 11 * op, 14), true, "#7a2e3a", null, 3);
+      g.fillStyle = C.rose; g.beginPath(); g.ellipse(0, 5 + 7 * op, 6, 2.5 + 2.5 * op, 0, 0, TAU); g.fill();
+    }
+    g.restore();
+    // bangs: soft scallops, plus a shine; radar hair clip
+    inkSmooth(g, [[-82, -24], [-78, -84], [-40, -114], [10, -118], [56, -100], [82, -64], [82, -18], [66, -44], [52, -10], [36, -46], [16, -16], [0, -50], [-18, -14], [-34, -48], [-52, -12], [-64, -44]], true, SORA.hair, null, 4.5);
+    inkSmooth(g, [[-46, -88], [-20, -100], [6, -100]], false, null, SORA.hairL, 5);
+    g.save(); g.translate(54, -92); g.rotate(-.5 + Math.sin(T * 1.7) * .15);
+    inkPath(g, [[-16, 0], [-10, 8], [0, 11], [10, 8], [16, 0], [0, 3]], true, C.cream, null, 3); inkCircle(g, 0, -8, 4, C.red, 2.5);
+    g.restore();
+    g.restore();
+    g.restore();
+    if (CHK && g === X) chkRect("char", g, x - 100 * s, y - 590 * s, 200 * s, 590 * s, "sora");
+  }
+  // confetti burst for the wins (deterministic)
+  function confetti(g, x, y, t0, n) {
+    var d = T - t0; if (d < 0 || d > 1.8) return; n = n || 46;
+    var cols = [C.yellow, C.mint, C.rose, C.indigo, C.orange, C.sky];
+    for (var i = 0; i < n; i++) {
+      var a = hash(i * 3.3) * TAU, v = 380 + hash(i * 7.1) * 520, px = x + Math.cos(a) * v * d, py = y + Math.sin(a) * v * d * .8 + 620 * d * d;
+      g.save(); g.globalAlpha = Math.max(0, 1 - d / 1.8); g.translate(px, py); g.rotate(d * 9 * (hash(i) - .5) + a);
+      g.fillStyle = cols[i % cols.length]; g.fillRect(-7, -3.5, 14, 7); g.restore();
+    }
+  }
+  // ── Mao (Live2D, see l2d.js): poses → Live2D parameters, drawn with her feet at (x, y) and h units tall ──
+  var TREAL = 0; // the frame being rendered (wipes redraw the old scene at a frozen T; Mao always uses the real frame)
+  var VOW = { A: "ParamA", E: "ParamE", I: "ParamI", O: "ParamO", U: "ParamU" };
+  function maoPose(pose, expr, look, talk, vis, t) {
+    var P = { ParamA: 0, ParamI: 0, ParamU: 0, ParamE: 0, ParamO: 0, ParamEyeLSmile: 0, ParamEyeRSmile: 0, ParamCheek: .25,
+      ParamBrowLY: 0, ParamBrowRY: 0, ParamBrowLAngle: 0, ParamBrowRAngle: 0, ParamEyeBallY: 0,
+      ParamArmRA01: 0, ParamArmRA02: 0, ParamArmRA03: 0, ParamArmLA01: 0, ParamArmLA02: 0, ParamArmLA03: 0, ParamWandRotate: 0,
+      ParamHeartLightOn: 0, ParamHeartLight: 0, ParamWandInk: 0, ParamAuraOn: 0, ParamAura: 0, ParamSphereOn: 0, ParamSmokeOn: 0,
+      ParamExplosionOn: 0, ParamExplosionChargeOn: 0, ParamInkDropOn: 0, ParamHealLightOn: 0, ParamStrengthenLightOn: 0, ParamHeartMissOn: 0, ParamHeartHealOn: 0 };
+    var op = Math.min(1, talk * 1.3);
+    if (op > .05 && VOW[vis]) P[VOW[vis]] = op;
+    var blink = ((t * .9) % 3.1) < .12 ? 0 : 1;
+    P.ParamEyeLOpen = P.ParamEyeROpen = blink;
+    if (expr === "grin") { P.ParamEyeLSmile = P.ParamEyeRSmile = 1; P.ParamCheek = 1; }
+    if (expr === "wink") { P.ParamEyeROpen = 0; P.ParamEyeRSmile = 1; P.ParamCheek = .8; }
+    if (expr === "wow") { P.ParamEyeLOpen = P.ParamEyeROpen = 1.2 * blink; P.ParamBrowLY = P.ParamBrowRY = 1; if (op < .25) P.ParamO = .55; }
+    if (expr === "think") { P.ParamBrowLAngle = -.7; P.ParamBrowRAngle = .4; P.ParamEyeBallY = .6; }
+    // head and body: idle sway, nods while she talks, turn toward what she is presenting
+    P.ParamAngleX = look * 22 + Math.sin(t * .9) * 4;
+    P.ParamAngleY = Math.sin(t * 1.3) * 3 + (talk > .15 ? Math.sin(t * 7) * 5 * talk : 0) + (expr === "think" ? 8 : 0);
+    P.ParamAngleZ = Math.sin(t * .7) * 5 + (expr === "think" ? 9 : 0);
+    P.ParamBodyAngleX = Math.sin(t * .8) * 3 + look * 5;
+    P.ParamBodyAngleZ = Math.sin(t * .6) * 2;
+    P.ParamBreath = (Math.sin(t * 2.2) + 1) / 2;
+    P.ParamEyeBallX = look * .7;
+    // arms (her wand is the pointer)
+    if (pose === "point") { P.ParamArmRA01 = 30; P.ParamArmLA01 = 30; P.ParamArmLA02 = -20; }
+    else if (pose === "present") { P.ParamArmRA01 = 17; P.ParamWandRotate = 3; }
+    else if (pose === "think") { P.ParamArmLA01 = 30; P.ParamArmLA02 = -20; P.ParamArmRA01 = 30; P.ParamArmRA02 = -20; P.ParamArmRA03 = 30; }
+    else if (pose === "cheer") { P.ParamArmRA01 = 26; P.ParamWandRotate = 10; P.ParamArmLA01 = 30; P.ParamArmLA02 = -20; }
+    else if (pose === "wave") { P.ParamArmRA01 = 22 + Math.sin(t * 9) * 6; P.ParamWandRotate = 6 + Math.sin(t * 9) * 4; }
+    return P;
+  }
+  function blendP(a, b, k) { var o = {}; for (var key in b) o[key] = a[key] == null ? b[key] : a[key] + (b[key] - a[key]) * k; return o; }
+  // plan = [[t, pose, expr, at], ...]; poses blend over .3 s; o.fx = [[t, "sparkle"|"aura"], ...]
+  function maoAt(plan, x, flip) {
+    var ci = 0; for (var i = 0; i < plan.length; i++) if (TREAL >= plan[i][0]) ci = i;
+    var cur = plan[ci], prev = plan[Math.max(0, ci - 1)], k = ci === 0 ? 1 : eOut(prog(TREAL, cur[0], .3));
+    var talk = envAt(TREAL), vis = viseme(TREAL);
+    function lk(p) { var at = p[3]; if (!at) return 0; return clamp((at[0] - x) / 700, -1, 1) * (flip ? -1 : 1) * -1; }
+    return blendP(maoPose(prev[1], prev[2], lk(prev), talk, vis, TREAL), maoPose(cur[1], cur[2], lk(cur), talk, vis, TREAL), k);
+  }
+  function maoFx(P, fx) {
+    return P; // the model's built-in effects read as white blobs on paper; wins use the film's own confetti
+    (fx || []).forEach(function (f) {
+      var d = TREAL - f[0]; if (d < 0 || d > 1.6) return;
+      if (f[1] === "sparkle") { P.ParamHeartLightOn = 1; P.ParamHeartLight = d / 1.6 * 30; P.ParamWandInk = 1; }
+      if (f[1] === "aura") { P.ParamAuraOn = 1; P.ParamAura = d / 1.6 * 30; }
+    });
+    return P;
+  }
+  function maoImg(P) { return window.__l2d ? window.__l2d.frame(TREAL, P, grain, C.ink) : null; }
+  // full body, feet at (x, y), h units tall; flip mirrors her so she faces/points to the right
+  function maoDraw(g, img, x, y, h, flip, hop) {
+    if (!img) return; var L = window.__l2d, sc = h / (L.feet - L.top);
+    g.save(); g.translate(x, y + (hop || 0)); g.scale(flip ? -sc : sc, sc);
+    g.fillStyle = C.shadow; g.beginPath(); g.ellipse(0, 0, L.W * .22, 40, 0, 0, TAU); g.fill();
+    g.drawImage(img, -L.W / 2, -L.feet);
+    g.restore();
+    if (CHK && g === X) chkRect("char", g, x - h * .26, y - h, h * .52, h, "mao");
+  }
+  // host(): same plan format the scenes already use (Sora's API); s = old scale → height
+  var MAO_X = 1700, MAO_H = 560; // waist-up presenter, bottom-right of every content scene
+  function host(g, x, y, s, plan, o) {
+    o = o || {};
+    if (CHK && g === X) CHKLOG.push({ kind: "charStart" });
+    var P = maoAt(plan, MAO_X, false), img = maoImg(P), L = window.__l2d;
+    if (img) {
+      var cropH = (L.feet - L.top) * .58, sc = MAO_H / cropH, hop = hopY(o.hop, 26), rise = 1 - eOut(prog(TREAL, o.enter == null ? -9 : o.enter, .5));
+      g.save(); g.translate(MAO_X, 1080 + 12 + hop * .6 + rise * 420); g.rotate(Math.sin(TREAL * .8) * .012); g.scale(sc, sc);
+      g.drawImage(img, -L.W / 2, -(L.top + cropH));
+      g.restore();
+    }
+    if (CHK && g === X) chkRect("char", g, MAO_X - 190, 1080 - MAO_H, 380, MAO_H, "mao");
+  }
+  // ── anime close-up: waist-up shot on focus lines; camera pushes in, punches on the key word ──
+  function focusLines(g, cx, cy, col, intensity, seed) {
+    g.save(); g.translate(cx, cy);
+    var n = 90, f = Math.floor(T * 12);
+    for (var i = 0; i < n; i++) {
+      var a = (i + hash(i * 3.7 + seed) * .8) / n * TAU, r0 = 330 + hash(i * 9.1 + f * .37) * 260, len = 900 + hash(i * 1.3 + f) * 600;
+      var w = (3 + hash(i * 5.3 + f * .11) * 14) * intensity;
+      g.fillStyle = col; g.beginPath();
+      g.moveTo(Math.cos(a) * r0, Math.sin(a) * r0);
+      g.lineTo(Math.cos(a + w / r0 / 2) * (r0 + len), Math.sin(a + w / r0 / 2) * (r0 + len));
+      g.lineTo(Math.cos(a - w / r0 / 2) * (r0 + len), Math.sin(a - w / r0 / 2) * (r0 + len));
+      g.fill();
+    }
+    g.restore();
+  }
+  // line: the narration line; plan: Mao's poses; side: "right" (she is on the right, words on the left) or "left"
+  function closeUp(g, line, base, blots, seed, plan, side, punchAt, fx) {
+    g.drawImage(paper("cu" + seed, base, blots, seed), 0, 0);
+    var right = side !== "left", fcx = right ? 1360 : 560;
+    var punch = punchAt == null ? 0 : Math.exp(-Math.max(0, T - punchAt) * 9) * (T >= punchAt ? 1 : 0);
+    focusLines(g, fcx, 470, "rgba(255,250,240,.55)", 1 + punch * 1.5, seed);
+    var P = maoFx(maoAt(plan, fcx, !right), fx), img = maoImg(P), L = window.__l2d;
+    var push = 1 + prog(T, line.start - .3, line.dur + .6) * .06 + punch * .07, tilt = (right ? -1 : 1) * (.03 + punch * .02);
+    if (img) {
+      // waist-up crop: top 58% of her figure, scaled so the crop fills the frame height
+      var cropH = (L.feet - L.top) * .58, sc = 1240 / cropH * push;
+      g.save(); g.translate(fcx, 1080 + 40); g.rotate(tilt); g.scale(right ? sc : -sc, sc);
+      g.drawImage(img, -L.W / 2, -(L.top + cropH) - 30);
+      g.restore();
+    }
+    if (punch > .05) { g.save(); g.globalAlpha = punch * .55; g.fillStyle = C.white; g.fillRect(0, 0, W, H); g.restore(); }
+    if (punchAt != null) confetti(g, fcx, 420, punchAt, 50);
+    bigLine(g, line, { x: right ? 150 : 1000, y: 250, w: 760 }, { size: 96, hold: false });
+  }
   function tower(g, x, base, w, h, label, lit, col) {
     var y = base - h;
     inkRR(g, x, y, w, h, 8, col || "#5b6aa8", 5);
@@ -280,16 +566,16 @@
   // subtitle pill: words light up as they are spoken
   function pill(g, line) {
     var f = spokenFrac(line, T), words = line.cap.split(" "), size = 40;
-    var rows = wrapWords(words, size, 1250), rowH = 52;
+    var rows = wrapWords(words, size, 1140), rowH = 52;
     var inA = eOut(prog(T, line.start - .1, .25)), outA = 1 - prog(T, line.end + .1, .25);
     var a = Math.min(inA, outA); if (a <= 0) return;
     var widest = Math.max.apply(null, rows.map(function (r) { return measure(r.join(" "), size); }));
-    var bw = widest + 70, bh = rows.length * rowH + 30, bx = W / 2 - bw / 2, by = H - 70 - bh + (1 - inA) * 30;
+    var bw = widest + 70, bh = rows.length * rowH + 30, bx = Math.max(40, 790 - bw / 2), by = H - 70 - bh + (1 - inA) * 30;
     g.save(); g.globalAlpha = a;
     inkRR(g, bx, by, bw, bh, 22, "rgba(43,36,64,.92)", 4, C.ink);
     var total = line.cap.replace(/\s/g, "").length, seen = 0;
     rows.forEach(function (r, ri) {
-      var x = W / 2 - measure(r.join(" "), size) / 2, y = by + 52 + ri * rowH;
+      var x = bx + bw / 2 - measure(r.join(" "), size) / 2, y = by + 52 + ri * rowH;
       r.forEach(function (w) {
         var wl = w.replace(/\s/g, "").length, w0 = seen / total, w1 = (seen + wl) / total; seen += wl;
         var col = f >= w1 ? C.cream : f > w0 ? C.yellow : C.dim;
@@ -371,6 +657,37 @@
     g.restore(); g.strokeStyle = C.ink; g.lineWidth = 5; g.strokeRect(-w / 2, -h / 2, w, h);
     g.restore();
   }
+  // a real screenshot on a drawn monitor; keys = [[t, [x, y, w, h]], ...] camera views in image pixels (fitted to the
+  // screen, eased between keys); marks(g, s) draws in image pixels
+  function shotCam(keys) {
+    var i = 0; for (var k = 0; k < keys.length; k++) if (T >= keys[k][0]) i = k;
+    var a = keys[Math.max(0, i - 1)][1], b = keys[i][1], e = i === 0 ? 1 : eInOut(prog(T, keys[i][0], .7));
+    return [0, 1, 2, 3].map(function (j) { return lerp(a[j], b[j], e); });
+  }
+  function shotView(g, cx, cy, w, h, src, view, marks) {
+    var img = needImg(src);
+    g.fillStyle = C.shadow; g.beginPath(); g.ellipse(cx, cy + h / 2 + 40, w * .4, 18, 0, 0, TAU); g.fill();
+    inkRR(g, cx - w / 2 - 22, cy - h / 2 - 22, w + 44, h + 44, 24, C.cream, 6);
+    g.save(); g.beginPath(); g.rect(cx - w / 2, cy - h / 2, w, h); g.clip(); g.fillStyle = "#fff"; g.fillRect(cx - w / 2, cy - h / 2, w, h);
+    if (img) {
+      var vw = view[2], vh = view[3]; if (vw / vh > w / h) vh = vw * h / w; else vw = vh * w / h;
+      var vx = view[0] + view[2] / 2 - vw / 2, vy = view[1] + view[3] / 2 - vh / 2;
+      vx = vw >= img.width ? (img.width - vw) / 2 : clamp(vx, 0, img.width - vw); vy = vh >= img.height ? (img.height - vh) / 2 : clamp(vy, 0, img.height - vh);
+      var s = w / vw; g.translate(cx - w / 2, cy - h / 2); g.scale(s, s); g.translate(-vx, -vy);
+      g.drawImage(img, 0, 0); if (marks) marks(g, s);
+    }
+    g.restore(); g.strokeStyle = C.ink; g.lineWidth = 5; g.strokeRect(cx - w / 2, cy - h / 2, w, h);
+  }
+  // a hand-drawn highlight ring (image pixels), drawn on over .35 s from t0
+  function ring(g, s, r, t0, col) {
+    var k = eOut(prog(T, t0, .35)); if (k <= 0) return;
+    g.save(); g.globalAlpha = .18 * k; g.fillStyle = col; g.fillRect(r[0], r[1], r[2], r[3]); g.globalAlpha = 1;
+    g.strokeStyle = col; g.lineWidth = 7 / s; g.lineJoin = "round"; g.beginPath();
+    var p = [[r[0], r[1]], [r[0] + r[2], r[1]], [r[0] + r[2], r[1] + r[3]], [r[0], r[1] + r[3]], [r[0], r[1]]], n = 4 * k;
+    g.moveTo(p[0][0], p[0][1]); for (var i = 1; i <= Math.ceil(n); i++) { var f = Math.min(1, n - (i - 1)); g.lineTo(lerp(p[i - 1][0], p[i][0], f), lerp(p[i - 1][1], p[i][1], f)); }
+    g.stroke(); g.restore();
+  }
+
   // internet-brutalist insert: a hard black card of raw output, flashed for a beat
   function flash(g, t0, dur, lines, col) {
     if (T < t0 || T > t0 + dur) return;
@@ -396,7 +713,7 @@
       inkRR(g, -40, -60, 80, 70, 16, b >= 4 ? C.orange : "#b9b2d8", 5); inkCircle(g, -14, -30, 7, C.ink, 2); inkCircle(g, 14, -30, 7, C.ink, 2);
       txt(g, "ML", 0, -78, 26, { align: "center", fill: C.cream, stroke: C.ink, sw: 5 }); g.restore();
     }
-    sfxWord(g, "x2!", 1760, 300, d + .1, 130, C.yellow, .12);
+    sfxWord(g, "x2!", 1640, 150, d + .1, 120, C.yellow, .12);
     // calendar flips to Q4 on "quarter"
     if (T > l2.start - .2) {
       var q = wt("hook2", ["quarter"]), flips = Math.floor(clamp((T - l2.start) / ((q - l2.start) / 3), 0, 3));
@@ -408,8 +725,10 @@
     }
     // Radar bursts in on line 3, dish pinging
     var up = eBack(prog(T, l3.start - .1, .45));
-    if (up > 0) { radar(g, 940, lerp(1400, 800, up), 1.2, { ping: l3.start + .3, expr: "wow" }); sfxWord(g, "PING!", 1180, 330, wt("hook3", ["first"]), 120, C.yellow, -.1); }
+    if (false) { radar(g, 940, lerp(1400, 800, up), 1.2, { ping: l3.start + .3, expr: "wow" }); sfxWord(g, "PING!", 1200, 400, wt("hook3", ["first"]), 100, C.yellow, -.1); }
     var cl = lineAt(T); if (cl && cl.scene === "hook") bigLine(g, cl, { x: 100, y: 180, w: 860 }, { size: 112 });
+    // the reveal: Mao, waist-up, on focus lines
+    if (T >= l3.start - .12) closeUp(g, l3, "#2c3260", [C.navy2, "#4b3f7a", C.teal], 301, [[l3.start - .12, "present", "smile", [600, 400]], [wt("hook3", ["first"]) - .15, "cheer", "wink"]], "right", wt("hook3", ["first"]), [[wt("hook3", ["first"]), "sparkle"]]);
   };
 
   // 02 TITLE — the radar scope finds the real competitors; the logo bounces in; three promises
@@ -444,7 +763,8 @@
       inkRR(g, 0, 0, measure(p[0], 50) + 100, 88, 44, p[2], 5); txt(g, (i + 1) + ". " + p[0], 30, 60, 50, { fill: C.ink, weight: 700 }); g.restore();
     });
     sfxWord(g, "?!", 1660, 220, wt("title1", ["wrong"]) + .1, 150, C.red, .14);
-    radar(g, 1640, 860, .9, { wave: T < l.start + 2.2, bounce: false, expr: T > wt("title1", ["wrong"]) ? "wow" : "happy" });
+    var tin = eOut(prog(T, sc.start, .9));
+    host(g, lerp(2080, 1790, tin), 1075, 0.8, [[sc.start, "wave", "grin"], [l.start + 1.4, "present", "smile"], [wt("title1", ["wrong"]) - .1, "point", "wow", [1320, 520]], [wt("title1", ["wrong"]) + .8, "present", "smile"]], { face: -1, enter: sc.start });
     caption(g, sc, null);
   };
 
@@ -464,7 +784,8 @@
       txt(g, "DATA: REAL", -290, 120, 52, { font: COMIC, weight: 400, fill: C.green, ls: 3 });
       g.restore();
       sfxWord(g, "CLAP!", 1640, 260, r1.start + .4, 120, C.yellow, .1);
-      radar(g, 360, 840, 1.0, { expr: "wow", bounce: false, wave: true });
+      /* Mao presents here */
+      host(g, 1790, 1075, 0.8, [[r1.start, "point", "grin", [1340, 520]]], { face: -1, hop: r1.start + .4 });
       bigLeft(g, "run1", 160, 110);
       return;
     }
@@ -485,19 +806,19 @@
       txt(g, tasks.length + " tool calls", 390, 860, 40, { align: "center", fill: C.indigoD, weight: 700 });
       // the real Run page of the evidence site, replaying
       var tc = T - r2.start; needClip("run", tc + .5);
-      monitor(g, 1230, 430, 900, "run", tc + .5, { rot: .02, scale: eBack(prog(T, r2.start - .05, .45)), zoom: 1.25, focusX: .3, focusY: .4 });
+      monitor(g, 1190, 430, 860, "run", tc + .5, { rot: .02, scale: eBack(prog(T, r2.start - .05, .45)), zoom: 1.25, focusX: .3, focusY: .4 });
       // Crustdata: real headcount bubbles out of Radar's dish
       if (T > r3.start + r3.dur * .45) {
         var cs = wt("run3", ["headcount"], .55);
         comps.forEach(function (c, i) {
           var kk = eBack(prog(T, cs + i * .12, .35)); if (kk <= 0) return;
-          g.save(); g.translate(880 + i * 205, 860 - Math.sin(i) * 20); g.scale(kk, kk); g.rotate((hash(i) - .5) * .12);
+          g.save(); g.translate(770 + i * 165, 800 - Math.sin(i) * 20); g.scale(kk * .88, kk * .88); g.rotate((hash(i) - .5) * .12);
           inkRR(g, -95, -62, 190, 124, 30, C.cream, 5); txt(g, c.name, 0, -18, 24, { align: "center", fill: C.ink, weight: 600 });
           txt(g, fmtN(c.headcount), 0, 38, 48, { align: "center", fill: C.mintD }); g.restore();
         });
-        sfxWord(g, "PING!", 1720, 680, cs, 90, C.yellow, .12);
       }
-      radar(g, 760, 820, .7, { ping: wt("run3", ["headcount"], .55), dish: -.4, expr: "happy" });
+      /* Mao presents here */
+      host(g, 1790, 1075, 0.8, [[r2.start, "present", "smile"], [r2.start + 1.2, "point", "smile", [1230, 430]], [wt("run3", ["headcount"], .55) - .2, "point", "grin", [1200, 860]]], { face: -1 });
       caption(g, sc, null);
       return;
     }
@@ -522,9 +843,10 @@
         txt(g, "stated     " + m[2].replace(/\.00$/, ""), -420, 56, 40, { font: MONO, weight: 500, fill: C.red });
         txt(g, m[3], 330, 30, 64, { align: "center", font: COMIC, weight: 400, fill: C.red });
         g.restore();
-        sfxWord(g, "UH-OH!", 1240, 560, uh, 140, C.red, -.1);
+        sfxWord(g, "UH-OH!", 1180, 470, uh, 130, C.red, -.1);
       }
-      fin(g, 1640, 760, 1.0, { worry: T > uh, sweat: T > uh + .2 });
+      fin(g, 1380, 700, .9, { worry: T > uh, sweat: T > uh + .2 });
+      host(g, 1790, 1075, 0.8, [[r4.start, "present", "smile"], [uh - .1, "point", "wow", [560, 690]]], { face: -1, hop: uh });
       caption(g, sc, null);
       return;
     }
@@ -539,14 +861,15 @@
         var x = 520 + i * 330, y = 600 - lift;
         g.save(); g.translate(x, y + (1 - kk) * 300); g.rotate((i - 1) * .1);
         inkRR(g, -140, -200, 280, 400, 22, isPick && T > pick ? C.indigo : isRule && T > ruleT && T < pick ? C.yellow : C.cream, 6);
-        g.save(); g.rotate(-PI / 2); txt(g, o, 0, 12, o.length > 14 ? 28 : 36, { align: "center", font: MONO, weight: 500, fill: C.ink }); g.restore();
+        g.save(); g.rotate(-PI / 2); txt(g, o, 0, 12, 36, { align: "center", font: MONO, weight: 500, fill: C.ink, maxW: 330 }); g.restore();
         if (isRule) txt(g, "RULE", 0, 250, 34, { align: "center", font: COMIC, weight: 400, fill: C.ink, ls: 3 });
         g.restore();
       });
       // the rule-bot holds up the default; Radar grabs the other card
-      g.save(); g.translate(1600, 760); inkRR(g, -90, -120, 180, 200, 30, "#b9b2d8", 6); inkCircle(g, -32, -50, 12, C.ink, 3); inkCircle(g, 32, -50, 12, C.ink, 3);
+      g.save(); g.translate(1460, 760); inkRR(g, -90, -120, 180, 200, 30, "#b9b2d8", 6); inkCircle(g, -32, -50, 12, C.ink, 3); inkCircle(g, 32, -50, 12, C.ink, 3);
       inkLine(g, -28, 10, 28, 10, 6); txt(g, "RULE", 0, -140, 40, { align: "center", font: COMIC, weight: 400, fill: C.ink, ls: 3 }); g.restore();
-      radar(g, 250, 820, 1.0, { expr: T > pick ? "proud" : "squint", armR: T > pick ? -1.2 : 0 });
+      /* Mao presents here */
+      host(g, 1790, 1075, 0.8, [[r5.start, "think", "think"], [pick, "cheer", "grin"]], { face: -1, hop: pick });
       stamp(g, "OVERRIDE!", 860, 250, pick + .25, C.indigoD, 96, -.1);
       sfxWord(g, "YOINK!", 1250, 300, pick, 110, C.orange, .1);
       caption(g, sc, null);
@@ -558,18 +881,19 @@
       var t15 = tasks.filter(function (x) { return x.id === "t15"; })[0] || {}, na = (RUN.not_analysed || [])[0] || {};
       [[scn, t15.target, false], [cor, na.input, true]].forEach(function (p, i) {
         var kk = eBack(prog(T, p[0] - .1, .45)); if (kk <= 0) return;
-        g.save(); g.translate(500 + i * 900, 470); g.rotate(i ? .06 : -.06); g.scale(kk, kk);
+        g.save(); g.translate(450 + i * 820, 470); g.rotate(i ? .06 : -.06); g.scale(kk, kk);
         inkRR(g, -170, -220, 340, 440, 12, p[2] ? C.white : "#d9d4cc", 6);
         for (var rr = 0; rr < 8; rr++) inkLine(g, -120, -150 + rr * 40, 120, -150 + rr * 40, 3, p[2] ? C.ink : "rgba(42,36,51,.25)");
         if (p[2]) inkPath(g, [[-20, -220], [30, -100], [-40, -10], [40, 100], [0, 220]], false, null, C.red, 9);
         txt(g, String(p[1] || "").replace("invoices/", ""), 0, 270, 30, { align: "center", font: MONO, weight: 500, fill: C.ink, stroke: C.cream, sw: 8 });
         g.restore();
-        if (!p[2] && T > p[0] + .6) { stamp(g, "READ ✓", 500, 470, p[0] + .6, C.mintD, 80, -.12); }
-        if (p[2] && T > p[0] + .9) { stamp(g, "NOT ANALYSED", 1400, 470, p[0] + .9, C.red, 64, .1); }
+        if (!p[2] && T > p[0] + .6) { stamp(g, "READ ✓", 450, 470, p[0] + .6, C.mintD, 80, -.12); }
+        if (p[2] && T > p[0] + .9) { stamp(g, "NOT ANALYSED", 1270, 470, p[0] + .9, C.red, 64, .1); }
       });
       sfxWord(g, "SCAN!", 520, 170, scn + .3, 90, C.sky, -.08);
-      sfxWord(g, "CRACK!", 1420, 170, cor + .1, 100, C.red, .1);
+      sfxWord(g, "CRACK!", 1290, 170, cor + .1, 100, C.red, .1);
       audy(g, 960, 860, .7, { point: T > scn + .3, squint: T < scn + .3 });
+      host(g, 1790, 1075, 0.8, [[r6.start, "point", "smile", [450, 470]], [cor - .1, "point", "wow", [1270, 470]]], { face: -1 });
       caption(g, sc, null);
       return;
     }
@@ -577,17 +901,19 @@
     g.drawImage(paper("run7", "#ffe6a8", ["#ffd98a", "#ffc28a", "#f7b2a0", "#fff1c9"], 211), 0, 0);
     var beat = wt("run7", ["beat"], .7);
     (RUN.decisions || []).forEach(function (d, i) {
-      var x = 1150 + (i % 5) * 150, y = 330 + Math.floor(i / 5) * 260, kk = eBack(prog(T, r7.start + i * .06, .35)); if (kk <= 0) return;
+      var x = 960 + (i % 5) * 112, y = 330 + Math.floor(i / 5) * 260, kk = eBack(prog(T, r7.start + i * .06, .35)); if (kk <= 0) return;
       var win = d.overrode && T > beat - .2, fl = win ? eBack(prog(T, beat - .2 + i * .05, .35)) : 0;
-      g.save(); g.translate(x, y - fl * 30); g.scale(kk * (1 + fl * .08), kk); g.rotate((hash(i) - .5) * .1);
+      g.save(); g.translate(x, y - fl * 30); g.scale(kk * (1 + fl * .08) * .8, kk * .8); g.rotate((hash(i) - .5) * .1);
       inkRR(g, -70, -100, 140, 200, 16, win ? C.yellow : C.cream, 5);
       txt(g, d.task, 0, -60, 24, { align: "center", font: MONO, weight: 500, fill: "#6a6170" });
-      g.save(); g.rotate(-PI / 2); txt(g, d.chosen, 0, 8, 22, { align: "center", font: MONO, weight: 500, fill: C.ink }); g.restore();
+      g.save(); g.rotate(-PI / 2); txt(g, d.chosen, 0, 8, 22, { align: "center", font: MONO, weight: 500, fill: C.ink, maxW: 170 }); g.restore();
       if (win) txt(g, "★", 0, 88, 40, { align: "center", fill: C.orange, stroke: C.ink, sw: 5 });
       g.restore();
     });
-    radar(g, 1400, 900, .65, { expr: "proud", wave: T > beat });
-    bigLeft(g, "run7", 220, 96);
+    /* Mao presents here */
+    host(g, 1790, 1075, 0.8, [[r7.start, "present", "smile"], [beat - .1, "cheer", "grin"]], { face: -1, hop: beat });
+    confetti(g, 1340, 420, beat);
+    var l7 = L("run7"); if (l7 && T > l7.start - .1) bigLine(g, l7, { x: 110, y: 220, w: 760 }, { size: 96 });
   };
 
   // 04 SELF-AUDIT — curtains, the $5.28M claim, Audy shouts, OVERTURNED on the word, claim kept out of the report
@@ -606,7 +932,7 @@
       txt(g, "CONFIDENCE", gx, gy - 20, 34, { align: "center", font: COMIC, weight: 400, fill: C.ink, ls: 3 });
     }
     if (T > a2.start - .2) {
-      radar(g, 430, 770, 1.0, { expr: T > ov ? "wow" : "proud", bounce: false });
+      /* Mao presents here */
       var k = eBack(prog(T, wt("aud2", ["million", "528", "5.28"], .45) - .2, .45));
       if (k > 0) {
         g.save(); g.translate(800, 300); g.scale(k, k);
@@ -623,6 +949,7 @@
       audy(g, lerp(2200, 1180, inA), 760, 1.0, { squint: T < ov - .4, point: T > ov - .4, shout: T > ov - .4 && T < a3.end });
       sfxWord(g, "HOLD ON!", 1160, 430, wt("aud3", ["argued"], .2), 96, C.indigo, .1);
     }
+    if (T > a1.start + .3) host(g, 270, 1075, .8, [[a1.start, "present", "grin"], [a2.start, "point", "smile", [800, 300]], [wt("aud2", ["million", "528", "5.28"], .45), "point", "wow", [800, 300]], [ov - .05, "cheer", "wow"], [a4.start, "present", "grin"]], { hop: ov });
     stamp(g, "OVERTURNED", 800, 560, ov, C.red, 110, -.14);
     sfxWord(g, "SLAM!", 1300, 840, ov + .05, 130, C.red);
     if (T > a4.start - .2) { // the report: claim sent to "Overturned claims"
@@ -645,7 +972,7 @@
       for (var f = 0; f < 6; f++) inkLine(g, x + (f + .5) * w / 6, 0, x + (f + .5) * w / 6 + Math.sin(T + f) * 8, H, 4, "rgba(42,36,51,.35)");
     });
     var cl = lineAt(T);
-    if (cl && cl.id === "aud1") bigLine(g, cl, { x: 0, y: 360, w: W }, { size: 130, align: "center" });
+    if (cl && cl.id === "aud1") closeUp(g, cl, "#f6dfcf", ["#f7b8a8", "#ffd9a0", "#f3a9b8", "#fff0d0"], 303, [[cl.start - .1, "present", "grin"], [cl.start + cl.dur * .45, "point", "wow", [500, 400]]], "right", cl.start + cl.dur * .5, [[cl.start + cl.dur * .5, "aura"]]);
     else if (cl && cl.id === "aud4") bigLine(g, cl, { x: 60, y: 880, w: W - 120 }, { size: 74, align: "center" });
     else caption(g, sc, null);
   };
@@ -656,7 +983,7 @@
     g.drawImage(paper("gen", "#cfe9f0", ["#a9d6e5", "#e7f5f8", "#9cc9e0", "#f0e2c8"], 83), 0, 0);
     var six = wt("gen1", ["six", "6"], .55), caught = wt("gen2", ["caught"], .3);
     (FX.companies || []).forEach(function (c, i) {
-      var col = i % 4, row = Math.floor(i / 4), x = 110 + col * 440 + (row ? 220 : 0), y = 140 + row * 330;
+      var col = i % 4, row = Math.floor(i / 4), x = 110 + col * 440 + (row ? 110 : 0), y = 140 + row * 330;
       var k = eBack(prog(T, g1.start + i * .09, .4)); if (k <= 0) return;
       g.save(); g.translate(x + 200, y + 140); g.scale(k, k); g.rotate((hash(i) - .5) * .06);
       inkRR(g, -200, -140, 400, 280, 24, c.role === "held_out" ? C.cream : "#fff1d6", 6);
@@ -672,16 +999,67 @@
       txt(g, L2.caught + " / " + L2.total, 170, 110, 44, { align: "right", fill: T > caught + .3 ? C.mintD : "#9a92a0" });
       g.restore();
     });
-    stamp(g, "0 FALSE ALARMS", 1640, 770, wt("gen2", ["zero", "0"], .7), C.mintD, 54, .06);
-    radar(g, 230, 900, .7, { expr: T > caught ? "proud" : "happy" });
+    stamp(g, "0 FALSE ALARMS", 1180, 1010, wt("gen2", ["zero", "0"], .7), C.mintD, 44, -.04);
+    host(g, 1790, 1075, 0.8, [[g1.start, "present", "smile"], [caught - .1, "cheer", "grin"]], { face: -1, hop: caught });
+    confetti(g, 960, 380, caught);
+    /* Mao presents here */
     var cl = lineAt(T);
     if (cl && cl.id === "gen2") bigLine(g, cl, { x: 380, y: 800, w: 980 }, { size: 68 }); else caption(g, sc, null);
   };
 
   // 06 NEATLOGS — real span waterfall, magnifier on case study 02, the 3 → 1 verdict dice (case study 05)
   S.neatlogs = function (g, sc) {
-    var n1 = L("nl1"), n2 = L("nl2"), n3 = L("nl3"), n4 = L("nl4");
+    var n1 = L("nl1"), nA = L("nlA"), nB = L("nlB"), nC = L("nlC"), n2 = L("nl2"), n4 = L("nl4");
     g.drawImage(paper("nl", "#1f2440", ["#2c3260", "#3b2f5a", "#22364f", "#2f4a5c"], 97), 0, 0);
+    if (T < n2.start - .05) { // the real incident neatlogs raised (screenshots of our project, 12 Oct)
+      txt(g, "neatlogs", 110, 118, 76, { fill: C.cream, stroke: C.ink, sw: 10 });
+      var MX = 790, MY = 510, MW = 1240, MH = 590, pk = eBack(prog(T, n1.start - .15, .45));
+      g.save(); g.translate(MX, MY); g.scale(pk, pk); g.rotate((1 - pk) * -.05); g.translate(-MX, -MY);
+      if (T < nA.start - .05) {
+        txt(g, "Traces · last 14 days", 470, 118, 30, { font: MONO, weight: 500, fill: "#a8aac4" });
+        var fl = wt("nl1", ["broke"], .3);
+        shotView(g, MX, MY, MW, MH, "../film/public/neatlogs/traces.png", shotCam([[n1.start, [0, 0, 2046, 1300]], [fl, [0, 80, 1500, 780]]]), function (g, s) {
+          ring(g, s, [612, 140, 250, 1080], fl + .2, C.red);
+        });
+        sfxWord(g, "CRASH!", 1300, 250, fl + .1, 96, C.red, .1);
+      } else {
+        txt(g, "Incidents · raised by neatlogs", 470, 118, 30, { font: MONO, weight: 500, fill: "#a8aac4" });
+        var spike = wt("nlA", ["spike"], .25), raised = wt("nlA", ["raised"], .75), root = wt("nlB", ["root"], .4),
+          claude = wt("nlC", ["claude"], .15), closed = wt("nlC", ["closed"], .45), ms = wt("nlC", ["millisecond"], .8);
+        var cam = shotCam([[nA.start, [0, 0, 2050, 1374]], [spike - .2, [100, 90, 1360, 440]], [raised - .2, [80, 60, 1970, 660]],
+          [nB.start, [130, 560, 1200, 640]], [claude - .3, [130, 360, 1200, 560]], [closed - .3, [1300, 60, 750, 360]], [ms - .4, [0, 0, 2050, 1374]]]);
+        shotView(g, MX, MY, MW, MH, "../film/public/neatlogs/incident.png", cam, function (g, s) {
+          if (T < nB.start) { ring(g, s, [135, 240, 885, 46], spike + .1, C.red); ring(g, s, [1462, 118, 552, 160], raised, C.orange); }
+          else if (T < claude - .3) ring(g, s, [172, 1015, 1010, 160], root, C.red);
+          else if (T < closed - .3) ring(g, s, [140, 472, 1068, 186], claude, C.indigo);
+          else ring(g, s, [1462, 118, 552, 160], closed, C.mintD);
+        });
+        if (T < nB.start) {
+          var bk = eBack(prog(T, spike + .2, .4));
+          if (bk > 0) txt(g, "108.5×", 1270, 300, 120, { align: "center", font: COMIC, weight: 400, fill: C.yellow, stroke: C.ink, sw: 14, scale: bk });
+          stamp(g, "INCIDENT RAISED", 620, 690, raised + .1, C.orange, 52, -.05);
+        }
+        else if (T < claude - .3) stamp(g, "ROOT CAUSE", 1180, 300, root + .1, C.red, 56, .08);
+        else if (T < ms - .4) { if (T > closed) stamp(g, "RESOLVED ✓", 700, 690, closed + .1, C.mintD, 56, -.05); sfxWord(g, "SENT!", 1300, 250, claude + .1, 96, C.yellow, .1); }
+        else {
+          var ck = eBack(prog(T, ms - .3, .45));
+          g.save(); g.translate(MX, MY); g.scale(ck, ck); g.rotate(-.02);
+          inkRR(g, -470, -230, 940, 460, 24, C.cream, 6);
+          txt(g, "fix 8d11308 · corrupt invoice 13", 0, -150, 34, { align: "center", font: MONO, weight: 500, fill: C.ink });
+          txt(g, "before: Gemini 400 error", 0, -70, 40, { align: "center", fill: C.red, weight: 700 });
+          txt(g, "after: fails in 0.8 ms", 0, 20, 64, { align: "center", fill: C.mintD, weight: 700 });
+          txt(g, "no LLM call", 0, 100, 44, { align: "center", fill: C.ink, weight: 700 });
+          txt(g, "traces 36362eb9… → 953bb991…", 0, 175, 26, { align: "center", font: MONO, weight: 500, fill: "#6a6170" });
+          g.restore();
+        }
+      }
+      g.restore();
+      var cl2 = wt("nlC", ["closed"], .45);
+      host(g, 1790, 1075, .8, [[n1.start, "present", "smile"], [nA.start, "point", "wow", [790, 545]], [nB.start, "think", "think"], [wt("nlC", ["claude"], .15) - .2, "point", "smile", [790, 545]], [cl2 - .1, "cheer", "grin"]], { face: -1, hop: cl2 });
+      confetti(g, 790, 400, wt("nlC", ["millisecond"], .8));
+      caption(g, sc, null);
+      return;
+    }
     txt(g, "neatlogs", 110, 150, 92, { fill: C.cream, stroke: C.ink, sw: 12 });
     if (n4 && T >= n4.start - .05) { // real public invoices: the reader copied the net amount (case study 06)
       var ri = FX.real_invoices || {}, ex = ri.example || {}, sw = ri.silent_wrong_per_pass || {};
@@ -703,7 +1081,7 @@
       // the count of silent wrong totals per pass, before -> after
       var zk = eBack(prog(T, zeroT - .3, .4));
       if (zk > 0) {
-        g.save(); g.translate(1420, 520); g.scale(zk, zk);
+        g.save(); g.translate(1250, 520); g.scale(zk * .85, zk * .85);
         inkRR(g, -360, -220, 720, 440, 24, C.cream, 6);
         txt(g, "silent wrong totals, per pass", 0, -150, 32, { align: "center", fill: C.ink, weight: 700 });
         txt(g, "tuned-on 12:", -320, -60, 34, { fill: C.ink, weight: 600 }); txt(g, sw.tuned_v1 + "  →  " + sw.tuned_v2, 320, -60, 46, { align: "right", fill: C.mintD });
@@ -713,16 +1091,17 @@
       }
       sfxWord(g, "OOPS!", 900, 250, netT + .1, 100, C.red, -.1);
       sfxWord(g, "FIXED!", 1620, 230, zeroT, 100, C.green, .1);
-      radar(g, 1700, 930, .5, { expr: fixed ? "proud" : "squint" });
+      host(g, 1790, 1075, .75, [[n4.start, "present", "smile"], [netT - .1, "point", "wow", [560, 640]], [zeroT - .1, "cheer", "grin"]], { face: -1, hop: zeroT });
+      confetti(g, 1330, 420, zeroT);
       caption(g, sc, null);
       return;
     }
-    if (T < n3.start - .05) {
+    {
       txt(g, "case study 02 · rerun: 5 runs per side, same models and data", 115, 200, 28, { font: MONO, weight: 500, fill: "#a8aac4" });
       var spans = [["plan", 0, .1], ["act:read_budget", .1, .06], ["verify:totals", .16, .03], ["act:fetch_competitor", .2, .1], ["decide:recovery", .3, .05, 1], ["act:fetch_jobs", .35, .08],
         ["decide:recovery", .43, .05, 1], ["act:classify_titles", .48, .12], ["decide:recovery", .6, .05, 1], ["audit:f_ml_ai", .72, .1], ["report", .86, .1]];
       spans.forEach(function (s, i) {
-        var y = 260 + i * 50, k = prog(T, n1.start + .1 + i * .07, .35), x0 = 560 + s[1] * 1150, w = s[2] * 1150 * eOut(k);
+        var y = 260 + i * 50, k = prog(T, n2.start + .1 + i * .07, .35), x0 = 560 + s[1] * 520, w = s[2] * 520 * eOut(k);
         if (k <= 0) return;
         txt(g, s[0], 520, y + 28, 26, { align: "right", font: MONO, weight: 500, fill: s[3] ? C.yellow : "#cfd0e6" });
         inkRR(g, x0, y + 6, Math.max(8, w), 30, 8, s[3] ? C.orange : C.teal2, 3);
@@ -730,30 +1109,32 @@
       var three = wt("nl2", ["three", "3"], .2), fix = wt("nl2", ["fix"], .45), cut = wt("nl2", ["kept"], .75);
       if (T > n2.start) {
         var mk = eOut(prog(T, n2.start, .4));
-        g.save(); g.globalAlpha = mk; inkCircle(g, 1480, 560, 230, "rgba(20,24,48,.94)", 8);
+        g.save(); g.globalAlpha = mk; inkCircle(g, 1300, 560, 230, "rgba(20,24,48,.94)", 8);
         if (T < fix) {
-          txt(g, "substitute_competitor", 1480, 450, 27, { align: "center", font: MONO, weight: 500, fill: C.orange });
-          ["Honeycomb", "Arize", "Chronosphere"].forEach(function (nm, i) { var fly = prog(T, three + .2 + i * .2, .5); txt(g, "✗ " + nm, 1480 + fly * 260 * (i - 1), 520 + i * 56 - fly * 160, 38, { align: "center", fill: C.red, weight: 700 }); });
-          txt(g, "→ New Relic (3,095)", 1480, 700, 30, { align: "center", fill: C.cream, weight: 600 }); txt(g, "→ Datadog (10,482)", 1480, 740, 30, { align: "center", fill: C.cream, weight: 600 });
+          txt(g, "substitute_competitor", 1300, 450, 27, { align: "center", font: MONO, weight: 500, fill: C.orange });
+          ["Honeycomb", "Arize", "Chronosphere"].forEach(function (nm, i) { var fly = prog(T, three + .2 + i * .2, .5); txt(g, "✗ " + nm, 1300 + fly * 260 * (i - 1), 520 + i * 56 - fly * 160, 38, { align: "center", fill: C.red, weight: 700 }); });
+          txt(g, "→ New Relic (3,095)", 1300, 700, 30, { align: "center", fill: C.cream, weight: 600 }); txt(g, "→ Datadog (10,482)", 1300, 740, 30, { align: "center", fill: C.cream, weight: 600 });
         } else {
-          (RUN.competitors || []).forEach(function (c, i) { txt(g, "✓ " + c.name, 1480, 430 + i * 50, 34, { align: "center", fill: C.green, weight: 700 }); });
+          (RUN.competitors || []).forEach(function (c, i) { txt(g, "✓ " + c.name, 1300, 430 + i * 50, 34, { align: "center", fill: C.green, weight: 700 }); });
           var c2 = FX.case02 || {};
-          txt(g, "5 of 5 kept", 1480, 700, 42, { align: "center", fill: C.yellow, weight: 700 });
-          txt(g, "in " + (c2.runs_per_side || 5) + " of " + (c2.runs_per_side || 5) + " runs", 1480, 745, 32, { align: "center", fill: C.cream, weight: 600 });
+          txt(g, "5 of 5 kept", 1300, 700, 42, { align: "center", fill: C.yellow, weight: 700 });
+          txt(g, "in " + (c2.runs_per_side || 5) + " of " + (c2.runs_per_side || 5) + " runs", 1300, 745, 32, { align: "center", fill: C.cream, weight: 600 });
         }
-        g.restore(); inkLine(g, 1640, 720, 1780, 870, 22, C.ink);
+        g.restore(); inkLine(g, 1460, 720, 1520, 790, 22, C.ink);
         sfxWord(g, "YOINK!", 1220, 300, three + .4, 100, C.orange, -.12);
         sfxWord(g, "FIXED!", 1700, 250, fix + .2, 100, C.green, .1);
       }
-      radar(g, 250, 880, .7, { expr: T > n2.start && T < fix ? "squint" : "happy" });
-    } else {
+      /* Mao presents here */
+      host(g, 1790, 1075, 0.8, [[n2.start, "point", "smile", [1300, 560]], [fix, "cheer", "grin"]], { face: -1, hop: fix });
+    }
+    if (false) {
       txt(g, "case study 05 · same Acme data · 5 identical runs per side", 115, 200, 28, { font: MONO, weight: 500, fill: "#a8aac4" });
       var one = wt("nl3", ["one", "1"], .8), before = (FX.case05 || {}).before || [], after = (FX.case05 || {}).after || [];
       var COL = { confirmed: C.green, overturned: C.red, downgraded: C.yellow };
       before.forEach(function (v, i) {
         var land = T > one + i * .08, spin = land ? eBack(prog(T, one + i * .08, .4)) : 0, cur = land ? after[i] : v;
         var k = eBack(prog(T, n3.start + i * .1, .4)); if (k <= 0) return;
-        g.save(); g.translate(330 + i * 315, 560 + (land ? 0 : Math.sin(T * 9 + i) * 14)); g.scale(k, k); g.rotate(land ? (1 - spin) * TAU : Math.sin(T * 6 + i) * .15);
+        g.save(); g.translate(300 + i * 300, 560 + (land ? 0 : Math.sin(T * 9 + i) * 14)); g.scale(k, k); g.rotate(land ? (1 - spin) * TAU : Math.sin(T * 6 + i) * .15);
         inkRR(g, -125, -125, 250, 250, 30, COL[cur] || C.cream, 6);
         txt(g, "run " + (i + 1), 0, -70, 26, { align: "center", font: MONO, weight: 500, fill: C.ink }); txt(g, cur, 0, 20, 36, { align: "center", fill: C.ink, weight: 700 });
         g.restore();
@@ -761,6 +1142,7 @@
       var big = T < one ? "3 verdicts" : "1 verdict";
       txt(g, big, 960, 870, 110, { align: "center", font: COMIC, weight: 400, fill: T < one ? C.red : C.yellow, stroke: C.ink, sw: 14, ls: 4 });
       sfxWord(g, "CLICK!", 1650, 300, one, 100, C.yellow, .1);
+      host(g, 1790, 1075, 0.8, [[n3.start, "think", "think"], [one - .1, "cheer", "grin"]], { face: -1, hop: one });
     }
     caption(g, sc, null);
   };
@@ -782,7 +1164,7 @@
       });
       var bk = eBack(prog(T, wt("ent1", ["ninety", "90"], .7) - .1, .45));
       if (bk > 0) { g.save(); g.translate(1520, 520); g.scale(bk, bk); txt(g, String(FX.checkpoints), 0, 0, 260, { align: "center", fill: C.yellow, stroke: C.ink, sw: 28, shadow: C.ink, sx: 8, sy: 10 }); txt(g, "checkpoints", 0, 80, 54, { align: "center", fill: C.ink }); g.restore(); }
-      radar(g, 1700, 900, .55, { expr: "happy", bounce: false });
+      host(g, 1790, 1075, 0.8, [[e1.start, "present", "smile"], [wt("ent1", ["ninety", "90"], .7) - .1, "point", "wow", [1520, 470]]], { face: -1 });
     } else if (T < e3.start - .05) {
       // detective board with red string
       inkRR(g, 80, 220, 1760, 640, 20, "#c79a6a", 6);
@@ -796,18 +1178,18 @@
         g.save(); g.translate(pos[i][0], pos[i][1]); g.rotate((hash(i * 5) - .5) * .14); g.scale(k, k);
         inkRR(g, -170, -80, 340, 160, 8, i === 4 ? "#fff3b0" : C.white, 5);
         txt(g, n[0].toUpperCase(), 0, -34, 22, { align: "center", font: MONO, weight: 500, fill: "#6a6170" });
-        txt(g, n[1], 0, 22, i === 4 ? 24 : 30, { align: "center", font: i === 4 ? FONT : MONO, weight: i === 4 ? 600 : 500, fill: C.ink });
+        txt(g, n[1], 0, 22, i === 4 ? 24 : 30, { align: "center", font: i === 4 ? FONT : MONO, weight: i === 4 ? 600 : 500, fill: C.ink, maxW: 300 });
         inkCircle(g, 0, -80, 12, C.red, 4);
         g.restore();
       });
-      fin(g, 1760, 860, .6, { worry: false });
+      host(g, 1790, 1075, 0.8, nodes.map(function (n, i) { return [n[2] - .2, "point", i === 4 ? "wow" : "smile", pos[i]]; }), { face: -1 });
       sfxWord(g, "AHA!", 1640, 220, wt("ent2", ["prompt"], .85) + .2, 100, C.yellow, .1);
     } else {
       // six runner-bots; two catch bugs
       var bug = wt("ent3", ["bugs", "four", "4"], .55), merged = wt("ent3", ["fixed"], .85);
       (FX.runners || []).forEach(function (r, i) {
         var k = eBack(prog(T, e3.start + i * .07, .35)); if (k <= 0) return;
-        var x = 200 + i * 300, y = 700 + Math.sin(T * 8 + i) * 8;
+        var x = 160 + i * 255, y = 700 + Math.sin(T * 8 + i) * 8 + hopY(merged + i * .06, 30);
         g.save(); g.translate(x, y); g.scale(k * .8, k * .8);
         inkRR(g, -70, -90, 140, 160, 28, ["#b9b2d8", "#f3c3bd", "#bfe3ec", "#c9e4b0", "#ffd166", "#cdbff0"][i], 5);
         inkCircle(g, -26, -40, 10, C.ink, 3); inkCircle(g, 26, -40, 10, C.ink, 3); inkLine(g, -20, 10, 20, 10, 5);
@@ -825,6 +1207,8 @@
         g.restore();
       });
       sfxWord(g, "GOTCHA!", 960, 200, bug, 120, C.orange, -.06);
+      host(g, 1790, 1075, 0.8, [[e3.start, "present", "smile"], [bug - .1, "point", "wow", [960, 380]], [merged - .1, "cheer", "grin"]], { face: -1, hop: merged });
+      confetti(g, 960, 300, merged);
       txt(g, (FX.trails || []).length + " review trails · " + (FX.runners || []).length + " runners each", 1820, 160, 34, { align: "right", font: MONO, weight: 500, fill: C.ink });
     }
     caption(g, sc, null);
@@ -838,6 +1222,7 @@
     if (T < c2.start - .05) {
       monitorImg(g, 880, 560, 1180, "../film/public/cfoai/launch-plan.png", { ar: 892 / 1364 * .82, scale: eBack(prog(T, c1.start - .1, .45)), rot: -.015, zoom: lerp(1, 1.25, eInOut(prog(T, c1.start + .5, 3))), fx: 0, fy: .3 });
       fin(g, 1700, 680, .95, { paper: true });
+      host(g, 135, 1075, .72, [[c1.start, "point", "smile", [880, 560]]]);
     } else if (T < c3.start - .05) {
       var three = wt("cfo2", ["three", "3"], .15), ninety = wt("cfo2", ["ninetynine", "ninety", "99"], .7);
       var k1 = eBack(prog(T, three - .1, .4)), k2 = eBack(prog(T, ninety - .4, .45));
@@ -851,7 +1236,7 @@
         g.restore();
         sfxWord(g, "~99%", 1440, 280, ninety, 140, C.red, .1);
       }
-      radar(g, 1650, 860, .7, { expr: T > ninety ? "wow" : "happy" });
+      host(g, 1790, 1075, 0.8, [[c2.start, "present", "smile"], [ninety - .1, "point", "wow", [1100, 590]]], { face: -1, hop: ninety });
     } else {
       var sc6 = (FX.cash || {}).scenarios || {}, names = Object.keys(sc6), all = [];
       names.forEach(function (n) { all = all.concat(sc6[n]); });
@@ -887,18 +1272,24 @@
   // 09 OUTRO — the site on a monitor, the cast dancing (backup dancers), end card
   S.outro = function (g, sc) {
     var o1 = L("out1"), o2 = L("out2");
+    if (T > o2.end + .55) { endCard(g, 1); return; }
     g.drawImage(paper("out", "#f6d9b8", ["#f7b2a0", "#ffd98a", "#f6a6c1", "#c4b4ee"], 149), 0, 0);
     g.save(); g.translate(960, 560); g.rotate(T * .06);
     for (var r = 0; r < 24; r++) { g.fillStyle = hexa(r % 2 ? "#ffd98a" : "#f7b2a0", .35); g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1500, r / 24 * TAU, (r + .5) / 24 * TAU); g.fill(); }
     g.restore();
     var tc = T - sc.start; needClip("intro", Math.min(tc + 2.6, 8.4));
-    monitor(g, 960, 380, 860, "intro", Math.min(tc + 2.6, 8.4), { scale: eBack(prog(T, sc.start, .5)), rot: -.015 });
+    monitor(g, 960, 320, 700, "intro", Math.min(tc + 2.6, 8.4), { scale: eBack(prog(T, sc.start, .5)), rot: -.015 });
     var hop = function (ph) { return -Math.abs(Math.sin(T * 5 + ph)) * 26; };
-    radar(g, 300, 870 + hop(0), .8, { wave: true }); audy(g, 1650, 880 + hop(1), .62, { shout: true }); fin(g, 1420, 850 + hop(2), .62, { armUp: true });
-    var cl = lineAt(T); if (cl && cl.scene === "outro") bigLine(g, cl, { x: 0, y: 760, w: W }, { size: 84, align: "center", hold: true });
-    if (T > o2.end + .1) {
-      var k = eOut(prog(T, o2.end + .1, .4));
-      g.save(); g.globalAlpha = k; g.fillStyle = "rgba(42,36,51,.86)"; g.fillRect(0, 0, W, H);
+    /* Mao presents here */
+    host(g, 410, 1075, .8, [[sc.start, "wave", "grin"], [o2.start, "cheer", "wink"]], { hop: o2.start + .2 });
+    confetti(g, 960, 520, o2.start + .2, 60);
+    var cl = lineAt(T);
+    if (cl && cl.id === "out1" && T < o2.start - .05) { closeUp(g, cl, "#f6d9b8", ["#f7b2a0", "#ffd98a", "#f6a6c1", "#c4b4ee"], 305, [[cl.start - .1, "present", "smile", [500, 400]], [wt("out1", ["source"], .8) - .1, "cheer", "grin"]], "right", wt("out1", ["source"], .8), [[wt("out1", ["source"], .8), "sparkle"]]); return; }
+    if (cl && cl.scene === "outro") bigLine(g, cl, { x: 0, y: 610, w: W }, { size: 80, align: "center", hold: true });
+    if (T > o2.end + .1) endCard(g, eOut(prog(T, o2.end + .1, .4)));
+  };
+  function endCard(g, k) {
+      g.save(); g.globalAlpha = k; g.fillStyle = "#2a2433"; g.fillRect(0, 0, W, H);
       txt(g, "SPEND RADAR", 960, 450, 170, { align: "center", fill: C.cream, stroke: C.ink, sw: 24, shadow: C.ink, sx: 8, sy: 10 });
       txt(g, "Every number has a source.", 960, 545, 56, { align: "center", fill: C.yellow });
       txt(g, "github.com/akarsh-dhingra/SpeedRadar-NeetHack", 960, 640, 36, { align: "center", font: MONO, weight: 500, fill: C.cream });
@@ -906,8 +1297,7 @@
       txt(g, "team qwep · #neatHack · built with neatlogs, Entire, cfo.ai", 960, 760, 34, { align: "center", fill: "#d9cfe0", weight: 600 });
       txt(g, "voice: Chatterbox, timbre from LibriSpeech reader 1673 (CC BY 4.0)", 960, 1010, 22, { align: "center", fill: "#9f95a8", weight: 500 });
       g.restore();
-    }
-  };
+  }
 
   // ── frame assembly ─────────────────────────────────────────────────────────
   var bufA = document.createElement("canvas"), bufB = document.createElement("canvas"); bufA.width = bufB.width = W * SC; bufA.height = bufB.height = H * SC;
@@ -925,7 +1315,7 @@
   }
   var TRANS = .55;
   function frame(t) {
-    T = t; BF = Math.floor(t * BOIL); X.setTransform(SC, 0, 0, SC, 0, 0); X.imageSmoothingQuality = "high";
+    T = t; TREAL = t; BF = Math.floor(t * BOIL); X.setTransform(SC, 0, 0, SC, 0, 0); X.imageSmoothingQuality = "high";
     var i = sceneAt(t), sc = TL.scenes[i];
     var into = i > 0 ? t - sc.start : 99;
     if (into < TRANS / 2 && i > 0) { // second half of a wipe: previous scene still partly visible
@@ -960,7 +1350,7 @@
     add(wt("run6", ["corrupt"], .5) + .1, "glitch", .8); add(wt("run6", ["corrupt"], .5) + .9, "stamp", .8); add(wt("run7", ["beat"], .7), "ding");
     add(L("aud1").start, "riser", .7); add(wt("aud2", ["million", "528", "5.28"], .45), "boom", .8); add(wt("aud3", ["overturned"], .75), "stamp", 1.2);
     add(wt("gen2", ["caught"], .3), "ding"); add(wt("gen2", ["zero", "0"], .7), "stamp", .8);
-    add(wt("nl2", ["three", "3"], .2) + .4, "glitch", .7); add(wt("nl2", ["dropped"], .75), "pop", .7); add(wt("nl2", ["fix"], .45) + .2, "ding"); add(wt("nl3", ["one", "1"], .8), "stamp");
+    add(wt("nl2", ["three", "3"], .2) + .4, "glitch", .7); add(wt("nl2", ["dropped"], .75), "pop", .7); add(wt("nl2", ["fix"], .45) + .2, "ding"); add(wt("nl1", ["broke"], .3) + .2, "glitch", .7); add(wt("nlA", ["spike"], .25) + .3, "boom", .7); add(wt("nlA", ["raised"], .75) + .1, "stamp"); add(wt("nlB", ["root"], .4) + .1, "stamp", .8); add(wt("nlC", ["claude"], .15) + .1, "pop"); add(wt("nlC", ["closed"], .45) + .1, "stamp"); add(wt("nlC", ["millisecond"], .8), "ding");
     if (L("nl4")) { add(wt("nl4", ["net"], .45) + .1, "glitch", .8); add(wt("nl4", ["fix"], .75), "stamp"); add(wt("nl4", ["zero", "0"], .85), "ding"); }
     add(wt("ent1", ["ninety", "90"], .7), "boom", .8); add(wt("ent2", ["prompt"], .85) + .2, "ding"); add(wt("ent3", ["bugs", "four", "4"], .55), "pop"); add(wt("ent3", ["fixed"], .85), "ding");
     add(wt("cfo2", ["ninetynine", "ninety", "99"], .7), "boom", .8); add(wt("cfo3", ["january"], .55) + .4, "ding", 1.1);
@@ -982,5 +1372,5 @@
     var keys = Object.keys(imgCache); if (keys.length > 120) keys.slice(0, keys.length - 60).forEach(function (k) { delete imgCache[k]; delete loading[k]; });
     return true;
   };
-  window.__ready = true;
+  (window.__l2dReady || Promise.resolve()).then(function () { window.__ready = true; }, function (e) { console.error("Live2D failed", e); window.__ready = true; });
 })();

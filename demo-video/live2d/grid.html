@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Live2D pose grid</title>
+<style>html,body{margin:0;background:#f6d9b8}</style>
+<script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+</head><body>
+<script>
+// Renders Mao in 8 parameter sets to learn what the arm / wand / effect parameters do.
+const BASE = "https://cdn.jsdelivr.net/gh/Live2D/CubismWebSamples@5-r.5/Samples/Resources/";
+const SETS = [
+  ["default", {}],
+  ["ArmRA01=30", { ParamArmRA01: 30 }],
+  ["RA01=30 RA02=-20 RA03=30", { ParamArmRA01: 30, ParamArmRA02: -20, ParamArmRA03: 30 }],
+  ["ArmLA01=30 LA02=-20", { ParamArmLA01: 30, ParamArmLA02: -20 }],
+  ["WandRotate=10", { ParamWandRotate: 10 }],
+  ["smile+A+cheek", { ParamEyeLSmile: 1, ParamEyeRSmile: 1, ParamA: 1, ParamCheek: 1 }],
+  ["Aura", { ParamAuraOn: 1, ParamAura: 15, ParamCheek: 1 }],
+  ["Heart light", { ParamHeartLightOn: 1, ParamHeartLight: 15, ParamWandInk: 1 }],
+];
+const app = new PIXI.Application({ width: 1920, height: 1080, backgroundAlpha: 0, preserveDrawingBuffer: true, autoStart: false });
+document.body.appendChild(app.view);
+window.__done = (async () => {
+  for (let i = 0; i < SETS.length; i++) {
+    const m = await PIXI.live2d.Live2DModel.from(BASE + "Mao/Mao.model3.json", { autoInteract: false, autoUpdate: false });
+    const im = m.internalModel; im.eyeBlink = undefined; im.motionManager.update = () => false;
+    const P = SETS[i][1];
+    im.on("afterMotionUpdate", () => { for (const k in P) im.coreModel.setParameterValueById(k, P[k]); });
+    const sc = 520 / m.height; m.scale.set(sc); m.x = (i % 4) * 480 + 240 - m.width / 2; m.y = Math.floor(i / 4) * 540 + 10;
+    app.stage.addChild(m);
+    for (let k = 0; k < 20; k++) m.update(33);
+    const t = new PIXI.Text(SETS[i][0], { fontSize: 18, fill: 0x2a2433 }); t.x = (i % 4) * 480 + 10; t.y = Math.floor(i / 4) * 540 + 510; app.stage.addChild(t);
+  }
+  app.render();
+  return SETS.length;
+})();
+</script></body></html>

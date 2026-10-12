@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Live2D params</title>
+<script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+</head><body>
+<script>
+// Lists Mao's parameters (id, min, max, default) and the internal-model hooks we can use for per-frame control.
+const BASE = "https://cdn.jsdelivr.net/gh/Live2D/CubismWebSamples@5-r.5/Samples/Resources/";
+window.__done = (async () => {
+  const m = await PIXI.live2d.Live2DModel.from(BASE + "Mao/Mao.model3.json", { autoInteract: false, autoUpdate: false });
+  const core = m.internalModel.coreModel, model = core.getModel ? core.getModel() : core._model;
+  const p = model.parameters, out = [];
+  for (let i = 0; i < p.count; i++) out.push([p.ids[i], +p.minimumValues[i].toFixed(2), +p.maximumValues[i].toFixed(2), +p.defaultValues[i].toFixed(2)]);
+  const im = m.internalModel;
+  return { params: out, hooks: { eyeBlink: !!im.eyeBlink, breath: !!im.breath, physics: !!im.physics, motionGroups: Object.keys((im.motionManager.definitions) || {}),
+    events: typeof im.on === "function" }, expressions: (im.settings.expressions || []).map((e) => e.Name) };
+})();
+</script></body></html>

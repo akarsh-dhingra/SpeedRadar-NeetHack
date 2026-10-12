@@ -20,15 +20,15 @@ const OW = 2560, OH = 1440; // output size; the film is drawn in 1920x1080 units
 
 const browser = await puppeteer.launch({
   headless: true, executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-  args: ["--no-sandbox", "--allow-file-access-from-files", "--force-color-profile=srgb", "--disable-web-security"],
+  args: ["--no-sandbox", "--allow-file-access-from-files", "--force-color-profile=srgb", "--disable-web-security", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"],
 });
 const page = await browser.newPage();
 await page.setViewport({ width: OW, height: OH, deviceScaleFactor: 1 });
 await page.evaluateOnNewDocument((tl, clips, data) => { window.__TL = tl; window.__CLIPS = clips; window.__DATA = data; }, TL, CLIPS, DATA);
 page.on("pageerror", (e) => console.error("page error:", e.message));
-await page.goto(pathToFileURL(path.join(HERE, "comp", "index.html")).href, { waitUntil: "networkidle0" });
+await page.goto(pathToFileURL(path.join(HERE, "comp", "index.html")).href, { waitUntil: "networkidle0", timeout: 120000 });
 await page.evaluate(() => window.__fontsReady);
-await page.waitForFunction(() => window.__ready === true);
+await page.waitForFunction(() => window.__ready === true, { timeout: 120000 });
 
 // lossless frames: PNG straight from the canvas pixels
 const shot = async (t) => { await page.evaluate((tt) => window.__render(tt), t); return page.screenshot({ type: "png", optimizeForSpeed: true, clip: { x: 0, y: 0, width: OW, height: OH } }); };

@@ -1,0 +1,28 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Live2D test</title>
+<style>html,body{margin:0;background:#f6d9b8}canvas{display:block}</style>
+<script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/cubism4.min.js"></script>
+</head><body>
+<script>
+// Feasibility check: load two of Live2D's official sample models (fetched from Live2D's own repo, not redistributed)
+// and render one frame with manual parameter control (mouth open, head angle), no real-time ticker.
+const BASE = "https://cdn.jsdelivr.net/gh/Live2D/CubismWebSamples@5-r.5/Samples/Resources/";
+const app = new PIXI.Application({ width: 1920, height: 1080, backgroundAlpha: 0, preserveDrawingBuffer: true, autoStart: false });
+document.body.appendChild(app.view);
+window.__done = (async () => {
+  const names = ["Hiyori", "Mao"], out = [];
+  for (let i = 0; i < names.length; i++) {
+    const m = await PIXI.live2d.Live2DModel.from(BASE + names[i] + "/" + names[i] + ".model3.json", { autoInteract: false, autoUpdate: false });
+    const sc = 1000 / m.height; m.scale.set(sc); m.x = 160 + i * 900; m.y = 40;
+    app.stage.addChild(m);
+    const core = m.internalModel.coreModel;
+    out.push({ name: names[i], w: Math.round(m.width), h: Math.round(m.height), params: core.getParameterCount ? core.getParameterCount() : null });
+    m.update(16); core.setParameterValueById("ParamMouthOpenY", 0.8); core.setParameterValueById("ParamAngleX", i ? -15 : 15);
+    core.update();
+  }
+  app.render();
+  return out;
+})();
+</script></body></html>
