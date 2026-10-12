@@ -57504,6 +57504,35 @@
     "runner_result": "no blocking issues",
     "findings": [],
     "note": "after-merge review of 398b322: base review/base-7c59831 is its parent, so the diff is exactly that commit"
+   },
+   {
+    "number": 5,
+    "title": "Real-invoice eval + read_pdf_llm v2/v3 + printed-net check (case studies 06, 07)",
+    "branch": "review/agent-real-invoices",
+    "runner_result": "no blocking issues",
+    "findings": [],
+    "note": "after-merge review of all agent and eval code changed since bee22e3 (the trail #3 merge)"
+   },
+   {
+    "number": 6,
+    "title": "Site + export: walkthrough, plain-English layer, real invoices page, Entire/neatlogs pages, cfo.ai section",
+    "branch": "review/site-and-export",
+    "runner_result": "no blocking issues",
+    "note": "after-merge review of site/ and spendradar/export.py as changed since bee22e3",
+    "findings": [
+     {
+      "severity": "medium",
+      "status": "resolved",
+      "fix": "bd079ca",
+      "summary": "The Managed-review export would crash if its net cash flow never turned positive in the window."
+     },
+     {
+      "severity": "low",
+      "status": "resolved",
+      "fix": "bd079ca",
+      "summary": "The Entire page hardcoded \"both fixed\" next to a computed count of runner findings."
+     }
+    ]
    }
   ],
   "runners": [
@@ -57514,7 +57543,7 @@
    "review",
    "summary"
   ],
-  "checkpoints": 90,
+  "checkpoints": 91,
   "explain": [
    {
     "file": "evidence/explain/f8b07091ded7-errors.md",

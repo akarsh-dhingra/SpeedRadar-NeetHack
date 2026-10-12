@@ -178,6 +178,18 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
   - Site data: the Entire page lists 4 trails (only the `entire` block of the export changed; `TRAILS` in `spendradar/export.py`).
 - **Checked:** `entire trail show 4`; Entire page rendered in headless Chrome.
 
+### 2026-10-12 — Entire trails #5 and #6: everything since the last review; two findings fixed (logged 2026-10-12 04:09 IST)
+- **Planned:** put all code changed since the trail #3 merge (`bee22e3`) through Entire's review runners, not just `398b322` (trail #4).
+- **Done:**
+  - Trail #5 (`review/agent-real-invoices`): agent + eval code since `bee22e3`, exactly as on main (real-invoice eval and ground truth, `read_pdf_llm` v2/v3, printed-net check, classifier unwrap, tests). Runners: no blocking issues, no findings.
+  - Trail #6 (`review/site-and-export`): `site/` and `spendradar/export.py` since `bee22e3`. Runners: two findings, both fixed in `bd079ca`:
+    - medium `01M4Q4PHNSKJ`: the Managed-review export used `next()` without a default, so it would crash the whole export if that scenario's net cash flow never turned positive. Now it reports "not within 24 months". (The runner also said the JSON file did not exist yet; it does: `business/cfoai/managed_review_2026-10-11.json`.)
+    - low `01M4Q4PHNXY5`: the Entire page hardcoded "both fixed before merge" next to a computed count. It now computes "N of M fixed", and the overview no longer says "before merge" (trails 4–6 are after-merge reviews).
+  - Each review branch = `bee22e3` plus those files exactly as on main, against `review/base-bee22e3`.
+  - Site data: 6 trails, 4 runner findings, all resolved; 91 checkpoint trailers.
+  - Entire snapshot `evidence/entire/checkpoint-list-2026-10-12.txt` (72 on main; 88 refs on GitHub at the time).
+- **Checked:** pytest 106 passed; `entire trail show 5/6`, `entire trail finding list 5/6`; Entire page in headless Chrome.
+
 ## Demo
 - Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
 - Evidence site (live): https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ (deployed from `site/`; built from `evidence/frontend_data.json`).

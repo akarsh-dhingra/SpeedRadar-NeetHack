@@ -109,8 +109,9 @@ def _cfoai_model(root):
         m = json.loads(mr.read_text(encoding="utf-8"))
         r, base = m["Managed review"], next(s for s in scen if s["name"] == "Base")
         low = min(r["Ending cash"])
-        first = next(i for i, v in enumerate(r["Net cash flow"]) if v > 0)
-        scen.append({"name": "Managed review", "first_cash_flow_positive_month": f"{m['months'][first]} (month {first + 1})",
+        first = next((i for i, v in enumerate(r["Net cash flow"]) if v > 0), None)  # None: never positive in the window
+        scen.append({"name": "Managed review",
+                     "first_cash_flow_positive_month": f"{m['months'][first]} (month {first + 1})" if first is not None else None,
                      "lowest_ending_cash": low, "lowest_ending_cash_month": m["months"][r["Ending cash"].index(low)],
                      "ending_cash_month_24": r["Ending cash"][-1], "revenue_month_24": base["revenue_month_24"],
                      "gross_margin_month_24": r["Gross margin"][-1], "customers_month_24": base["customers_month_24"],
@@ -130,7 +131,7 @@ def _cfoai_model(root):
 RESCORE_VARIANTS = {"history-all-acme-runs", "before-fix-misses", "gpt5nano-evidence-rescore", "fixture-rescore"}
 
 # Entire trails on the GitHub repo (the submission repo). Runner results copied from `entire trail show`
-# and `entire trail finding list` on 2026-10-11 (trails 1-3) and 2026-10-12 (trail 4); the trail pages are the source.
+# and `entire trail finding list` on 2026-10-11 (trails 1-3) and 2026-10-12 (trails 4-6); the trail pages are the source.
 ENTIRE_REPO = "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack"
 TRAILS = [
     {"number": 1, "title": "Code provenance: every run links to the Entire checkpoint that wrote its code",
@@ -147,6 +148,16 @@ TRAILS = [
     {"number": 4, "title": "Printed-net invoice totals + read_pdf_llm v3 + classifier unwrap (case study 07)",
      "branch": "review/printed-net", "runner_result": "no blocking issues", "findings": [],
      "note": "after-merge review of 398b322: base review/base-7c59831 is its parent, so the diff is exactly that commit"},
+    {"number": 5, "title": "Real-invoice eval + read_pdf_llm v2/v3 + printed-net check (case studies 06, 07)",
+     "branch": "review/agent-real-invoices", "runner_result": "no blocking issues", "findings": [],
+     "note": "after-merge review of all agent and eval code changed since bee22e3 (the trail #3 merge)"},
+    {"number": 6, "title": "Site + export: walkthrough, plain-English layer, real invoices page, Entire/neatlogs pages, cfo.ai section",
+     "branch": "review/site-and-export", "runner_result": "no blocking issues",
+     "note": "after-merge review of site/ and spendradar/export.py as changed since bee22e3",
+     "findings": [{"severity": "medium", "status": "resolved", "fix": "bd079ca",
+                   "summary": "The Managed-review export would crash if its net cash flow never turned positive in the window."},
+                  {"severity": "low", "status": "resolved", "fix": "bd079ca",
+                   "summary": "The Entire page hardcoded \"both fixed\" next to a computed count of runner findings."}]},
 ]
 RUNNERS = ["risk", "confidence", "drift", "security", "review", "summary"]
 
