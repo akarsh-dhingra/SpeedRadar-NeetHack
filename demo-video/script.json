@@ -173,15 +173,21 @@
     },
     {
      "id": "nl2",
-     "say": "One trace showed the agent throwing away three of its five competitors. After the fix, it kept all five, and the data credits dropped from twenty-six point six to five point four.",
-     "cap": "One trace: the agent threw away 3 of its 5 competitors. After the fix, it kept all 5 — and credits dropped from 26.6 to 5.4.",
-     "src": "evidence/case-studies/02-competitor-substitution.md"
+     "say": "In five runs before one fix, the agent threw away three of its five competitors, every time. After the fix, it kept all five, every time.",
+     "cap": "Before one fix: 3 of 5 competitors thrown away, in 5 runs out of 5. After it: all 5 kept, every time.",
+     "src": "evidence/case-studies/02-competitor-substitution.md, rerun n = 5 per side"
     },
     {
      "id": "nl3",
      "say": "Another showed the same data getting three different verdicts. Now, it gets one, every time.",
      "cap": "Another: the same data got 3 different verdicts. Now it gets 1, every time.",
      "src": "evidence/case-studies/05-audit-verdict-variance.md"
+    },
+    {
+     "id": "nl4",
+     "say": "Then we tried twenty-four real, public invoices. The reader was copying the net amount instead of the total. After the fix, zero silent wrong totals.",
+     "cap": "Then: 24 real public invoices. The reader copied the net amount, not the total. After the fix: 0 silent wrong totals.",
+     "src": "evidence/case-studies/06-real-invoices-gross-vs-net.md (12 tuned-on + 12 held-out, n = 3 passes: 2 and 4 per pass -> 0)"
     }
    ]
   },
@@ -192,9 +198,9 @@
    "lines": [
     {
      "id": "ent1",
-     "say": "Entire gave our coding agent a memory. Sixty-nine checkpoints, each one linking a commit to its prompt.",
-     "cap": "Entire gave our coding agent a memory: 69 checkpoints, each linking a commit to its prompt.",
-     "src": "evidence/frontend_data.json entire.checkpoints = 69"
+     "say": "Entire gave our coding agent a memory. More than ninety checkpoints, each one linking a commit to its prompt.",
+     "cap": "Entire gave our coding agent a memory: 90+ checkpoints, each linking a commit to its prompt.",
+     "src": "evidence/frontend_data.json entire.checkpoints (91 on 12 Oct)"
     },
     {
      "id": "ent2",
@@ -204,9 +210,9 @@
     },
     {
      "id": "ent3",
-     "say": "And Entire's review runners caught two real bugs, before we merged.",
-     "cap": "And Entire's review runners caught 2 real bugs before we merged.",
-     "src": "frontend_data.json entire.trails findings: a16758f, 62c6b69"
+     "say": "Six review trails later, Entire's runners have caught four real bugs, and we fixed every one.",
+     "cap": "6 review trails: Entire's runners caught 4 real bugs — all 4 fixed.",
+     "src": "evidence/frontend_data.json entire.trails: 6 trails, 4 findings, all resolved (a16758f, 62c6b69, bd079ca)"
     }
    ]
   },
@@ -228,9 +234,9 @@
     },
     {
      "id": "cfo3",
-     "say": "Across six scenarios, the base case turns cash-flow positive in January twenty twenty-eight.",
-     "cap": "Across 6 scenarios, the base case turns cash-flow positive in January 2028.",
-     "src": "business/cfoai/mcp_export_2026-10-11.json"
+     "say": "Across seven scenarios, the base case turns cash-flow positive in January twenty twenty-eight. Even paying for a human to review flagged invoices, it still does.",
+     "cap": "Across 7 scenarios, the base case turns cash-flow positive in January 2028 — even paying a human to review flagged invoices.",
+     "src": "frontend_data.json business.cfoai_model: Base first positive 2028-01; Managed review 2028-01 (month 15)"
     }
    ]
   },

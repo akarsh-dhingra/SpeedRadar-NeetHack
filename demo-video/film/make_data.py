@@ -77,28 +77,14 @@ def series(path, sheet_hint, label):
     raise SystemExit(f"{label} not found in {path}")
 
 
-# cfo.ai: the read-only MCP export of the live workspace (business/cfoai/mcp_export_2026-10-11.json) is the source;
-# the older xlsx exports are only a fallback.
-mcp_path = ROOT / "business" / "cfoai" / "mcp_export_2026-10-11.json"
-if mcp_path.exists():
-    mcp = json.loads(mcp_path.read_text(encoding="utf-8"))
-    ser = mcp["series"]
-    cash = {"_source": "business/cfoai/mcp_export_2026-10-11.json (cfo.ai MCP, read-only)", "months": "Nov 2026 – Oct 2028",
-            "scenarios": {k: [round(v) for v in ser[k]["Ending cash"]] for k in ser if not k.startswith("_")}}
-    cash.update(base=cash["scenarios"]["Main Scenario"], growth=cash["scenarios"]["Growth"], downside=cash["scenarios"]["Downside"])
-    scen = [{"name": x["name"], **{k: x["metrics"].get(k) for k in ("first_cash_flow_positive_month", "lowest_ending_cash", "lowest_ending_cash_month",
-             "ending_cash_month_24", "revenue_month_24", "gross_margin_month_24", "customers_month_24")}} for x in mcp["scenarios"]]
-    cfo_meta = {"scenarios": scen, "changelog_entries": mcp["history"]["total_entries"], "canvas_blocks": len(mcp["canvas_blocks"]),
-                "pages": [p_.get("title") for p_ in mcp["pages"]]}
-else:
-    cash = {
-        "_source": "business/cfoai/Monthly P&L & Cash.xlsx (Main Scenario = Base), business/cfoai/round2/Summary-Base-Growth-Downside.xlsx",
-        "months": "Nov 2026 – Oct 2028",
-        "base": series("business/cfoai/Monthly P&L & Cash.xlsx", "Monthly", "Ending cash"),
-        "growth": series("business/cfoai/round2/Summary-Base-Growth-Downside.xlsx", "key", "Ending cash > Growth"),
-        "downside": series("business/cfoai/round2/Summary-Base-Growth-Downside.xlsx", "key", "Ending cash"),
-    }
-    cfo_meta = {}
+# cfo.ai: the live model as the site carries it (evidence/frontend_data.json business.cfoai_model, built from the
+# read-only cfo.ai MCP exports in business/cfoai/), all scenarios with 24 months of ending cash.
+cm = fd["business"]["cfoai_model"]
+cash = {"_source": "evidence/frontend_data.json business.cfoai_model (" + str(cm.get("source")) + ")", "months": "Nov 2026 – Oct 2028",
+        "scenarios": {("Main Scenario" if x["name"] == "Base" else x["name"]): x["ending_cash"] for x in cm["scenarios"]}}
+cash.update(base=cash["scenarios"]["Main Scenario"], growth=cash["scenarios"]["Growth"], downside=cash["scenarios"]["Downside"])
+cfo_meta = {"scenarios": [{k: v for k, v in x.items() if k != "ending_cash"} for x in cm["scenarios"]],
+            "changelog_entries": cm.get("changelog_entries"), "canvas_blocks": cm.get("canvas_blocks"), "pages": cm.get("pages")}
 explain = (ROOT / "evidence" / "explain" / "5fcef2f7f2f8-decide-recovery.md").read_text(encoding="utf-8")
 grab = lambda pat: (re.search(pat, explain) or [None, None])[1]
 facts = {
@@ -112,7 +98,13 @@ facts = {
                 "checkpoint": grab(r"Entire checkpoint \[`([0-9A-Z]+)`"), "session": grab(r"session `([0-9a-f-]+)`"),
                 "chosen": "narrow_range", "default": "mark_low_confidence", "model": "gpt-5-nano",
                 "prompt": "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)"},
-    "case02": {"peers_before": "2/5", "peers_after": "5/5", "credits_before": 26.6, "credits_after": 5.4},
+    # case study 02 rerun, n = 5 per side (credits are not compared there: the cache served the later runs)
+    "case02": {"runs_per_side": 5, "peers_kept_before": [2, 2, 2, 2, 2], "peers_kept_after": [5, 5, 5, 5, 5],
+               "substitutions_before": 3, "substitutions_after": 0, "replacements": ["New Relic", "Datadog"]},
+    # case studies 06/07: real public FCC invoices (12 tuned-on + 12 held-out), n = 3 passes per row
+    "real_invoices": {"n_invoices": 24, "example": {"total": "450.00", "net_read": "382.50"},
+                      "silent_wrong_per_pass": {"tuned_v1": 2, "heldout_v1": 4, "tuned_v2": 0, "heldout_v2": 0},
+                      "flagged_heldout": {"v2": 7, "v3": 2}},
     "case05": {"before": ["confirmed", "overturned", "downgraded", "overturned", "overturned"], "after": ["downgraded"] * 5},
     "checkpoints": fd["entire"]["checkpoints"],
     # latest main-line commits that carry an Entire-Checkpoint trailer (hash, subject, checkpoint id)

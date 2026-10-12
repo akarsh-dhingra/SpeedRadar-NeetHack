@@ -1,16 +1,16 @@
 {
  "_source": "evidence/frontend_data.json summary; business/cfoai exports; evidence/explain; evidence/case-studies 02 and 05; git ls-remote (checkpoints)",
  "summary": {
-  "runs_scored": 61,
+  "runs_scored": 77,
   "runs_unfinished": 3,
   "companies": 7,
   "held_out_companies": 6,
   "latest_runs_all_caught": 7,
   "latest_runs_false_alarms": 0,
-  "recovery_decisions": 289,
-  "recovery_overrides": 161,
-  "findings_overturned": 11,
-  "findings_downgraded": 23
+  "recovery_decisions": 837,
+  "recovery_overrides": 439,
+  "findings_overturned": 16,
+  "findings_downgraded": 73
  },
  "injected": [
   {
@@ -58,7 +58,7 @@
     "Grafana Labs"
    ],
    "latest": {
-    "run_id": "1011-334cde",
+    "run_id": "1011-2a9596",
     "caught": 5,
     "total": 5,
     "false_alarms": 0
@@ -250,7 +250,7 @@
   }
  ],
  "cash": {
-  "_source": "business/cfoai/mcp_export_2026-10-11.json (cfo.ai MCP, read-only)",
+  "_source": "evidence/frontend_data.json business.cfoai_model (business/cfoai/mcp_export_2026-10-11.json)",
   "months": "Nov 2026 – Oct 2028",
   "scenarios": {
    "Main Scenario": [
@@ -408,6 +408,32 @@
     17642,
     19969,
     22647
+   ],
+   "Managed review": [
+    22885,
+    20770,
+    18654,
+    16648,
+    14900,
+    13262,
+    11731,
+    10460,
+    9298,
+    8244,
+    7449,
+    6763,
+    6391,
+    6127,
+    6177,
+    6336,
+    6808,
+    7648,
+    8597,
+    9859,
+    11230,
+    12914,
+    14707,
+    16814
    ]
   },
   "base": [
@@ -492,7 +518,7 @@
  "cfo_model": {
   "scenarios": [
    {
-    "name": "Main Scenario",
+    "name": "Base",
     "first_cash_flow_positive_month": "2028-01 (month 15)",
     "lowest_ending_cash": 7148.711999999998,
     "lowest_ending_cash_month": "2027-12",
@@ -550,6 +576,17 @@
     "revenue_month_24": 7950,
     "gross_margin_month_24": 0.6010012578616354,
     "customers_month_24": 50
+   },
+   {
+    "name": "Managed review",
+    "first_cash_flow_positive_month": "2028-01 (month 15)",
+    "lowest_ending_cash": 6127.319333333332,
+    "lowest_ending_cash_month": "2027-12",
+    "ending_cash_month_24": 16813.93433333333,
+    "revenue_month_24": 7950,
+    "gross_margin_month_24": 0.5291526205450734,
+    "customers_month_24": 50,
+    "note": "We review flagged invoices ourselves: measured flag rate 17.59% (real FCC invoices)."
    }
   ],
   "changelog_entries": 30,
@@ -574,10 +611,44 @@
   "prompt": "/grill-me # CLAUDE.md — Spend Radar (neatHack 2026)"
  },
  "case02": {
-  "peers_before": "2/5",
-  "peers_after": "5/5",
-  "credits_before": 26.6,
-  "credits_after": 5.4
+  "runs_per_side": 5,
+  "peers_kept_before": [
+   2,
+   2,
+   2,
+   2,
+   2
+  ],
+  "peers_kept_after": [
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "substitutions_before": 3,
+  "substitutions_after": 0,
+  "replacements": [
+   "New Relic",
+   "Datadog"
+  ]
+ },
+ "real_invoices": {
+  "n_invoices": 24,
+  "example": {
+   "total": "450.00",
+   "net_read": "382.50"
+  },
+  "silent_wrong_per_pass": {
+   "tuned_v1": 2,
+   "heldout_v1": 4,
+   "tuned_v2": 0,
+   "heldout_v2": 0
+  },
+  "flagged_heldout": {
+   "v2": 7,
+   "v3": 2
+  }
  },
  "case05": {
   "before": [
@@ -595,8 +666,38 @@
    "downgraded"
   ]
  },
- "checkpoints": 69,
+ "checkpoints": 91,
  "commits": [
+  {
+   "sha": "246dce7",
+   "subject": "entire: checkpoint snapshot 12 Oct (72 on main; 88 refs on GitHub; 90 trailers across branches)",
+   "checkpoint": "01M4Q4M177C82DSW15PB0KFVEW"
+  },
+  {
+   "sha": "0d8b35c",
+   "subject": "site: plain-English layer for human reviewers; drop build-in-public row",
+   "checkpoint": "01M4NTXRYJXVYDQDYX2RKE39TJ"
+  },
+  {
+   "sha": "5566f01",
+   "subject": "site: add \"How it works\" walkthrough as the landing page",
+   "checkpoint": "01M4NTK97PNQ6Q894M6DFDGS21"
+  },
+  {
+   "sha": "4c793f1",
+   "subject": "site: Business page shows the live cfo.ai model (6 scenarios, 24-month ending cash, read over the cfo.ai MCP with read-only tools); export carries it",
+   "checkpoint": "01M4NJKCVFH8E60AP6V9T1J3HG"
+  },
+  {
+   "sha": "8d0e757",
+   "subject": "posts: draft the Entire post (provenance, explain, trails and runners)",
+   "checkpoint": "01M4NHM09SVAMRK1QQCCV40HXZ"
+  },
+  {
+   "sha": "04f6775",
+   "subject": "site: fix neatlogs page crash (sort helper shadowed by the triage variable)",
+   "checkpoint": "01M4NH6G5K5B651B7DX40R0THY"
+  },
   {
    "sha": "8547df8",
    "subject": "log: submission readiness pass",
@@ -611,36 +712,6 @@
    "sha": "d935eaa",
    "subject": "site: publish site/ to GitHub Pages on push",
    "checkpoint": "01M4N70TFE8BXDW6BWKXEPMY76"
-  },
-  {
-   "sha": "2d5a134",
-   "subject": "site: Entire and neatlogs pages, three-tool strip and judge evidence map on the overview, case study 05 with per-run verdicts; export keeps original run labels over re-scores",
-   "checkpoint": "01M4N6ZFX8F1Y954B0YNCEGZ7C"
-  },
-  {
-   "sha": "62c6b69",
-   "subject": "explain: stop paging when the neatlogs cursor does not advance (Entire trail #3 runner finding 01M4N686NR31)",
-   "checkpoint": "01M4N6B6CGG1RDCGAP7RSG9STX"
-  },
-  {
-   "sha": "7228e06",
-   "subject": "README: Entire trails live on the GitHub repo (trails 1-3)",
-   "checkpoint": "01M4N67ADZ7Z01ZWBKN5EBFWCV"
-  },
-  {
-   "sha": "abbd57a",
-   "subject": "evidence: final eval on merged main (5/5, 0 unsupported, 0 hops; provenance to checkpoint)",
-   "checkpoint": "01M4N5SJ1JRSZRE7YPZGANR2F4"
-  },
-  {
-   "sha": "a9b572e",
-   "subject": "log: audit, neatlogs coverage, Entire trails/runners, case study 05, explain",
-   "checkpoint": "01M4N5FPCVHT22HXVK3PE6DZE1"
-  },
-  {
-   "sha": "a16758f",
-   "subject": "audit: weigh news evidence even when signals disagree (Entire trail #2 runner finding 01M4N4SF2YQX); floor at downgrade",
-   "checkpoint": "01M4N525ZQ174NPSPNEYSV321V"
   }
  ],
  "runners": [
@@ -681,6 +752,37 @@
      "status": "resolved",
      "fix": "62c6b69",
      "summary": "Trace pagination could loop forever if the cursor did not advance."
+    }
+   ]
+  },
+  {
+   "number": 4,
+   "title": "Printed-net invoice totals + read_pdf_llm v3 + classifier unwrap (case study 07)",
+   "runners": "no blocking issues",
+   "findings": []
+  },
+  {
+   "number": 5,
+   "title": "Real-invoice eval + read_pdf_llm v2/v3 + printed-net check (case studies 06, 07)",
+   "runners": "no blocking issues",
+   "findings": []
+  },
+  {
+   "number": 6,
+   "title": "Site + export: walkthrough, plain-English layer, real invoices page, Entire/neatlogs pages, cfo.ai section",
+   "runners": "no blocking issues",
+   "findings": [
+    {
+     "severity": "medium",
+     "status": "resolved",
+     "fix": "bd079ca",
+     "summary": "The Managed-review export would crash if its net cash flow never turned positive in the window."
+    },
+    {
+     "severity": "low",
+     "status": "resolved",
+     "fix": "bd079ca",
+     "summary": "The Entire page hardcoded \"both fixed\" next to a computed count of runner findings."
     }
    ]
   }

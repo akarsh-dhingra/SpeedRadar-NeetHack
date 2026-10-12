@@ -680,11 +680,45 @@
 
   // 06 NEATLOGS — real span waterfall, magnifier on case study 02, the 3 → 1 verdict dice (case study 05)
   S.neatlogs = function (g, sc) {
-    var n1 = L("nl1"), n2 = L("nl2"), n3 = L("nl3");
+    var n1 = L("nl1"), n2 = L("nl2"), n3 = L("nl3"), n4 = L("nl4");
     g.drawImage(paper("nl", "#1f2440", ["#2c3260", "#3b2f5a", "#22364f", "#2f4a5c"], 97), 0, 0);
     txt(g, "neatlogs", 110, 150, 92, { fill: C.cream, stroke: C.ink, sw: 12 });
+    if (n4 && T >= n4.start - .05) { // real public invoices: the reader copied the net amount (case study 06)
+      var ri = FX.real_invoices || {}, ex = ri.example || {}, sw = ri.silent_wrong_per_pass || {};
+      txt(g, (ri.n_invoices || 24) + " real public invoices (FCC broadcast ads) · case study 06", 115, 200, 28, { font: MONO, weight: 500, fill: "#a8aac4" });
+      var netT = wt("nl4", ["net"], .45), fixT = wt("nl4", ["fix"], .75), zeroT = wt("nl4", ["zero", "0"], .85);
+      var pk = eBack(prog(T, n4.start, .45));
+      g.save(); g.translate(560, 590); g.rotate(-.04); g.scale(pk, pk);
+      inkRR(g, -330, -330, 660, 660, 12, C.white, 6);
+      txt(g, "INVOICE", -290, -260, 44, { font: COMIC, weight: 400, fill: C.ink, ls: 3 });
+      for (var r = 0; r < 5; r++) { inkLine(g, -290, -190 + r * 46, 150, -190 + r * 46, 3, "rgba(42,36,51,.3)"); }
+      var fixed = T > fixT, pickNet = T > netT && !fixed;
+      inkRR(g, -300, 60, 600, 80, 10, fixed ? "#d6f1dc" : "#fff", 4, fixed ? C.mintD : C.ink);
+      txt(g, "TOTAL", -270, 115, 40, { fill: C.ink }); txt(g, "$" + (ex.total || ""), 270, 115, 44, { align: "right", font: MONO, weight: 500, fill: C.ink });
+      inkRR(g, -300, 170, 600, 80, 10, pickNet ? "#ffd9d6" : "#fff", 4, pickNet ? C.red : C.ink);
+      txt(g, "NET AMOUNT DUE", -270, 225, 34, { fill: C.ink }); txt(g, "$" + (ex.net_read || ""), 270, 225, 44, { align: "right", font: MONO, weight: 500, fill: C.ink });
+      g.restore();
+      if (pickNet) { stamp(g, "READ THE NET ✗", 560, 520, netT + .2, C.red, 56, -.08); }
+      if (fixed) { stamp(g, "READS THE TOTAL ✓", 560, 520, fixT, C.mintD, 56, -.08); }
+      // the count of silent wrong totals per pass, before -> after
+      var zk = eBack(prog(T, zeroT - .3, .4));
+      if (zk > 0) {
+        g.save(); g.translate(1420, 520); g.scale(zk, zk);
+        inkRR(g, -360, -220, 720, 440, 24, C.cream, 6);
+        txt(g, "silent wrong totals, per pass", 0, -150, 32, { align: "center", fill: C.ink, weight: 700 });
+        txt(g, "tuned-on 12:", -320, -60, 34, { fill: C.ink, weight: 600 }); txt(g, sw.tuned_v1 + "  →  " + sw.tuned_v2, 320, -60, 46, { align: "right", fill: C.mintD });
+        txt(g, "held-out 12:", -320, 30, 34, { fill: C.ink, weight: 600 }); txt(g, sw.heldout_v1 + "  →  " + sw.heldout_v2, 320, 30, 46, { align: "right", fill: C.mintD });
+        txt(g, "n = 3 passes each", 0, 150, 26, { align: "center", font: MONO, weight: 500, fill: "#6a6170" });
+        g.restore();
+      }
+      sfxWord(g, "OOPS!", 900, 250, netT + .1, 100, C.red, -.1);
+      sfxWord(g, "FIXED!", 1620, 230, zeroT, 100, C.green, .1);
+      radar(g, 1700, 930, .5, { expr: fixed ? "proud" : "squint" });
+      caption(g, sc, null);
+      return;
+    }
     if (T < n3.start - .05) {
-      txt(g, "trace af0df27e… · run 1010-b31657 · case study 02", 115, 200, 28, { font: MONO, weight: 500, fill: "#a8aac4" });
+      txt(g, "case study 02 · rerun: 5 runs per side, same models and data", 115, 200, 28, { font: MONO, weight: 500, fill: "#a8aac4" });
       var spans = [["plan", 0, .1], ["act:read_budget", .1, .06], ["verify:totals", .16, .03], ["act:fetch_competitor", .2, .1], ["decide:recovery", .3, .05, 1], ["act:fetch_jobs", .35, .08],
         ["decide:recovery", .43, .05, 1], ["act:classify_titles", .48, .12], ["decide:recovery", .6, .05, 1], ["audit:f_ml_ai", .72, .1], ["report", .86, .1]];
       spans.forEach(function (s, i) {
@@ -693,7 +727,7 @@
         txt(g, s[0], 520, y + 28, 26, { align: "right", font: MONO, weight: 500, fill: s[3] ? C.yellow : "#cfd0e6" });
         inkRR(g, x0, y + 6, Math.max(8, w), 30, 8, s[3] ? C.orange : C.teal2, 3);
       });
-      var three = wt("nl2", ["three", "3"], .2), fix = wt("nl2", ["fix"], .45), cut = wt("nl2", ["dropped"], .75);
+      var three = wt("nl2", ["three", "3"], .2), fix = wt("nl2", ["fix"], .45), cut = wt("nl2", ["kept"], .75);
       if (T > n2.start) {
         var mk = eOut(prog(T, n2.start, .4));
         g.save(); g.globalAlpha = mk; inkCircle(g, 1480, 560, 230, "rgba(20,24,48,.94)", 8);
@@ -703,8 +737,9 @@
           txt(g, "→ New Relic (3,095)", 1480, 700, 30, { align: "center", fill: C.cream, weight: 600 }); txt(g, "→ Datadog (10,482)", 1480, 740, 30, { align: "center", fill: C.cream, weight: 600 });
         } else {
           (RUN.competitors || []).forEach(function (c, i) { txt(g, "✓ " + c.name, 1480, 430 + i * 50, 34, { align: "center", fill: C.green, weight: 700 }); });
-          var cr = lerp(26.6, 5.4, eOut(prog(T, cut, .8)));
-          txt(g, "credits " + cr.toFixed(1), 1480, 720, 46, { align: "center", fill: C.yellow, weight: 700 });
+          var c2 = FX.case02 || {};
+          txt(g, "5 of 5 kept", 1480, 700, 42, { align: "center", fill: C.yellow, weight: 700 });
+          txt(g, "in " + (c2.runs_per_side || 5) + " of " + (c2.runs_per_side || 5) + " runs", 1480, 745, 32, { align: "center", fill: C.cream, weight: 600 });
         }
         g.restore(); inkLine(g, 1640, 720, 1780, 870, 22, C.ink);
         sfxWord(g, "YOINK!", 1220, 300, three + .4, 100, C.orange, -.12);
@@ -745,7 +780,7 @@
         var sk = eBack(prog(T, t0 + .25, .3)); if (sk > 0) { g.save(); g.translate(400, -44); g.scale(sk, sk); g.rotate(.2); inkRR(g, -100, -26, 200, 52, 12, C.yellow, 4); txt(g, c.checkpoint.slice(0, 10) + "…", 0, 9, 20, { align: "center", font: MONO, fill: C.ink }); g.restore(); }
         g.restore();
       });
-      var bk = eBack(prog(T, wt("ent1", ["sixtynine", "sixty", "69"], .7) - .1, .45));
+      var bk = eBack(prog(T, wt("ent1", ["ninety", "90"], .7) - .1, .45));
       if (bk > 0) { g.save(); g.translate(1520, 520); g.scale(bk, bk); txt(g, String(FX.checkpoints), 0, 0, 260, { align: "center", fill: C.yellow, stroke: C.ink, sw: 28, shadow: C.ink, sx: 8, sy: 10 }); txt(g, "checkpoints", 0, 80, 54, { align: "center", fill: C.ink }); g.restore(); }
       radar(g, 1700, 900, .55, { expr: "happy", bounce: false });
     } else if (T < e3.start - .05) {
@@ -769,7 +804,7 @@
       sfxWord(g, "AHA!", 1640, 220, wt("ent2", ["prompt"], .85) + .2, 100, C.yellow, .1);
     } else {
       // six runner-bots; two catch bugs
-      var bug = wt("ent3", ["bugs", "two", "2"], .6), merged = wt("ent3", ["merge", "merged"], .9);
+      var bug = wt("ent3", ["bugs", "four", "4"], .55), merged = wt("ent3", ["fixed"], .85);
       (FX.runners || []).forEach(function (r, i) {
         var k = eBack(prog(T, e3.start + i * .07, .35)); if (k <= 0) return;
         var x = 200 + i * 300, y = 700 + Math.sin(T * 8 + i) * 8;
@@ -781,15 +816,16 @@
       });
       var finds = []; (FX.trails || []).forEach(function (tr) { (tr.findings || []).forEach(function (f) { finds.push({ t: tr.number, f: f }); }); });
       finds.forEach(function (it, i) {
-        var k = eBack(prog(T, bug + i * .25, .4)); if (k <= 0) return;
-        g.save(); g.translate(560 + i * 760, 360); g.rotate((i ? .05 : -.05)); g.scale(k, k);
+        var k = eBack(prog(T, bug + i * .18, .4)); if (k <= 0) return;
+        g.save(); g.translate(560 + (i % 2) * 800, 270 + Math.floor(i / 2) * 215); g.rotate((i % 2 ? .04 : -.04)); g.scale(k * .92, k * .92);
         inkRR(g, -330, -100, 660, 200, 16, C.cream, 6);
         txt(g, "trail #" + it.t + " · " + it.f.severity, -300, -50, 28, { font: MONO, weight: 500, fill: C.orange });
         txt(g, it.f.summary.slice(0, 40) + "…", -300, 0, 26, { fill: C.ink, weight: 600 });
-        if (T > merged - .3) txt(g, "fixed " + it.f.fix + " ✓ before merge", -300, 60, 28, { font: MONO, weight: 500, fill: C.mintD });
+        if (T > merged - .3) txt(g, "fixed in " + it.f.fix + " ✓", -300, 60, 28, { font: MONO, weight: 500, fill: C.mintD });
         g.restore();
       });
       sfxWord(g, "GOTCHA!", 960, 200, bug, 120, C.orange, -.06);
+      txt(g, (FX.trails || []).length + " review trails · " + (FX.runners || []).length + " runners each", 1820, 160, 34, { align: "right", font: MONO, weight: 500, fill: C.ink });
     }
     caption(g, sc, null);
   };
@@ -823,7 +859,7 @@
       var X = function (i) { return x0 + i / 23 * cw; }, Y = function (v) { return y0 + ch - (v - lo) / (hi - lo) * ch; };
       inkLine(g, x0, Y(0), x0 + cw, Y(0), 4, "rgba(42,36,51,.5)"); txt(g, "$0", x0 - 20, Y(0) + 10, 26, { align: "right", fill: "#4b5a48" });
       var draw = eInOut(prog(T, c3.start + .1, 2.4)), COLS = { "Main Scenario": C.indigoD, "Growth": C.mintD, "Downside": C.red };
-      var minor = ["Team uncached cap", "Team repriced", "Industry mix"], MCOL = { "Team uncached cap": "#3f8fb0", "Team repriced": "#9a6fc4", "Industry mix": "#8a8f86" };
+      var minor = ["Team uncached cap", "Team repriced", "Industry mix", "Managed review"], MCOL = { "Team uncached cap": "#3f8fb0", "Team repriced": "#9a6fc4", "Industry mix": "#8a8f86", "Managed review": "#c08a3e" };
       // gridlines
       [0, 50000, 100000].forEach(function (v) { if (v > hi) return; g.strokeStyle = "rgba(42,36,51,.12)"; g.lineWidth = 2; g.beginPath(); g.moveTo(x0, Y(v)); g.lineTo(x0 + cw, Y(v)); g.stroke(); txt(g, money(v), x0 - 18, Y(v) + 9, 24, { align: "right", fill: "#4b5a48", weight: 600 }); });
       names.slice().sort(function (a, b) { return (COLS[a] ? 1 : 0) - (COLS[b] ? 1 : 0); }).forEach(function (n) {
@@ -838,7 +874,7 @@
       // legend for the other three scenarios
       var lgk = eOut(prog(T, c3.start + 2.5, .4));
       g.save(); g.globalAlpha = lgk;
-      minor.forEach(function (n, i) { if (!sc6[n]) return; var lx = 236 + i * 400; g.fillStyle = MCOL[n]; g.fillRect(lx, 318, 30, 6); txt(g, n + "  " + money(sc6[n][23]), lx + 40, 328, 24, { fill: C.ink, weight: 600 }); });
+      minor.forEach(function (n, i) { if (!sc6[n]) return; var lx = 236 + i * 350; g.fillStyle = MCOL[n]; g.fillRect(lx, 858, 30, 6); txt(g, n + "  " + money(sc6[n][23]), lx + 40, 868, 22, { fill: C.ink, weight: 600 }); });
       g.restore();
       var jan = wt("cfo3", ["january"], .55), base = sc6["Main Scenario"] || [];
       if (T > jan - .2 && base.length) { var bi = base.indexOf(Math.min.apply(null, base)); stamp(g, "CASH-FLOW POSITIVE · JAN 2028", 700, 470, jan, C.indigoD, 40, -.05); }
@@ -925,7 +961,8 @@
     add(L("aud1").start, "riser", .7); add(wt("aud2", ["million", "528", "5.28"], .45), "boom", .8); add(wt("aud3", ["overturned"], .75), "stamp", 1.2);
     add(wt("gen2", ["caught"], .3), "ding"); add(wt("gen2", ["zero", "0"], .7), "stamp", .8);
     add(wt("nl2", ["three", "3"], .2) + .4, "glitch", .7); add(wt("nl2", ["dropped"], .75), "pop", .7); add(wt("nl2", ["fix"], .45) + .2, "ding"); add(wt("nl3", ["one", "1"], .8), "stamp");
-    add(wt("ent1", ["sixtynine", "sixty", "69"], .7), "boom", .8); add(wt("ent2", ["prompt"], .85) + .2, "ding"); add(wt("ent3", ["bugs", "two", "2"], .6), "pop");
+    if (L("nl4")) { add(wt("nl4", ["net"], .45) + .1, "glitch", .8); add(wt("nl4", ["fix"], .75), "stamp"); add(wt("nl4", ["zero", "0"], .85), "ding"); }
+    add(wt("ent1", ["ninety", "90"], .7), "boom", .8); add(wt("ent2", ["prompt"], .85) + .2, "ding"); add(wt("ent3", ["bugs", "four", "4"], .55), "pop"); add(wt("ent3", ["fixed"], .85), "ding");
     add(wt("cfo2", ["ninetynine", "ninety", "99"], .7), "boom", .8); add(wt("cfo3", ["january"], .55) + .4, "ding", 1.1);
     add(L("out2").end, "ding");
     return c.sort(function (a, b) { return a.t - b.t; });
