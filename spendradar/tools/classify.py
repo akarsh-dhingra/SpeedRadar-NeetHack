@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 import neatlogs
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from spendradar import llm, prompts
 from spendradar.tracing import tool_errors
@@ -18,6 +18,16 @@ class TitleLabel(BaseModel):
 
 class TitleBatch(BaseModel):
     labels: list[TitleLabel]
+
+    @field_validator("labels", mode="before")
+    @classmethod
+    def _unwrap_schema_echo(cls, v):
+        # Some models echo the JSON schema around the answer: {"items": [...labels...], "type": "array"}.
+        # The labels inside are valid, so unwrap them (2 of 10 case-study-02 runs lost a competitor's
+        # ML/AI estimate to this after 2 re-asks; runs 1011-2c53f4 t31, 1011-6d3ba6 t28).
+        if isinstance(v, dict) and isinstance(v.get("items"), list):
+            return v["items"]
+        return v
 
 
 @neatlogs.span(kind="TOOL", name="act:classify_titles", tool_name="classify_titles")

@@ -72,6 +72,9 @@ class InvoiceExtract(BaseModel):
     invoice_date: str
     lines: list[InvoiceLine]
     stated_total: float
+    # Printed on agency-billed invoices (e.g. US broadcast ads): gross - commission = net. Null when not printed.
+    agency_commission: float | None
+    net_amount_due: float | None
 
 
 def _parse_invoice_text(text: str) -> InvoiceExtract:
@@ -97,7 +100,7 @@ def _parse_invoice_text(text: str) -> InvoiceExtract:
         raise ToolError("text parser found no line items / total")
     return InvoiceExtract(invoice_number=fields.get("invoice no.", ""), vendor=all_lines[0],
                           cost_centre=fields.get("cost centre", ""), invoice_date=fields.get("invoice date", ""),
-                          lines=lines, stated_total=total)
+                          lines=lines, stated_total=total, agency_commission=None, net_amount_due=None)
 
 
 def _open_error(p: Path) -> str | None:

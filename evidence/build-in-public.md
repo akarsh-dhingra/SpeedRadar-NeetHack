@@ -142,6 +142,53 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 
 ---
 
+## Post E — how Entire runs through Spend Radar (Sun evening)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> My agent cites a source for every number. With @EntireHQ, the code behind the agent gets the same treatment. #neatHack
+>
+> Spend Radar compares a finance team's people spend against real competitors, then tries to disprove its own findings. Here's where Entire sits in that system:
+>
+> 1/ Every run knows who wrote its code
+> Each report and @neatlogs trace records its commit and its Entire checkpoint. A number links to its source, the source to its trace, and the trace to the agent session that wrote the code.
+>
+> 2/ A debugger for agent mistakes
+> `spendradar explain <trace>` follows a failing neatlogs span to the code line, runs `entire why`, and returns the commit, checkpoint, session and prompt behind it, plus `entire graph impact` for what a fix would touch.
+> On our corrupt-PDF bug the chain closed on itself: the prompt behind the fix was neatlogs' own auto-triage report.
+>
+> 3/ Every change gets reviewed before it merges
+> Each change goes on a trail. 6 runners tailored to this repo (risk, confidence, drift, security, review, summary) know what matters here: secrets, zero spend, unsourced numbers.
+> They caught 2 real issues before merge:
+> - my self-audit fix silently skipped news evidence (layoffs, acquisitions)
+> - a trace-reading loop that could run forever
+> Both fixed, tested and resolved on the trail.
+>
+> 69 checkpoints · 3 trails · 6 runners · 2 bugs caught before merge
+>
+> The agent got more consistent, and every change to it now has to survive review first.
+>
+> https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/#entire
+
+**Images (up to 4):**
+1. Trail #2 on entire.io, scrolled to the runner finding (medium, resolved): https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/trails/2
+2. The runners list for the repo (`.entire/runners/` or the Runners page on entire.io).
+3. The site's Entire page: the stats row and the "Closed loop" callout.
+4. The `spendradar explain` dossier for trace f8b07091…, cropped to Code → Commit · checkpoint → Prompt (`evidence/explain/f8b07091ded7-errors.md`).
+
+**Sources:** `evidence/frontend_data.json` (`entire`: checkpoints 69, trails 3, runners 6, 2 findings resolved); trails 1–3 on entire.io; `evidence/explain/`; `evidence/case-studies/05-audit-verdict-variance.md`.
+
+**Before posting, check:**
+- [ ] Entire's handle on X (`@EntireHQ` is not verified)
+- [ ] The trail and runner screenshots show no secrets or tokens
+
+**Posted:** —  
+**Link:** —
+
+---
+
 ## Post 6 — cfo.ai unit economics from real tokens (Mon)
 
 **Status:** draft — not posted
@@ -167,6 +214,31 @@ Each entry: draft text, what image to attach, and once posted, the link and time
 **Image:** the cfo.ai Unit Economics cache-sensitivity view beside the `business/unit_costs.md` table.
 
 **Sources:** `business/cfoai_plan.md`, `business/cfoai/Unit Economics.xlsx`, `business/unit_costs.md`, `business/unit_costs.json` (traces `5c512d38…`, `d4a8716f…`, `0dcf2297…`, `96bb7958…`, `c4c0b55a…`).
+
+**Posted:** —  
+**Link:** —
+
+## Post R — tested on real invoices (Sun night / Mon)
+
+**Status:** draft — not posted
+
+**Text:**
+
+> Our test companies are fictional. So tonight Spend Radar read 36 REAL invoices: public FCC political-ad bills (amazon/ConfBench, verified totals). #neatHack
+>
+> First pass: 7 of 12 totals right. The bug: TV invoices print Gross Total, then Agency Commission, then Net Amount Due, and the model kept copying the net.
+>
+> Fixed the prompt, then checked it on 12 invoices picked AFTER the fix:
+> totals right: 6-7 of 12 -> 12 of 12 (3 passes each)
+> wrong totals nobody was warned about: 4 per pass -> 0
+>
+> A second fix (accept line items that match the printed net) cut false review flags from 7 to 2 per pass on that set. On a third fresh set it made no clear difference, and I'm saying so.
+>
+> Every pass is a @neatlogs trace. The measured 17.6% review rate is now a scenario in our cfo.ai plan: checking flags ourselves costs ~5 points of gross margin.
+
+**Image:** the site's Real invoices page (before/after table) next to one neatlogs trace of a pass.
+
+**Sources:** `evidence/case-studies/06-real-invoices-gross-vs-net.md`, `evidence/case-studies/07-printed-net-line-items.md`, `evidence/real-invoices/*.json`, `business/cfoai/managed_review_2026-10-11.json`.
 
 **Posted:** —  
 **Link:** —

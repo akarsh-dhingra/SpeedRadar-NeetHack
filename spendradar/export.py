@@ -48,9 +48,24 @@ COMPARISONS = [
      "before": ["1011-ae5e18"], "after": ["1011-f679dc", "1011-257f61"],
      "case_study": "evidence/case-studies/04-held-out-companies.md",
      "note": "In both after runs the planner happened to include every file; the fix is covered by a unit test."},
-    {"title": "One weak signal threw away 3 of 5 peers", "company": "acme",
+    {"title": "One weak signal threw away 3 of 5 peers (rerun, n = 5 per side)", "company": "acme",
+     "before": ["1011-324f77", "1011-45b4f4", "1011-e6132c", "1011-2c53f4", "1011-e8b645"],
+     "after": ["1011-efdab4", "1011-51f5c4", "1011-6d3ba6", "1011-1078e9", "1011-09fd9f"],
+     "case_study": "evidence/case-studies/02-competitor-substitution.md",
+     "note": "Same code, models and cached data on both sides; before = current main with only the fix reverted "
+             "(d311fb5). Peers kept: 2 of 5 in all 5 runs before, 5 of 5 in all 5 after; 3 substitutions per run "
+             "before, 0 after. 0 fallback hops.",
+     # Read from each run's state.json (competitors kept, substitute_competitor decisions); see the case study.
+     "per_run": {"label": "Chosen peers kept", "values": {
+         **{rid: {"text": "2 / 5 (3 swapped for New Relic / Datadog)", "good": False}
+            for rid in ("1011-324f77", "1011-45b4f4", "1011-e6132c", "1011-2c53f4", "1011-e8b645")},
+         **{rid: {"text": "5 / 5", "good": True}
+            for rid in ("1011-efdab4", "1011-51f5c4", "1011-6d3ba6", "1011-1078e9", "1011-09fd9f")}}}},
+    {"title": "One weak signal threw away 3 of 5 peers (original)", "company": "acme",
      "before": ["1010-b31657"], "after": ["1010-7bf26d"],
-     "case_study": "evidence/case-studies/02-competitor-substitution.md", "note": "n = 1 per side."},
+     "case_study": "evidence/case-studies/02-competitor-substitution.md", "note": "n = 1 per side.",
+     "per_run": {"label": "Chosen peers kept", "values": {"1010-b31657": {"text": "2 / 5", "good": False},
+                                                          "1010-7bf26d": {"text": "5 / 5", "good": True}}}},
 ]
 
 # Headline figures from the cfo.ai plan, copied from business/cfoai_plan.md ("Results" and "Fixing the
@@ -74,22 +89,36 @@ BUSINESS_HEADLINES = {
 
 # The live cfo.ai workspace, read over the cfo.ai MCP with read-only tools (list_orgs, inspect_*) on 11 Oct.
 CFOAI_MCP_EXPORT = "business/cfoai/mcp_export_2026-10-11.json"
+CFOAI_MANAGED_REVIEW = "business/cfoai/managed_review_2026-10-11.json"  # scenario added later the same night
 
 
 def _cfoai_model(root):
-    """Six scenarios' key metrics and 24-month ending cash from the cfo.ai MCP export, or None if absent."""
+    """The scenarios' key metrics and 24-month ending cash from the cfo.ai MCP export, or None if absent."""
     p = Path(root) / CFOAI_MCP_EXPORT
     if not p.exists():
         return None
     d = json.loads(p.read_text(encoding="utf-8"))
     ser = d["series"]
     months = ser[next(k for k in ser if not k.startswith("_"))]["months"]
+    scen = [{"name": "Base" if x["name"] == "Main Scenario" else x["name"],
+             **{k: x["metrics"].get(k) for k in ("first_cash_flow_positive_month", "lowest_ending_cash", "lowest_ending_cash_month",
+                                                 "ending_cash_month_24", "revenue_month_24", "gross_margin_month_24", "customers_month_24")},
+             "ending_cash": [round(v) for v in ser[x["name"]]["Ending cash"]]} for x in d["scenarios"]]
+    mr = Path(root) / CFOAI_MANAGED_REVIEW
+    if mr.exists():  # added 11 Oct 23:26 IST over the cfo.ai MCP; values as cfo.ai returned them
+        m = json.loads(mr.read_text(encoding="utf-8"))
+        r, base = m["Managed review"], next(s for s in scen if s["name"] == "Base")
+        low = min(r["Ending cash"])
+        first = next(i for i, v in enumerate(r["Net cash flow"]) if v > 0)
+        scen.append({"name": "Managed review", "first_cash_flow_positive_month": f"{m['months'][first]} (month {first + 1})",
+                     "lowest_ending_cash": low, "lowest_ending_cash_month": m["months"][r["Ending cash"].index(low)],
+                     "ending_cash_month_24": r["Ending cash"][-1], "revenue_month_24": base["revenue_month_24"],
+                     "gross_margin_month_24": r["Gross margin"][-1], "customers_month_24": base["customers_month_24"],
+                     "ending_cash": [round(v) for v in r["Ending cash"]],
+                     "note": "We review flagged invoices ourselves: measured flag rate 17.59% (real FCC invoices)."})
     return {
-        "source": CFOAI_MCP_EXPORT, "read_only": True, "months": months,
-        "scenarios": [{"name": "Base" if x["name"] == "Main Scenario" else x["name"],
-                       **{k: x["metrics"].get(k) for k in ("first_cash_flow_positive_month", "lowest_ending_cash", "lowest_ending_cash_month",
-                                                           "ending_cash_month_24", "revenue_month_24", "gross_margin_month_24", "customers_month_24")},
-                       "ending_cash": [round(v) for v in ser[x["name"]]["Ending cash"]]} for x in d["scenarios"]],
+        "source": CFOAI_MCP_EXPORT, "read_only": True, "months": months, "scenarios_added": CFOAI_MANAGED_REVIEW,
+        "scenarios": scen,
         "pages": [pg.get("title") for pg in d.get("pages", [])],
         "changelog_entries": d.get("history", {}).get("total_entries"),
         "canvas_blocks": len(d.get("canvas_blocks", [])),
@@ -101,7 +130,7 @@ def _cfoai_model(root):
 RESCORE_VARIANTS = {"history-all-acme-runs", "before-fix-misses", "gpt5nano-evidence-rescore", "fixture-rescore"}
 
 # Entire trails on the GitHub repo (the submission repo). Runner results copied from `entire trail show`
-# and `entire trail finding list` on 2026-10-11; the trail pages are the source.
+# and `entire trail finding list` on 2026-10-11 (trails 1-3) and 2026-10-12 (trail 4); the trail pages are the source.
 ENTIRE_REPO = "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack"
 TRAILS = [
     {"number": 1, "title": "Code provenance: every run links to the Entire checkpoint that wrote its code",
@@ -115,6 +144,9 @@ TRAILS = [
      "branch": "feat/explain", "runner_result": "no blocking issues",
      "findings": [{"severity": "low", "status": "resolved", "fix": "62c6b69",
                    "summary": "Trace pagination could loop forever if the cursor did not advance."}]},
+    {"number": 4, "title": "Printed-net invoice totals + read_pdf_llm v3 + classifier unwrap (case study 07)",
+     "branch": "review/printed-net", "runner_result": "no blocking issues", "findings": [],
+     "note": "after-merge review of 398b322: base review/base-7c59831 is its parent, so the diff is exactly that commit"},
 ]
 RUNNERS = ["risk", "confidence", "drift", "security", "review", "summary"]
 
@@ -262,10 +294,193 @@ def _run(r: dict, card: dict, path: Path) -> dict:
                                        or t.get("args", {}).get("name") or ""),
                          "reason": t.get("reason", ""), "parent": t.get("parent"), "attempts": t.get("attempts", 1)}
                         for t in st.get("done", [])]
+    elif (prev := PREVIOUS.get(r["run_id"])) and (prev.get("tasks") or prev.get("findings")):
+        # runs/ is git-ignored, so no single machine holds every run folder. Keep the details an earlier export
+        # read from that run's own state rather than dropping them; scorecard values above still come fresh.
+        for k in ("started_at", "findings", "recovery", "plan_rationale", "tasks"):
+            out[k] = prev.get(k, out[k])
+        out["details_from"] = "previous export (run folder not on this machine)"
     return out
 
 
+PREVIOUS: dict[str, dict] = {}  # run_id -> run as last exported; filled by build()
+
+
+def _load_previous() -> None:
+    PREVIOUS.clear()
+    if OUT.exists():
+        for c in json.loads(OUT.read_text(encoding="utf-8")).get("companies", []):
+            for r in c.get("runs", []):
+                PREVIOUS[r["run_id"]] = r
+
+
+def _real_invoices() -> dict | None:
+    """The latest real-invoice scorecard (evals/real_invoices.py), shown as exported."""
+    cards = sorted(Path("evidence/real-invoices").glob("2026*.json"))
+    if not cards:
+        return None
+    loaded = [(p, json.loads(p.read_text(encoding="utf-8"))) for p in cards]
+
+    def silent(card: dict) -> int:  # wrong total, yet its line items add up: nothing warns a human
+        return sum(1 for x in card["invoices"] if not x["total_correct"]
+                   and (x.get("agent_totals_check") or {}).get("passed"))
+
+    passes = [{"variant": c.get("variant", "real-invoices"), "created": c["created"], "git_sha": c["git_sha"],
+               "flagged_correct": sum(1 for x in c["invoices"] if x["total_correct"]
+                                      and not (x.get("agent_totals_check") or {}).get("passed")),
+               "invoice_set": ("held out" if "heldout" in c.get("gt_file", "") else
+                               "third, fresh" if "third" in c.get("gt_file", "") else "tuned on"),
+               "n_invoices": c["n_invoices"], "total_correct": c["total_correct"], "silent_misses": silent(c),
+               "neatlogs_trace_id": c.get("neatlogs_trace_id"), "scorecard": q.as_posix()} for q, c in loaded]
+    groups: dict[str, list[dict]] = {}
+    for x in passes:
+        groups.setdefault(x["variant"], []).append(x)
+    summary = [{"variant": v, "invoice_set": xs[0]["invoice_set"], "passes": len(xs), "n_invoices": xs[0]["n_invoices"],
+                "total_correct": [x["total_correct"] for x in xs], "silent_misses": [x["silent_misses"] for x in xs],
+                "flagged_correct": [x["flagged_correct"] for x in xs]}
+               for v, xs in groups.items() if v in REAL_INVOICES_VARIANTS]
+    summary.sort(key=lambda g: REAL_INVOICES_VARIANTS.index(g["variant"]))
+    main = [pc for pc in loaded if pc[1].get("variant") == REAL_INVOICES_MAIN] or loaded
+    p, card = main[-1]
+    return {"scorecard": p.as_posix(), "passes": passes, "summary": summary, "what_changed": REAL_INVOICES_NOTE,
+            "silent_misses": silent(card),
+            **{k: card.get(k) for k in ("created", "git_sha", "neatlogs_trace_id", "source", "license", "n_invoices",
+                                         "read_ok", "total_correct", "agent_totals_check_passed", "invoices")}}
+
+
+# Real-invoice comparison: the variants in before/after order (same script, only the extraction prompt differs),
+# the variant whose latest pass fills the invoice-by-invoice table, and one line on what changed.
+REAL_INVOICES_VARIANTS = ["real-before-prompt-v2", "real-after-prompt-v2", "tuned-v3", "heldout-prompt-v1", "heldout-prompt-v2",
+                          "heldout-v3", "third-v2", "third-v3"]
+REAL_INVOICES_MAIN = "heldout-v3"
+REAL_INVOICES_NOTE = None
+
+
+# "How it works": one real run told in plain words. Everything the page shows is prepared here, so the page
+# only renders (the design system's "show, never compute").
+STORY_TOOLS = {  # tool -> (plan line, tile word)
+    "read_budget": ("Read the budget spreadsheet", "Spreadsheet"),
+    "read_invoice": ("Read an invoice PDF", "Invoice"),
+    "read_policy": ("Read the spend policy", "Policy"),
+    "read_salary_table": ("Read the salary table", "Salary table"),
+    "fetch_competitor": ("Look up a competitor's headcount (Crustdata)", "Competitor"),
+    "fetch_jobs": ("Fetch a competitor's job posts (Crustdata)", "Job posts"),
+    "classify_titles": ("Sort job titles into teams (LLM)", "Job titles"),
+}
+STORY_ACTIONS = {
+    "narrow_range": "Re-read only the row that looked wrong",
+    "reparse_alt": "Try a different way to read the file",
+    "fetch_more_signal": "Fetch more evidence",
+    "mark_low_confidence": "Keep it, marked low confidence",
+    "substitute_competitor": "Swap in a similar company",
+    "skip": "Leave it out and say so in the report",
+}
+STORY_CATEGORY = {"ml_ai": "ML/AI", "infra_cloud": "Infra/cloud", "engineering": "Engineering", "sales": "Sales",
+                  "marketing": "Marketing", "internal": "Own books"}
+
+
+def _plain(text: str) -> str:
+    return text.replace("ml_ai", "ML/AI").replace("infra_cloud", "infra/cloud")
+
+
+def _story(comps: list[dict]) -> dict | None:
+    """The latest finished, real-data, uninjected run of the featured company with a full step log; never a
+    deliberate before-run."""
+    c = next((x for x in comps if x["key"] == FEATURED["company"]), None)
+    ok = [r for r in (c or {}).get("runs", []) if r["tasks"] and r["findings"] and r["recovery"]
+          and r["data_mode"] == "real" and not r["injected_faults"] and r["phase"] == "done"
+          and not re.search(r"before|ablation", r["variant"])]
+    if not ok:
+        return None
+    r = ok[-1]
+
+    def short(t: str) -> str:
+        return t.replace("invoices/", "")
+
+    top = [t for t in r["tasks"] if not t["parent"]]
+    kids: dict[str, list[dict]] = {}
+    for t in r["tasks"]:
+        if t["parent"]:
+            kids.setdefault(t["parent"], []).append(t)
+
+    def outcome(t: dict) -> str:
+        if t["status"] != "failed":
+            return "ok"
+        k = kids.get(t["id"], [])
+        return "recovered" if k and k[-1]["status"] == "done" else "flagged"
+
+    groups: list[dict] = []
+    for t in top:
+        if groups and groups[-1]["tool"] == t["tool"]:
+            groups[-1]["n"] += 1
+        else:
+            groups.append({"tool": t["tool"], "label": STORY_TOOLS.get(t["tool"], (t["tool"],))[0], "n": 1})
+    tiles = [{"id": t["id"], "word": STORY_TOOLS.get(t["tool"], ("", t["tool"]))[1], "target": short(t["target"]),
+              "reason": t["reason"], "outcome": outcome(t)} for t in top]
+    counts = {k: sum(1 for x in tiles if x["outcome"] == k) for k in ("ok", "recovered", "flagged")}
+
+    by_id = {t["id"]: t for t in r["tasks"]}
+    internal = [f for f in r["findings"] if f["kind"] != "policy"]
+
+    def next_step(d: dict) -> str:
+        k = kids.get(d["task_id"], [])
+        if not k:
+            return ""
+        if k[-1]["status"] == "done":
+            return "worked"
+        name = by_id.get(d["task_id"], {}).get("target", "").split("/")[-1]
+        return "reported" if name and any(name in f["statement"] for f in internal) else "flagged"
+
+    picks, seen = [], set()
+    for d in r["recovery"]:  # one example per action the agent chose against the rule, then other actions
+        if d["chosen"] != d["rule_default"] and d["chosen"] not in seen:
+            seen.add(d["chosen"])
+            picks.append(d)
+    for d in r["recovery"]:
+        if d["chosen"] not in seen and d["chosen"] != "mark_low_confidence":
+            seen.add(d["chosen"])
+            picks.append(d)
+    picks.sort(key=lambda d: next_step(d) != "worked")
+    cases = []
+    for d in picks[:3]:
+        t = by_id.get(d["task_id"], {})
+        cases.append({"task_id": d["task_id"], "word": STORY_TOOLS.get(t.get("tool", ""), ("", ""))[1],
+                      "target": short(t.get("target", "")),
+                      "failed_check": re.sub(r"^(tool_error: )+", "", d["failed_check"]).split("\n")[0],
+                      "options": [{"label": STORY_ACTIONS.get(o, o), "chosen": o == d["chosen"]} for o in d["options"]],
+                      "rule": STORY_ACTIONS.get(d["rule_default"], d["rule_default"]),
+                      "chosen": STORY_ACTIONS.get(d["chosen"], d["chosen"]), "override": d["chosen"] != d["rule_default"],
+                      "model": d["model"] or "rule", "reason": re.split(r"(?<=[.!?])\s", d["reason"] or "—")[0],
+                      "next": next_step(d)})
+
+    order = {"overturned": 0, "downgraded": 1, "confirmed": 2}
+    findings = [{"status": f["status"], "category": STORY_CATEGORY.get(f["category"], f["category"]),
+                 "text": _plain(f["statement"].split(". Matching")[0].split("; ")[0]),
+                 "why": _plain(re.sub(r"^[^:]+:\s*", "", (f["audit_notes"] or [""])[0])) if f["status"] != "confirmed" else ""}
+                for f in sorted(r["findings"], key=lambda f: order.get(f["status"], 3))]
+    policy = []
+    for f in r["findings"]:
+        if f["kind"] != "policy":
+            continue
+        m = re.search(r"is ([\d.]+%) of headcount vs competitor median ([\d.]+%[^\s(]*)", f["statement"])
+        policy.append({"category": STORY_CATEGORY.get(f["category"], f["category"]), "ours": m.group(1) if m else None,
+                       "peers": m.group(2) if m else None, "violated": bool(f["policy_violated"]), "status": f["status"]})
+    m = r["metrics"]
+    return {"company": c["name"], "company_key": c["key"], "run_id": r["run_id"], "trace_id": r["neatlogs_trace_id"],
+            "models": m["models"], "plan_rationale": r["plan_rationale"], "planted_total": m["planted_total"],
+            "files": [short(t["target"]) for t in top if t["tool"].startswith("read_")],
+            "competitors": [x["name"] for x in c["competitors"]],
+            "plan": groups, "n_tasks": len(top), "tiles": tiles, "counts": counts,
+            "cases": cases, "decisions": m["recovery_decisions"], "non_default": m["recovery_non_default"],
+            "findings": findings, "policy": policy,
+            "own_books": [_plain(f["statement"].split(";")[0].split(": line items")[0]) for f in internal],
+            "score": {"planted_caught": m["planted_caught"], "planted_total": m["planted_total"],
+                      "unsupported": m["unsupported_numbers_in_report"], "llm_calls": m["llm_calls"],
+                      "crustdata_credits": m["crustdata_credits"]}}
+
+
 def build() -> Path:
+    _load_previous()
     companies: dict[str, dict] = {}
     latest: dict[str, tuple[dict, dict, Path]] = {}
     first_scored: dict[str, str] = {}
@@ -290,7 +505,8 @@ def build() -> Path:
         # Run order = when the run started (its state, UTC); runs without local state use the first scorecard
         # they appear in (written in IST), not a later re-score.
         c["runs"].sort(key=lambda r: _utc(r["started_at"]) if r["started_at"] else _utc(first_scored[r["run_id"]], IST))
-        done = [r for r in c["runs"] if r["phase"] == "done"]
+        # "Latest" never means a deliberate before-run (a fix reverted to re-measure a case study).
+        done = [r for r in c["runs"] if r["phase"] == "done" and not re.search(r"before|ablation", r["variant"])]
         c["latest_run_id"] = (done or c["runs"])[-1]["run_id"]
     order = ["acme"] + sorted(k for k in companies if k != "acme")
     comps = [companies[k] for k in order if k in companies]
@@ -314,7 +530,8 @@ def build() -> Path:
                                    "planted_total": r["metrics"]["planted_total"]}
                                   for c in comps for r in c["runs"] if r["injected_faults"]],
             },
-            "featured": FEATURED, "comparisons": COMPARISONS,
+            "featured": FEATURED, "comparisons": COMPARISONS, "real_invoices": _real_invoices(),
+            "story": _story(comps),
             "companies": comps,
             "business": {"plan": "business/cfoai_plan.md", "unit_costs": "business/unit_costs.md",
                          "cfoai_exports": "business/cfoai/", "headlines": BUSINESS_HEADLINES,

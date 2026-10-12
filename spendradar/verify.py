@@ -21,6 +21,25 @@ def totals_check(target: str, parts: list[float], stated: float) -> Check:
                  detail=f"line items sum {s:,.2f} vs stated {stated:,.2f} ({diff:.2%} off)")
 
 
+def invoice_totals_check(target: str, parts: list[float], stated: float, commission: float | None = None,
+                         net: float | None = None) -> Check:
+    """Line items vs the totals PRINTED on the invoice. Agency-billed invoices (real FCC broadcast invoices,
+    case study 07) often print line items net of commission and other deductions, so the items are consistent
+    if they sum to the stated gross total OR to the printed net amount due (when net <= gross), within
+    TOLERANCE. Gross - commission need not equal net: 9 of 24 verified FCC invoices deduct more than the
+    commission. All arithmetic here, none by the LLM. Without a printed net (every fictional company), this is
+    exactly totals_check."""
+    chk = totals_check(target, parts, stated)
+    if chk.passed or not net or abs(net) > abs(stated):
+        return chk
+    s = sum(parts)
+    if abs(s - net) <= TOLERANCE * abs(net):
+        extra = f", agency commission {commission:,.2f}" if commission is not None else ""
+        return Check(name="verify:totals", target=target, passed=True,
+                     detail=f"line items sum {s:,.2f} = printed net amount due {net:,.2f} (gross {stated:,.2f}{extra})")
+    return chk
+
+
 def freshness(days: int) -> float:
     if days <= 90:
         return 1.0

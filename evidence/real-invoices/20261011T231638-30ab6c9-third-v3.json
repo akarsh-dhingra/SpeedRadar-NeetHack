@@ -1,0 +1,220 @@
+{
+ "created": "2026-10-11T23:16:38",
+ "git_sha": "30ab6c9",
+ "run_id": "real-1011-231540",
+ "variant": "third-v3",
+ "gt_file": "evals/real_invoices_third_gt.json",
+ "neatlogs_trace_id": "340027bf9eaa50f6c9f58f50e87e6b48",
+ "source": "https://huggingface.co/datasets/amazon/ConfBench",
+ "license": "CC BY-NC 4.0 (evaluation/benchmark use only). The original FCC invoice documents are public records.",
+ "n_invoices": 12,
+ "read_ok": 12,
+ "total_correct": 11,
+ "agent_totals_check_passed": 9,
+ "invoices": [
+  {
+   "file": "bd6cfc5de633f9ded20312a2b2169b3f__original.pdf",
+   "agency": "GREER MARGOUS MITCHELL BURN",
+   "advertiser": "HILLARY FOR AMERICA 2016 PROJ 200112",
+   "verified_gross_total": 1400.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 1400.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 1,400.00 vs stated 1,400.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "c179dadf6e00d237dbd773f2625979ca__original.pdf",
+   "agency": "GREER MARGOLIS MITCHELL BURNS",
+   "advertiser": "Hillary for America",
+   "verified_gross_total": 17750.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 17750.0,
+   "total_correct": true,
+   "lines_extracted": 21,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 17,750.00 vs stated 17,750.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "c2c347be879f649389d51e143c7d2b90__original.pdf",
+   "agency": "Old Towne Media",
+   "advertiser": "Bernie Sanders for President",
+   "verified_gross_total": 4160.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 4160.0,
+   "total_correct": true,
+   "lines_extracted": 20,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 4,160.00 vs stated 4,160.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "c37905bd2051f90731a3cfbbd6214119__original.pdf",
+   "agency": "WXII-ME TV",
+   "advertiser": "Priorities USA Action",
+   "verified_gross_total": 1835.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 1835.0,
+   "total_correct": true,
+   "lines_extracted": 11,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 1,835.00 vs stated 1,835.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "c86d3402da034360ee3b62f8183c3e17__original.pdf",
+   "agency": "GREENSTRIPE MEDIA, INC",
+   "advertiser": "Yes on 55- Californians for Budget Stability",
+   "verified_gross_total": 591.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 1607.0,
+   "total_correct": false,
+   "lines_extracted": 23,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 1,607.00 vs stated 1,607.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "c904ae14f36aceb1151d976d74e39e9a__original.pdf",
+   "agency": "ADVERTISING & MKTG SOLUTIONS",
+   "advertiser": "JACK WAGNER FOR MAYOR",
+   "verified_gross_total": 39080.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 39080.0,
+   "total_correct": true,
+   "lines_extracted": 12,
+   "agent_totals_check": {
+    "passed": false,
+    "detail": "line items sum 34,670.00 vs stated 39,080.00 (11.28% off)"
+   }
+  },
+  {
+   "file": "caa7473ca2633d4a48445cd1d0ef2881__original.pdf",
+   "agency": "BUYING TIME, LLC",
+   "advertiser": "POLI/M HETNZ/D/CON/AZ",
+   "verified_gross_total": 14850.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 14850.0,
+   "total_correct": true,
+   "lines_extracted": 15,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 14,850.00 vs stated 14,850.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "cb4e0286d5b42a83c5d505d29d8a775b__original.pdf",
+   "agency": "ADELSTEIN & ASSOCIATES",
+   "advertiser": "Friends of Sam Yingling/cci",
+   "verified_gross_total": 8900.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 8900.0,
+   "total_correct": true,
+   "lines_extracted": 71,
+   "agent_totals_check": {
+    "passed": false,
+    "detail": "line items sum 8,750.00 vs stated 8,900.00 (1.69% off)"
+   }
+  },
+  {
+   "file": "dc1df85e4e29cc5406286fc8d909f17c__original.pdf",
+   "agency": "GMMB",
+   "advertiser": "Hillary For America 2016",
+   "verified_gross_total": 143186.49,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 121,708.52 vs stated 5,886.41 (1967.62% off)",
+   "extracted_total": 143186.49,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": false,
+    "detail": "line items sum 121,708.52 vs stated 143,186.49 (15.00% off)"
+   }
+  },
+  {
+   "file": "e8dcdc39047de03f648321f61583b10f__original.pdf",
+   "agency": "Targeted Platform Media",
+   "advertiser": "Priorities USA Action",
+   "verified_gross_total": 18575.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 18575.0,
+   "total_correct": true,
+   "lines_extracted": 16,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 18,575.00 vs stated 18,575.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "f07820a290eb3f3ff606b0153c9f38f1__original.pdf",
+   "agency": "THE G MEDIA GROUP, INC.",
+   "advertiser": "FRANK CAROLLO FOR CITY COMMISSIONER",
+   "verified_gross_total": 500.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 500.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 500.00 vs stated 500.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "fa1d6b17927c2218ccd0abc33e001c3f__original.pdf",
+   "agency": "BUYING TIME, LLC",
+   "advertiser": "POLI/T HEJHAL/D/STR/IA",
+   "verified_gross_total": 13770.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 13770.0,
+   "total_correct": true,
+   "lines_extracted": 2,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 13,770.00 vs stated 13,770.00 (0.00% off)"
+   }
+  }
+ ]
+}

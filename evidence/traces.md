@@ -33,3 +33,41 @@ One line per important trace: date (IST) · trace id · what it shows. Dashboard
 - 2026-10-11 05:30 · `9254be96468c5c234473b080cb6cd216` · run 1011-777bb7 (Acme Observability Inc., evidence): after the audit line-item fix; 5/5 planted, 0 false alarms, 0 fallback hops.
 - 2026-10-11 05:37 · `56891cde8dd9038fbf37d9551f11efad` · run 1011-5eb1a9 (Acme Observability Inc., evidence): after the audit line-item fix; 5/5 planted, 0 false alarms, 0 fallback hops.
 - 2026-10-11 05:44 · `8e06009c9c9edde53af208f08d6d135c` · run 1011-ac4bf5 (Acme Observability Inc., evidence): after the audit line-item fix; 5/5 planted, 0 false alarms, 0 fallback hops.
+- 2026-10-11 16:03 · `139c076ca99acaf06901377eeadee8c1` · run 1011-324f77 (Acme Observability Inc., evidence): case study 02 rerun, BEFORE (fix reverted, d311fb5): 3 competitor substitutions, 2 of 5 chosen peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:13 · `1a44aa4ab5a1639bcd4c717331bb6b4a` · run 1011-45b4f4 (Acme Observability Inc., evidence): case study 02 rerun, BEFORE (fix reverted, d311fb5): 3 competitor substitutions, 2 of 5 chosen peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:21 · `5ac7dfbf67c150363b148f4c8f29b935` · run 1011-e6132c (Acme Observability Inc., evidence): case study 02 rerun, BEFORE (fix reverted, d311fb5): 3 competitor substitutions, 2 of 5 chosen peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:29 · `d6161cf81ecb0e543ec46d5c1d1b1f7a` · run 1011-2c53f4 (Acme Observability Inc., evidence): case study 02 rerun, BEFORE (fix reverted, d311fb5): 3 competitor substitutions, 2 of 5 chosen peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:39 · `5ed5fa88833bdb19058c5c068cc26719` · run 1011-e8b645 (Acme Observability Inc., evidence): case study 02 rerun, BEFORE (fix reverted, d311fb5): 3 competitor substitutions, 2 of 5 chosen peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:03 · `2d28f557b12e42454b035de19eeb1ff0` · run 1011-efdab4 (Acme Observability Inc., evidence): case study 02 rerun, AFTER (current code): 0 substitutions, 5 of 5 peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:11 · `0756f9d7f7d9d52a490222261d3824b9` · run 1011-51f5c4 (Acme Observability Inc., evidence): case study 02 rerun, AFTER (current code): 0 substitutions, 5 of 5 peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:17 · `2a7e255d1182a16ef2fba3a1bd62ffbb` · run 1011-6d3ba6 (Acme Observability Inc., evidence): case study 02 rerun, AFTER (current code): 0 substitutions, 5 of 5 peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:23 · `927c096b9a1b4fac3b587f866c71d833` · run 1011-1078e9 (Acme Observability Inc., evidence): case study 02 rerun, AFTER (current code): 0 substitutions, 5 of 5 peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 16:31 · `098a8bc9808af2151c277a2b01315bb1` · run 1011-09fd9f (Acme Observability Inc., evidence): case study 02 rerun, AFTER (current code): 0 substitutions, 5 of 5 peers kept; 5/5 planted, 0 fallback hops.
+- 2026-10-11 21:38 IST · `561e07ead7f7bfbf3b3ee20e87a8abcc` · real invoices, real-invoices (first harness) (real_invoices_gt.json): 7/12 totals correct (case study 06).
+- 2026-10-11 21:42 IST · `816e23b211567d77b025872e1bb0d8a6` · real invoices, real-before-prompt-v2 (real_invoices_gt.json): 6/12 totals correct (case study 06).
+- 2026-10-11 21:43 IST · `1fe1b76ffa3784f67c388093cae9b41b` · real invoices, real-before-prompt-v2 (real_invoices_gt.json): 5/12 totals correct (case study 06).
+- 2026-10-11 21:44 IST · `486c4a926fc14752bc2c87717358de41` · real invoices, real-before-prompt-v2 (real_invoices_gt.json): 5/12 totals correct (case study 06).
+- 2026-10-11 21:46 IST · `36f7827e6ac6c02ca5c95f2188f45da8` · real invoices, real-after-prompt-v2 (real_invoices_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 21:47 IST · `bb363b38437d8b665bb19e0fd3c31807` · real invoices, real-after-prompt-v2 (real_invoices_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 21:48 IST · `7c65a3da6faf8e4d6985bd6ed712bdbf` · real invoices, real-after-prompt-v2 (real_invoices_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 21:51 IST · `2b6af65f4e8cbad311d58e955c8900c3` · real invoices, heldout-prompt-v1 (real_invoices_heldout_gt.json): 6/12 totals correct (case study 06).
+- 2026-10-11 21:53 IST · `b81d454b66b94846f6bc30260687af4d` · real invoices, heldout-prompt-v1 (real_invoices_heldout_gt.json): 7/12 totals correct (case study 06).
+- 2026-10-11 21:54 IST · `2ce86cba4c400c6dbaaf0cb70b82480b` · real invoices, heldout-prompt-v1 (real_invoices_heldout_gt.json): 7/12 totals correct (case study 06).
+- 2026-10-11 21:55 IST · `28cbcce7f2808041468d0f67e65f3b03` · real invoices, heldout-prompt-v2 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 21:56 IST · `9e9a2708a2fe2759df60f4a31749a574` · real invoices, heldout-prompt-v2 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 21:57 IST · `7182ef015c37b912412faf51363a10f9` · real invoices, heldout-prompt-v2 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 06).
+- 2026-10-11 23:13 IST · `cf55d24ac3f01006d112520a22cd57db` · real invoices, third-v2 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:14 IST · `fb6a8835526576f1dd45e1407523541a` · real invoices, third-v2 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:15 IST · `1bf5ec7534603b06e47966cbef5711bd` · real invoices, third-v2 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:16 IST · `340027bf9eaa50f6c9f58f50e87e6b48` · real invoices, third-v3 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:17 IST · `f292a68bebee0164874bc62f26671155` · real invoices, third-v3 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:18 IST · `043440bbf840a96878de2dafcdb14fa7` · real invoices, third-v3 (real_invoices_third_gt.json): 11/12 totals correct (case study 07).
+- 2026-10-11 23:19 IST · `fca38dfdeefc437117cc4650ed3b9578` · real invoices, tuned-v3 (real_invoices_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:20 IST · `5ce4da1caa71da22076242a88807f342` · real invoices, tuned-v3 (real_invoices_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:21 IST · `4d729b6277ec53f5aaa71f12c5b3192f` · real invoices, tuned-v3 (real_invoices_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:22 IST · `7918b737c9aba2024f7bb996c2480599` · real invoices, heldout-v3 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:23 IST · `11f7b26851b67a1be786c8067b692686` · real invoices, heldout-v3 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 23:24 IST · `38356fb2ad0cfc6dee50fbf231b5bb81` · real invoices, heldout-v3 (real_invoices_heldout_gt.json): 12/12 totals correct (case study 07).
+- 2026-10-11 17:42 · `1ffa27413826a1a487d5d996f88b1111` · run 1011-c4ebfc (Acme Observability Inc., evidence): agent fixes v3 + title unwrap (30ab6c9); 5/5 planted, 0 fallback hops.
+- 2026-10-11 17:47 · `fb99e7d209c06e4d89a628fa6f6238d0` · run 1011-2a8424 (Acme Observability Inc., evidence): agent fixes v3 + title unwrap (30ab6c9); 5/5 planted, 0 fallback hops.
+- 2026-10-11 17:54 · `b29772f60503b18971ef87ba99da5c1c` · run 1011-2a9596 (Acme Observability Inc., evidence): agent fixes v3 + title unwrap (30ab6c9); 5/5 planted, 0 fallback hops.

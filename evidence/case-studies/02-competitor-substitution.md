@@ -27,4 +27,22 @@
   - The before run's LLM latency and token totals predate the cached-call accounting fix (`8747783`), so they are not compared here.
   - The provider mix differs (see case study 01).
   - The metrics above (peers kept, substitutions, credits) come from agent logic, not model quality.
-  - A same-mix n = 3 comparison is planned after the quota reset.
+  - A same-mix n = 3 comparison is planned after the quota reset. *(Done at n = 5; see below.)*
+
+## Rerun, 11 Oct 2026 (n = 5 per side, same code, models and data)
+
+The original "before" commit (`11a5108`) only supports Gemini and OpenRouter, so re-running it would have changed the models as well as the logic. Instead, **before** is current code with only this fix put back the way it was (branch `ablation/cs02-fix-reverted`, commit `d311fb5`, not for merge): a weak ML/AI estimate may again choose `substitute_competitor`, and `fetch_more_signal` re-runs the identical jobs query. **After** is current code unchanged (`0d8b35c` for the first run, `40607a7` for the other four; those two commits differ only in the site export and an eval script, not in agent code). Both sides: evidence runs (LLM cache off), Acme data, the same Crustdata cache, models `gpt-5-nano` + `gemini-3.5-flash-lite`, **0 fallback hops in all 10 runs**.
+
+| Metric (per run) | Before (fix reverted) | After (current code) |
+|---|---|---|
+| Chosen peers kept (of 5) | 2, 2, 2, 2, 2 | 5, 5, 5, 5, 5 |
+| `substitute_competitor` decisions | 3, 3, 3, 3, 3 | 0, 0, 0, 0, 0 |
+| Peers in the final comparison | Sentry, Grafana Labs + New Relic, Datadog (all 5 runs) | Honeycomb, Sentry, Arize, Chronosphere, Grafana Labs (all 5 runs) |
+| Planted errors caught | 5/5 in all 5 | 5/5 in all 5 |
+| Unsupported numbers in report | 0 in all 5 | 0 in all 5 |
+| Recovery decisions (non-default) | 13 (8), 12 (7), 13 (8), 14 (9), 13 (8) | 10 (5), 10 (5), 11 (5), 10 (5), 10 (5) |
+
+- Scorecards: `evidence/evals/20261011T221740-d311fb5-cs02-before-n5.json` (neatlogs eval trace `3b37c999443a09deed0f37c324972fa1`) and `evidence/evals/20261011T220804-0d8b35c-cs02-after-n5.json` (eval trace `eb1a9d341b791d403449dcac10f05764`).
+- One run trace per side: before `1011-324f77` → `139c076ca99acaf06901377eeadee8c1`; after `1011-efdab4` → `2d28f557b12e42454b035de19eeb1ff0`.
+- Crustdata credits are not compared: the first before-run spent 7.6 credits fetching the substitutes' job posts, and every later run on both sides was served from the cache (0 credits).
+- The New Relic and Datadog headcounts are 9.4× and 31.8× Acme's (from the original case), so every median in the "before" reports is skewed by companies of a different size.

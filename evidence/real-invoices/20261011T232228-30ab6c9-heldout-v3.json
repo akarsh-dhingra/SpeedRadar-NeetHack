@@ -1,0 +1,220 @@
+{
+ "created": "2026-10-11T23:22:28",
+ "git_sha": "30ab6c9",
+ "run_id": "real-1011-232129",
+ "variant": "heldout-v3",
+ "gt_file": "evals/real_invoices_heldout_gt.json",
+ "neatlogs_trace_id": "7918b737c9aba2024f7bb996c2480599",
+ "source": "https://huggingface.co/datasets/amazon/ConfBench",
+ "license": "CC BY-NC 4.0 (evaluation/benchmark use only). The original FCC invoice documents are public records.",
+ "n_invoices": 12,
+ "read_ok": 12,
+ "total_correct": 12,
+ "agent_totals_check_passed": 10,
+ "invoices": [
+  {
+   "file": "08e2649c3291ee569a116260d46e9866__original.pdf",
+   "agency": "OnMedia",
+   "advertiser": "NRCC IE-DM",
+   "verified_gross_total": 22466.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 53,592.64 vs stated 15,563.32 (244.35% off)",
+   "extracted_total": 22466.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 22,466.00 vs stated 22,466.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "3aac2d4d386a203e8d6419043f1adfa1__original.pdf",
+   "agency": "ADELSTEIN LISTON",
+   "advertiser": "CONNOLLY COMMITTEE",
+   "verified_gross_total": 105000.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 105000.0,
+   "total_correct": true,
+   "lines_extracted": 4,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 105,000.00 vs stated 105,000.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "3b9f33e058641d47cf2ebe76b9382648__original.pdf",
+   "agency": "ONMEDIA",
+   "advertiser": "CARLY FOR PRESIDENT-DM",
+   "verified_gross_total": 230.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 548.66 vs stated 159.33 (244.35% off)",
+   "extracted_total": 230.0,
+   "total_correct": true,
+   "lines_extracted": 3,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 159.33 = printed net amount due 159.33 (gross 230.00, agency commission -34.50)"
+   }
+  },
+  {
+   "file": "3d239b34e970a6f5ad4d1417352cf82e__original.pdf",
+   "agency": "Rainmaker Inc",
+   "advertiser": "Doug Reynolds",
+   "verified_gross_total": 1555.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 1555.0,
+   "total_correct": true,
+   "lines_extracted": 16,
+   "agent_totals_check": {
+    "passed": false,
+    "detail": "line items sum 1,600.00 vs stated 1,555.00 (2.89% off)"
+   }
+  },
+  {
+   "file": "3dabc131205d3a2c74a73eb545494d3f__original.pdf",
+   "agency": "Mentzer Media",
+   "advertiser": "American Future Fund",
+   "verified_gross_total": 15000.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 15000.0,
+   "total_correct": true,
+   "lines_extracted": 4,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 15,000.00 vs stated 15,000.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "7bc4cc14d20c04204f81948012da50c9__original.pdf",
+   "agency": "MENTZER MEDIA SERVICES",
+   "advertiser": "Judicial Crisis Netw",
+   "verified_gross_total": 73400.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 73400.0,
+   "total_correct": true,
+   "lines_extracted": 16,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 73,400.00 vs stated 73,400.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "7c4e113ac908349db24caff741a89313__original.pdf",
+   "agency": "KCRA_MT",
+   "advertiser": "Stop the Special Interest Ta",
+   "verified_gross_total": 3450.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 3450.0,
+   "total_correct": true,
+   "lines_extracted": 6,
+   "agent_totals_check": {
+    "passed": false,
+    "detail": "line items sum 3,550.00 vs stated 3,450.00 (2.90% off)"
+   }
+  },
+  {
+   "file": "7ec895784100dd7287978ab5cac9f283__original.pdf",
+   "agency": "ONMEDIA A MEDIACOM COMMUNICATIONS CO.",
+   "advertiser": "Hawley For AG NCC SPG-MO",
+   "verified_gross_total": 9072.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 21,641.24 vs stated 6,284.62 (244.35% off)",
+   "extracted_total": 9072.0,
+   "total_correct": true,
+   "lines_extracted": 3,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 6,284.62 = printed net amount due 6,284.62 (gross 9,072.00, agency commission -1,360.80)"
+   }
+  },
+  {
+   "file": "8064c51e90f5e7bb8b36c1dcf68f9feb__original.pdf",
+   "agency": "viamedia",
+   "advertiser": "Texans for Greg Abbott",
+   "verified_gross_total": 1400.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "verify:totals failed: line items sum 2,947.00 vs stated 773.50 (281.00% off)",
+   "extracted_total": 1400.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 1,400.00 vs stated 1,400.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "8ecb95435a6eeb3dd384d6eb2f007c3c__original.pdf",
+   "agency": "ASELLUS GROUP INC",
+   "advertiser": "LORRETTA SANCHEZ FOR US SENATE",
+   "verified_gross_total": 2215.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 2215.0,
+   "total_correct": true,
+   "lines_extracted": 1,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 2,215.00 vs stated 2,215.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "9a5b4d80b3d2fa19526ec0f1fafa1b24__original.pdf",
+   "agency": "",
+   "advertiser": "Consumers for Sensible Energy",
+   "verified_gross_total": 19000.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "text parser found no line items / total",
+   "extracted_total": 19000.0,
+   "total_correct": true,
+   "lines_extracted": 19,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 19,000.00 vs stated 19,000.00 (0.00% off)"
+   }
+  },
+  {
+   "file": "b9c03770cf700075de53e44c70b20f4f__original.pdf",
+   "agency": "Mentzer Media Services",
+   "advertiser": "ISS/American Action Network",
+   "verified_gross_total": 17450.0,
+   "route": "text -> reparse_alt (llm)",
+   "parser": "llm:gemini-3.5-flash-lite",
+   "error": null,
+   "text_error": "no text layer (likely a scanned image)",
+   "extracted_total": 17450.0,
+   "total_correct": true,
+   "lines_extracted": 13,
+   "agent_totals_check": {
+    "passed": true,
+    "detail": "line items sum 17,450.00 vs stated 17,450.00 (0.00% off)"
+   }
+  }
+ ]
+}
