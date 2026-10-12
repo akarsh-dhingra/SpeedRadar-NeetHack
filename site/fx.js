@@ -54,7 +54,7 @@
       var grow = Math.min(1, t / 500), ease = 1 - Math.pow(1 - grow, 3);
       // rings and crosshair
       ctx.lineWidth = 1;
-      for (var k = 1; k <= 4; k++) { ctx.strokeStyle = rgba(grid, 0.35 * ease); ctx.beginPath(); ctx.arc(cx, cy, R * k / 4 * ease, 0, Math.PI * 2); ctx.stroke(); }
+      for (var k = 1; k <= 4; k++) { ctx.strokeStyle = rgba(grid, 0.35 * ease); ctx.beginPath(); ctx.arc(cx, cy, Math.max(0, R * k / 4 * ease), 0, Math.PI * 2); ctx.stroke(); }
       ctx.strokeStyle = rgba(grid, 0.22 * ease); ctx.beginPath(); ctx.moveTo(cx - R * 1.15 * ease, cy); ctx.lineTo(cx + R * 1.15 * ease, cy); ctx.moveTo(cx, cy - R * 1.15 * ease); ctx.lineTo(cx, cy + R * 1.15 * ease); ctx.stroke();
       // ticks
       for (var d = 0; d < 72; d++) { var ta = d / 72 * Math.PI * 2, l = d % 6 === 0 ? 10 : 4; ctx.strokeStyle = rgba(grid, 0.4 * ease); ctx.beginPath(); ctx.moveTo(cx + Math.cos(ta) * R * ease, cy + Math.sin(ta) * R * ease); ctx.lineTo(cx + Math.cos(ta) * (R + l) * ease, cy + Math.sin(ta) * (R + l) * ease); ctx.stroke(); }
@@ -75,7 +75,7 @@
         if (b.hit < 0) return;
         var age = (now - b.hit) / 1000, x = cx + Math.cos(b.a) * R * b.r, y = cy + Math.sin(b.a) * R * b.r, col = b.dev ? accent : green;
         ctx.fillStyle = rgba(col, 1); ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fill();
-        for (var w = 0; w < 2; w++) { var rr = (age * 70 + w * 18) % 60; ctx.strokeStyle = rgba(col, Math.max(0, 0.6 - rr / 60)); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 5 + rr, 0, Math.PI * 2); ctx.stroke(); }
+        for (var w = 0; w < 2; w++) { var rr = (age * 70 + w * 18) % 60; ctx.strokeStyle = rgba(col, Math.max(0, 0.6 - rr / 60)); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, Math.max(0, 5 + rr), 0, Math.PI * 2); ctx.stroke(); }
         ctx.fillStyle = rgba(text, Math.min(1, age * 3)); ctx.font = "500 13px Geist, ui-sans-serif, system-ui, sans-serif";
         var right = Math.cos(b.a) >= 0; ctx.textAlign = right ? "left" : "right";
         ctx.fillText(b.name, x + (right ? 12 : -12), y + 4);
@@ -133,13 +133,13 @@
             var rp = ripples[i], age = (now - rp.t) / 1000, rad = age * rp.speed, dr = Math.abs(Math.hypot(x - rp.x, y - rp.y) - rad);
             if (dr < 26) { var kr = (1 - dr / 26) * (1 - (now - rp.t) / rp.life); a += 0.9 * kr; s += 1.2 * kr; col = rp.col; }
           }
-          ctx.fillStyle = rgba(col, Math.min(1, a)); ctx.beginPath(); ctx.arc(x, y, s, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = rgba(col, Math.min(1, a)); ctx.beginPath(); ctx.arc(x, y, Math.max(0, s), 0, 6.2832); ctx.fill();
         }
       }
       sparks = sparks.filter(function (p) { return (now - p.t) < 700; });
       sparks.forEach(function (p) {
         var age = (now - p.t) / 700, px = p.x + p.vx * age * 60, py = p.y + p.vy * age * 60 + age * age * 30;
-        ctx.fillStyle = rgba(p.col, 1 - age); ctx.beginPath(); ctx.arc(px, py, 1.8 * (1 - age) + 0.4, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = rgba(p.col, 1 - age); ctx.beginPath(); ctx.arc(px, py, Math.max(0, 1.8 * (1 - age) + 0.4), 0, 6.2832); ctx.fill();
       });
       raf = requestAnimationFrame(tick);
     }
