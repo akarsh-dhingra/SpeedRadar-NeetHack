@@ -9,6 +9,7 @@ One more checkpoint has a trailer but no ref, on purpose: `01M4JX7270SGA4WHPPEH2
 | File | What it shows |
 |---|---|
 | `checkpoint-list.txt` | checkpoints on `main`, one per agent commit (10 Oct) |
+| `checkpoint-list-2026-10-12.txt` | snapshot on 12 Oct: `entire checkpoint list` on `main` (72 checkpoints), with the counts at that time: 88 checkpoint refs on GitHub, 90 distinct `Entire-Checkpoint` trailers across all branches |
 | `checkpoint-list-2026-10-11-1204.txt` | snapshot at 12:04 IST, 11 Oct: 47 checkpoint refs on GitHub; the list also shows the current session's temporary carry-forward checkpoint |
 | `checkpoint-list-2026-10-11.txt` | all 38 commit-linked checkpoints after fetching every checkpoint ref from GitHub, both team members |
 | `checkpoint-explain-11a5108-latency-fix.txt` | header of the checkpoint for the latency fix (case study 01) |
