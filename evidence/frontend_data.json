@@ -57496,6 +57496,14 @@
       "summary": "Trace pagination could loop forever if the cursor did not advance."
      }
     ]
+   },
+   {
+    "number": 4,
+    "title": "Printed-net invoice totals + read_pdf_llm v3 + classifier unwrap (case study 07)",
+    "branch": "review/printed-net",
+    "runner_result": "no blocking issues",
+    "findings": [],
+    "note": "after-merge review of 398b322: base review/base-7c59831 is its parent, so the diff is exactly that commit"
    }
   ],
   "runners": [

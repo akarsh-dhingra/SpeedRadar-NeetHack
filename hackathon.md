@@ -169,6 +169,15 @@ Python 3.12, plain agent loop, Pydantic · neatlogs (tracing) · Entire (checkpo
 - **Not done:** Entire trails (CLI not logged in here); demo video.
 - **Checked:** pytest 106 passed; headless Chrome on every page at 1440 and 390 px.
 
+### 2026-10-12 — Entire trail #4: after-merge review of the printed-net change (logged 2026-10-12 03:57 IST)
+- **Planned:** the Entire step left undone last night (CLI was not logged in): run the review runners on the agent change behind case study 07.
+- **Done:**
+  - `entire auth status`: logged in.
+  - Trail #4 (https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack/trails/4) on branch `review/printed-net` (= `398b322`) against `review/base-7c59831` (its parent), so the reviewed diff is exactly that commit: the printed-net totals check, `read_pdf_llm` v3, and the classifier unwrap. The commit was already on main; this is an after-merge review.
+  - Runners: "Agent review found no blocking issues"; `entire trail finding list 4`: no findings. The approvals gate still needs a human approver.
+  - Site data: the Entire page lists 4 trails (only the `entire` block of the export changed; `TRAILS` in `spendradar/export.py`).
+- **Checked:** `entire trail show 4`; Entire page rendered in headless Chrome.
+
 ## Demo
 - Video: link to add after recording (≤ 3:00, captioned). Script: `evidence/demo-script.md` (every number cited).
 - Evidence site (live): https://akarsh-dhingra.github.io/SpeedRadar-NeetHack/ (deployed from `site/`; built from `evidence/frontend_data.json`).

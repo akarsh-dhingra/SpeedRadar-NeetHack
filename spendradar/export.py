@@ -130,7 +130,7 @@ def _cfoai_model(root):
 RESCORE_VARIANTS = {"history-all-acme-runs", "before-fix-misses", "gpt5nano-evidence-rescore", "fixture-rescore"}
 
 # Entire trails on the GitHub repo (the submission repo). Runner results copied from `entire trail show`
-# and `entire trail finding list` on 2026-10-11; the trail pages are the source.
+# and `entire trail finding list` on 2026-10-11 (trails 1-3) and 2026-10-12 (trail 4); the trail pages are the source.
 ENTIRE_REPO = "https://entire.io/gh/akarsh-dhingra/SpeedRadar-NeetHack"
 TRAILS = [
     {"number": 1, "title": "Code provenance: every run links to the Entire checkpoint that wrote its code",
@@ -144,6 +144,9 @@ TRAILS = [
      "branch": "feat/explain", "runner_result": "no blocking issues",
      "findings": [{"severity": "low", "status": "resolved", "fix": "62c6b69",
                    "summary": "Trace pagination could loop forever if the cursor did not advance."}]},
+    {"number": 4, "title": "Printed-net invoice totals + read_pdf_llm v3 + classifier unwrap (case study 07)",
+     "branch": "review/printed-net", "runner_result": "no blocking issues", "findings": [],
+     "note": "after-merge review of 398b322: base review/base-7c59831 is its parent, so the diff is exactly that commit"},
 ]
 RUNNERS = ["risk", "confidence", "drift", "security", "review", "summary"]
 
