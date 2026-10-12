@@ -7,17 +7,21 @@
   var D = window.SPEND_RADAR_DATA;
   var REPO = "https://github.com/akarsh-dhingra/SpeedRadar-NeetHack";
   var BLOB = REPO + "/blob/main/";
+  var NL_TRACE = "https://app.neatlogs.com/traces/";
   var FX = window.SRFX || { on: function () { return false; }, after: function () {}, intro: function (d, done) { done(); }, setOrigin: function () {}, setMotion: function () {} };
   var WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 
   var VIEWS = [
+    { id: "story", label: "How it works", icon: "play", group: "Start here" },
     { id: "overview", label: "Overview", icon: "grid", group: "Evidence" },
     { id: "run", label: "Run detail", icon: "file", group: "Evidence" },
     { id: "disproved", label: "Disproved itself", icon: "shield", group: "Evidence" },
     { id: "recovery", label: "Recovery log", icon: "swap", group: "Evidence" },
     { id: "compare", label: "Before / after", icon: "split", group: "Evidence" },
-    { id: "business", label: "Business", icon: "briefcase", group: "Context" },
-    { id: "traces", label: "neatlogs traces", icon: "trace", group: "Context" }
+    { id: "real", label: "Real invoices", icon: "file", group: "Evidence" },
+    { id: "business", label: "cfo.ai business plan", icon: "briefcase", group: "Tools" },
+    { id: "traces", label: "neatlogs", icon: "trace", group: "Tools" },
+    { id: "entire", label: "Entire", icon: "branch", group: "Tools" }
   ];
 
   var ICONS = {
@@ -84,7 +88,8 @@
     metric: "caught",
     disproved: "overturned",
     recovery: "overrides",
-    recoveryShown: 30
+    recoveryShown: 30,
+    story: 0
   };
   if (!company(S.company)) S.company = D.companies[0].key;
 
@@ -238,6 +243,7 @@
       '<div><div class="ac-prov-k">neatlogs trace</div><div class="ac-prov-v"><span>' + esc(r.neatlogs_trace_id) + "</span>" + copyBtn(r.neatlogs_trace_id, "trace ID") + "</div></div>" +
       '<div><div class="ac-prov-k">Commit</div><div class="ac-prov-v"><span>' + esc(r.git_sha) + "</span>" + copyBtn(r.git_sha, "commit") + "</div></div>" +
       '<div><div class="ac-prov-k">Scorecard</div><div class="ac-prov-v"><span><a href="' + BLOB + esc(r.scorecard) + '" target="_blank" rel="noopener">' + esc(r.scorecard) + "</a></span>" + copyBtn(r.scorecard, "scorecard path") + "</div></div>" +
+      (r.code && r.code.checkpoint ? '<div><div class="ac-prov-k">Code · Entire checkpoint</div><div class="ac-prov-v"><span><a href="' + esc(r.code.entire_url) + '" target="_blank" rel="noopener">' + esc(r.code.checkpoint) + "</a></span>" + copyBtn(r.code.checkpoint, "checkpoint ID") + "</div></div>" : "") +
       '<div><div class="ac-prov-k">Started · models</div><div class="ac-prov-v"><span>' + esc(when(r)) + " · " + esc((r.metrics.models || []).join(", ") || "—") + "</span></div></div>" +
     "</div></section>";
   }
@@ -248,6 +254,67 @@
   }
 
   // ── views ────────────────────────────────────────────────────────
+  function toolsStrip() {
+    var N = D.neatlogs || {}, E = D.entire || {}, B = (D.business || {}).headlines || {};
+    function card(view, title, big, small, lines) {
+      return '<a class="ac-card sr-tilt sr-tool" href="#' + view + '" data-view-link="' + view + '"><div class="ac-card-head"><h3 class="ac-card-title">' + title + '</h3>' + icon("arrow") + '</div><div class="ac-stat-value">' + big + '</div><div class="ac-delta">' + small + '</div><ul class="sr-tool-lines">' + lines.map(function (l) { return "<li>" + l + "</li>"; }).join("") + "</ul></a>";
+    }
+    var caught = (E.trails || []).reduce(function (a, t) { return a + (t.findings || []).length; }, 0);
+    return '<div class="sr-section-title" data-enter><h2>Built with neatlogs, Entire and cfo.ai</h2><p>Each tool has a job in the loop, not a logo on a slide.</p></div>' +
+      '<div class="sr-tools" data-enter>' +
+        card("traces", "neatlogs", n(D.summary.runs_scored), "traced runs", [
+          "Debugger: case studies 01\u201305 each start from a trace or a scorecard",
+          "Auto-triage found the corrupt-PDF bug; fixed and resolved over the MCP",
+          n((N.detections || []).length) + " detections and evals published as traces",
+          n((N.prompts || []).length) + " prompt templates, versioned on every LLM span"]) +
+        card("entire", "Entire", n(E.checkpoints), "checkpoints", [
+          "Every run links to the checkpoint and agent session behind its code",
+          n((E.trails || []).length) + " trails reviewed by " + n((E.runners || []).length) + " repo-tailored runners; " + n(caught) + " real issues caught before merge",
+          "<span class=\"ac-code\">spendradar explain</span>: neatlogs span \u2192 code \u2192 checkpoint \u2192 prompt",
+          "entire-graph search / impact used to locate and size changes"]) +
+        card("business", "cfo.ai", esc(B.llm_cost_per_run || ""), "LLM cost per run, measured", [
+          "Plan built from neatlogs token counts at paid-equivalent prices",
+          "Pricing, costs, revenue and runway; base and growth scenarios",
+          "Finding: competitor data is ~99% of run cost, so caching decides margin",
+          "Team tier fixed with a fresh-run cap: 76.6% margin"]) +
+      "</div>";
+  }
+
+  function judgeChecklist() {
+    var rows = [
+      ["The agent improved", "Before/after runs with traces and numbers, n = 5 per side for case study 05", "#compare", "Before / after"],
+      ["Used neatlogs", "Trace IDs for every run, detections, evals, the auto-triage fix", "#traces", "neatlogs"],
+      ["Used Entire", "Checkpoints, trails with runner findings, explain dossiers", "#entire", "Entire"],
+      ["Used cfo.ai", "Pricing, costs, revenue and runway from measured costs", "#business", "cfo.ai plan"],
+      ["Recovers from failure", "Every recovery decision with the menu, the choice and the rule default", "#recovery", "Recovery log"],
+      ["Works on real documents", "Agent's invoice reader on 12 real public invoices, scored against verified totals", "#real", "Real invoices"],
+      ["Checks its own work", "Findings the self-audit overturned or downgraded, with reasons", "#disproved", "Disproved itself"],
+      ["Code written during the hackathon", "Dated commits from 10 Oct 12:30 IST, each with an Entire checkpoint", REPO + "/commits/main", "Commits"]
+    ];
+    return '<div class="sr-section-title" data-enter><h2>For judges: where each piece of evidence is</h2><p>Every number on this site comes from a saved scorecard or trace.</p></div>' +
+      '<section class="ac-card" data-enter><div class="ac-scroll"><table class="ac-table"><thead><tr><th>You asked for</th><th>What is here</th><th>Open</th></tr></thead><tbody>' +
+      rows.map(function (r) {
+        var ext = r[2].charAt(0) !== "#";
+        return "<tr><td>" + esc(r[0]) + '</td><td class="ac-muted">' + esc(r[1]) + '</td><td><a class="ac-link" href="' + esc(r[2]) + '"' + (ext ? ' target="_blank" rel="noopener"' : "") + ">" + esc(r[3]) + " " + icon("arrow") + "</a></td></tr>";
+      }).join("") + "</tbody></table></div></section>";
+  }
+
+  function same(xs) { return xs.every(function (v) { return v === xs[0]; }); }
+  function newResults() {
+    var R = D.real_invoices, cs = (D.comparisons || []).filter(function (c) { return c.per_run && c.before.length >= 5; })[0];
+    var held = R && (R.summary || []).filter(function (g) { return g.invoice_set === "held out" && /v1|v2/.test(g.variant); });
+    var tiles = "";
+    if (cs) {
+      var b = cs.per_run.values[cs.before[0]], a = cs.per_run.values[cs.after[0]];
+      tiles += '<a class="ac-card sr-tool" href="#compare" data-view="compare"><div class="ac-stat-label">Case study 02 rerun · n = ' + cs.before.length + ' per side</div><div class="ac-stat-value"><span class="ac-down">' + esc(b.text.split(" (")[0]) + '</span> → <span class="ac-up">' + esc(a.text) + '</span></div><div class="ac-delta">chosen competitors kept, in every run on each side ' + icon("arrow") + "</div></a>";
+    }
+    if (held && held.length === 2) {
+      tiles += '<a class="ac-card sr-tool" href="#real" data-view="real"><div class="ac-stat-label">Real invoices, held out · ' + held[0].passes + ' passes per side</div><div class="ac-stat-value"><span class="ac-down">' + held[0].silent_misses.join(" · ") + '</span> → <span class="ac-up">' + held[1].silent_misses.join(" · ") + '</span></div><div class="ac-delta">wrong totals nobody was warned about, of ' + held[0].n_invoices + ' real FCC invoices ' + icon("arrow") + "</div></a>";
+      tiles += '<a class="ac-card sr-tool" href="#real" data-view="real"><div class="ac-stat-label">Real invoices, held out · totals read correctly</div><div class="ac-stat-value">' + (same(held[1].total_correct) ? '<span class="ac-up">' + held[1].total_correct[0] + " / " + held[1].n_invoices + "</span>" : held[1].total_correct.join(" · ")) + '</div><div class="ac-delta">' + (same(held[1].total_correct) ? "in all " + held[1].passes + " passes after the fix" : "per pass after the fix") + "; before: " + held[0].total_correct.map(function (v) { return v + " / " + held[0].n_invoices; }).join(" · ") + " " + icon("arrow") + "</div></a>";
+    }
+    return tiles ? '<div class="sr-section-title" data-enter><h2>Latest results</h2><p>Measured on 11 Oct: a case study re-run at n = 5, and the invoice reader on real public invoices.</p></div><div class="ac-stats" data-enter>' + tiles + "</div>" : "";
+  }
+
   function viewOverview() {
     var sm = D.summary, nC = sm.companies, held = sm.held_out_companies;
     var allLatest = sm.latest_runs_all_caught === nC;
@@ -277,11 +344,29 @@
       return '<div class="sr-node' + (s[2] === "LLM" ? " sr-node--llm" : "") + '"><span class="sr-node-dot" style="--n:' + i + '">' + icon(s[0]) + "</span><h4>" + s[1] + '</h4><span class="ac-tag sr-who">' + s[2] + "</span><p>" + s[3] + "</p></div>";
     }).join("");
     var bastion = company(sm.injected_runs.length ? sm.injected_runs[sm.injected_runs.length - 1].company : D.companies[1].key) || D.companies[1];
+    var GLOSS = [
+      ["Planted mistake", "An error we hid on purpose in a fictional company's files, so we can check whether the agent finds it."],
+      ["Held-out company", "A company created after the agent was built. The agent was never adjusted to fit it."],
+      ["Finding", "One conclusion in the report, for example \"Acme's ML team is a bigger share of staff than at its competitors\"."],
+      ["Self-audit", "A step where the agent tries to prove its own finding wrong before reporting it."],
+      ["Overturned / downgraded", "Removed from the report, or kept with its confidence cut."],
+      ["Confidence", "A score from 0 to 1 computed by a formula: checks passed × how far the sources agree × how fresh the data is. Never typed in."],
+      ["Rule default vs override", "When a check fails, a simple rule would always pick the same fix. The LLM may choose differently (an override) and must give a reason."],
+      ["Fallback hop", "The AI model was busy or failed, so the agent switched to another model."],
+      ["Fixture", "A test run with one competitor number changed on purpose. Labelled everywhere; never used for real reports."],
+      ["Trace (neatlogs)", "The complete step-by-step recording of one run."],
+      ["Checkpoint (Entire)", "A link from a commit to the AI coding session that wrote it."]
+    ];
+    var intro = '<section class="ac-card sr-intro-box" data-enter><div class="sr-intro-main"><span class="ac-overline-inline">What is Spend Radar?</span>' +
+      '<h1>An AI agent that tells a finance team where competitors spend more, or less, on people than they do, and shows its work.</h1>' +
+      '<p>You give it your budget, invoices and spending policy. It looks up real competitors\' team sizes and hiring, compares team by team, checks your own books for mistakes, and then tries to <b>disprove its own findings</b> before writing a report where every number links to its source.</p>' +
+      '<div class="sr-intro-cta"><a class="ac-btn" href="#story" data-view="story">' + icon("play") + 'See how it works, step by step</a><a class="ac-btn ac-btn--ghost" href="#run" data-view="run">Open a full run</a></div></div>' +
+      '<details class="sr-gloss"><summary>Words used on this site</summary><dl>' + GLOSS.map(function (g) { return "<dt>" + esc(g[0]) + "</dt><dd>" + esc(g[1]) + "</dd>"; }).join("") + "</dl></details></section>";
     return enter(
       '<section class="ac-verdict" data-enter id="verdict"><div class="ac-verdict-grid"><div>' +
-        '<span class="ac-overline-inline">Generalisation · latest finished run per company</span>' +
+        '<span class="ac-overline-inline">Does it work? · latest finished run per company</span>' +
         '<h1 class="ac-hero-xl">' + headWords + "</h1>" +
-        '<p class="ac-lede">' + word(held).replace(/^./, function (s) { return s.toUpperCase(); }) + " of them were never used to tune the agent. Acme is the one it was built against; the others were created later, across " + word(sm.industries.length) + " industries. All " + word(nC) + " are fictional. Each square is one error planted in that company's books.</p>" +
+        '<p class="ac-lede">' + word(held).replace(/^./, function (s) { return s.toUpperCase(); }) + " of them were never used to tune the agent. Acme is the one it was built against; the others were created later, across " + word(sm.industries.length) + " industries. All " + word(nC) + " are fictional. Each square is one mistake we hid in that company's books; green means the agent found it.</p>" +
         '<div class="ac-figures">' +
           '<div class="ac-figure"><b>' + n(sm.runs_scored) + "</b><span>scored runs behind this page</span></div>" +
           '<div class="ac-figure"><b class="' + (sm.latest_runs_false_alarms === 0 ? "ac-up" : "ac-down") + '">' + n(sm.latest_runs_false_alarms) + "</b><span>false alarms across the latest runs</span></div>" +
@@ -289,6 +374,7 @@
         "</div></div>" +
         '<div class="ac-matrix" aria-label="Planted errors caught, latest run per company">' + rows + "</div>" +
       "</div></section>" +
+      intro + helpBox("overview").replace("<section ", "<section data-enter ") + newResults() +
 
       '<div class="sr-section-title" data-enter><h2>How one run works</h2><p>The LLM plans, picks recoveries and audits. Python runs every tool, does all the maths and enforces the limits.</p></div>' +
       '<section class="ac-card sr-scroll" data-enter><div class="sr-loop"><span class="sr-pulse" aria-hidden="true"></span>' + loop + "</div>" +
@@ -297,8 +383,92 @@
       (ff ? '<div class="sr-section-title" data-enter><h2>It argues with itself</h2><p>Before reporting, the agent tries to disprove each finding. This one did not survive.</p></div><div data-enter id="featured">' +
         proofChain(fc, fr, ff, { foot: '<button class="ac-btn ac-btn--ghost" type="button" data-replay-chain>' + icon("play") + "Replay</button>" }) + "</div>" : "") +
 
+      toolsStrip() + judgeChecklist() +
       '<div class="sr-section-title" data-enter><h2>Run history</h2><p>Each column is one scored run. Pick a company to see its runs.</p></div>' +
       '<div class="ac-grid-2 sr-scroll" data-enter style="margin-top:0">' + heroCard(company(S.company) || bastion, latest(company(S.company) || bastion), false) + companyList(S.company) + "</div>"
+    );
+  }
+
+  // ── "How it works": one real run told in six plain steps ─────────
+  // D.story is prepared by the export (counts, labels, examples); this only renders it.
+  var STATUS_WORD = { confirmed: ["ac-badge--up", "✓ Confirmed"], downgraded: ["ac-badge--warn", "Downgraded"], overturned: ["ac-badge--down", "✗ Overturned"] };
+  var MARK = { ok: ["ac-up", "✓"], recovered: ["ac-accent", "→"], flagged: ["ac-down", "✗"] };
+  function viewStory() {
+    var s = D.story;
+    if (!s) return '<p class="sr-empty">No exported run has a full step log yet.</p>';
+    var sc = s.score;
+
+    var ch1 = '<div class="sr-st-cols"><div><h4 class="sr-st-h">' + n(s.files.length) + ' finance files</h4><div class="ac-row">' +
+      s.files.map(function (f) { return '<span class="ac-tag sr-st-file">' + esc(f) + "</span>"; }).join("") +
+      '</div><p class="sr-st-note">' + esc(s.company) + "'s books are fictional. " + word(s.planted_total).replace(/^./, function (x) { return x.toUpperCase(); }) + " mistakes are planted in them; the agent is not told which or where.</p></div>" +
+      '<div><h4 class="sr-st-h">' + n(s.competitors.length) + ' real competitors</h4><div class="ac-row">' +
+      s.competitors.map(function (x) { return '<span class="ac-badge ac-badge--neutral">' + esc(x) + "</span>"; }).join("") +
+      '</div><p class="sr-st-note">Their headcount and job posts come live from Crustdata.</p></div></div>' +
+      '<div class="sr-st-q"><div class="ac-overline">The question it has to answer</div>Where does ' + esc(s.company) + " spend more or less on people than its competitors, does that break its own spend policy, and is anything wrong in its own books?</div>";
+
+    var ch2 = (s.plan_rationale ? '<div class="sr-plan"><b>The plan, in the agent\'s own words</b>' + esc(s.plan_rationale) + "</div>" : "") +
+      '<ul class="ac-list sr-st-plan">' + s.plan.map(function (g, i) {
+        return '<li class="ac-li"><span class="ac-avatar">' + (i + 1) + '</span><div class="ac-li-main"><div class="ac-li-name">' + esc(g.label) + '</div></div><div class="ac-li-end ac-code ac-muted">× ' + n(g.n) + "</div></li>";
+      }).join("") + "</ul>" +
+      '<p class="sr-st-note">The LLM wrote this as a typed list of ' + n(s.n_tasks) + " tasks. Python checked it against a schema and adds any file the plan forgot.</p>";
+
+    var LBL = { ok: "worked first time", recovered: "a check failed, then it recovered", flagged: "a check failed; kept low confidence or left out" };
+    var ch3 = '<div class="sr-st-legend">' + ["ok", "recovered", "flagged"].map(function (k) { return '<span><b class="' + MARK[k][0] + '">' + MARK[k][1] + " " + n(s.counts[k]) + "</b> " + LBL[k] + "</span>"; }).join("") + "</div>" +
+      '<div class="sr-st-grid">' + s.tiles.map(function (t) {
+        return '<div class="sr-st-task" title="' + esc(t.reason) + '"><div class="sr-st-task-top"><span class="ac-code ac-muted">' + esc(t.id) + '</span><b class="' + MARK[t.outcome][0] + '">' + MARK[t.outcome][1] + "</b></div><div class=\"sr-st-task-word\">" + esc(t.word) + '</div><div class="ac-code ac-muted sr-st-task-target">' + esc(t.target) + "</div></div>";
+      }).join("") + "</div>" +
+      '<p class="sr-st-note">Each tile is one tool call. After each one, Python runs a fixed check: do the line items add up to the total? Are there at least two independent signals? Is there a source for every number? Hover a tile for why the agent ran it.</p>';
+
+    var NEXT = { worked: '<b class="ac-up">✓ It worked, and the run carried on</b>', reported: '<span class="ac-status">The numbers really do not add up. That is a real problem in the file, so it goes into the report (step 6).</span>', flagged: '<span class="ac-status ac-status--down">Still failed, so it was kept low confidence or left out, and the report says so.</span>' };
+    var ch4 = '<div class="sr-st-cases">' + s.cases.map(function (d) {
+      return '<div class="ac-card sr-st-case"><div class="ac-row"><span class="ac-tag">' + esc(d.word) + '</span><span class="ac-code">' + esc(d.target) + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">What went wrong</span><span class="ac-code ac-down">' + esc(d.failed_check) + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">Options it was given</span><div class="ac-seg ac-seg--plain sr-st-opts" role="group" aria-label="Options">' + d.options.map(function (o) { return '<button type="button" tabindex="-1" aria-pressed="' + o.chosen + '">' + esc(o.label) + "</button>"; }).join("") + "</div></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">The fixed rule would</span><span>' + esc(d.rule) + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">The agent chose</span><span><b>' + esc(d.chosen) + "</b> " + (d.override ? '<span class="ac-badge ac-badge--accent">Override</span>' : '<span class="ac-badge ac-badge--neutral">Rule</span>') + "</span></div>" +
+        '<div class="sr-st-row"><span class="sr-st-k">Why · ' + esc(d.model) + '</span><span class="ac-muted">' + esc(d.reason) + "</span></div>" +
+        (d.next ? '<div class="sr-st-row"><span class="sr-st-k">What happened next</span>' + NEXT[d.next] + "</div>" : "") + "</div>";
+    }).join("") + "</div>" +
+      '<p class="sr-st-note">' + n(s.decisions) + " decisions in this run; " + n(s.non_default) + " were overrides (the LLM chose differently from the fixed rule). The LLM only picks from the menu; retry and credit limits are enforced in Python.</p>";
+
+    var ch5 = '<ul class="ac-list">' + s.findings.map(function (f) {
+      var b = STATUS_WORD[f.status] || ["ac-badge--neutral", f.status];
+      return '<li class="ac-li sr-st-find"><span class="ac-badge ' + b[0] + '">' + b[1] + '</span><div class="ac-li-main"><div class="ac-li-name">' + esc(f.category) + '</div><div class="ac-li-sub">' + esc(f.text) + "</div>" +
+        (f.why ? '<div class="sr-st-why">' + esc(f.why) + "</div>" : "") + "</div></li>";
+    }).join("") + "</ul>" +
+      '<p class="sr-st-note">For every finding, the audit recomputes the number, re-checks the sources and looks for contradicting evidence. Confidence comes from a formula: checks passed × signal agreement × data freshness.</p>';
+
+    var ch6 = '<div class="sr-st-cols"><div><h4 class="sr-st-h">People spend vs competitors</h4><ul class="ac-list">' + s.policy.map(function (p) {
+      return '<li class="ac-li"><b class="' + (p.violated ? "ac-down" : "ac-up") + '">' + (p.violated ? "✗" : "✓") + '</b><div class="ac-li-main"><div class="ac-li-name">' + esc(p.category) + '</div><div class="ac-li-sub">' + (p.ours ? esc(s.company.split(" ")[0]) + " " + esc(p.ours) + " vs peers " + esc(p.peers) : "") + '</div></div><div class="ac-li-end"><small class="ac-muted">' + (p.violated ? "breaks policy" : "within policy") + (p.status !== "confirmed" ? " · " + esc(p.status) : "") + "</small></div></li>";
+    }).join("") + '</ul></div><div><h4 class="sr-st-h">Problems in its own books</h4><ul class="ac-list">' + s.own_books.map(function (t) {
+      return '<li class="ac-li"><span class="ac-status ac-status--down"></span><div class="ac-li-main"><div class="ac-li-sub" style="color:var(--text)">' + esc(t) + "</div></div></li>";
+    }).join("") + "</ul></div></div>" +
+      '<div class="ac-stats sr-section">' +
+        stat("Planted mistakes caught", '<span class="' + (sc.planted_caught === sc.planted_total ? "ac-up" : "ac-down") + '">' + score({ planted_caught: sc.planted_caught, planted_total: sc.planted_total }) + "</span>", "from the ground-truth file the agent never sees", 0) +
+        stat("Numbers without a source", n(sc.unsupported), "every number in the report cites a file, page or API request", 1) +
+        stat("LLM calls", n(sc.llm_calls), (s.models || []).join(", "), 2) +
+        stat("Crustdata credits", n(sc.crustdata_credits), "served from cache in this run", 3) +
+      "</div>" +
+      '<p class="sr-st-note"><a class="ac-link" href="#run" data-open-run="' + s.run_id + '" data-company="' + s.company_key + '">Open this run\'s full detail ' + icon("arrow") + "</a></p>";
+
+    var CH = [
+      ["What it was given", "A folder of finance files and a list of competitors. No other help.", ch1],
+      ["It made a plan", "The LLM reads the folder and writes its own to-do list.", ch2],
+      ["It did the work, one tool at a time", "Python runs each task and checks the result straight away.", ch3],
+      ["When a check failed, it chose what to do", "The LLM picks a fix from a fixed menu and gives a reason.", ch4],
+      ["It tried to prove itself wrong", "Before reporting, every finding is attacked. Weak ones are downgraded or overturned.", ch5],
+      ["The answer", "What the finance team gets.", ch6]
+    ];
+    var k = Math.max(0, Math.min(CH.length - 1, S.story));
+    var steps = '<div class="ac-seg ac-seg--plain sr-st-steps" role="group" aria-label="Steps">' + CH.map(function (x, i) {
+      return '<button type="button" data-story="' + i + '" aria-pressed="' + (i === k) + '"><span class="ac-code">' + (i + 1) + "</span> " + esc(x[0]) + "</button>";
+    }).join("") + "</div>";
+    return enter(
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">How Spend Radar works, in one real run</h1><p class="ac-subtitle">' + esc(s.company) + " (fictional) · run <span class=\"ac-code\">" + s.run_id + "</span> · " + esc((s.models || []).join(", ")) + ". Every value is read from this run's saved log. Use ← → to step.</p></div></div>" +
+      '<div data-enter>' + steps + "</div>" +
+      '<section class="ac-card sr-st-panel" data-enter><div class="ac-card-head"><div><span class="ac-overline-inline">Step ' + (k + 1) + " of " + CH.length + '</span><h3 class="ac-card-title" style="margin-top:var(--space-1)">' + esc(CH[k][0]) + '</h3><p class="sr-st-sub">' + esc(CH[k][1]) + "</p></div></div>" + CH[k][2] +
+        '<div class="sr-st-nav"><button type="button" class="ac-btn ac-btn--ghost" data-story="' + (k - 1) + '"' + (k === 0 ? " disabled" : "") + ">← Back</button>" +
+        (k < CH.length - 1 ? '<button type="button" class="ac-btn" data-story="' + (k + 1) + '">Next: ' + esc(CH[k + 1][0]) + " →</button>" : '<a class="ac-btn" href="#overview" data-view="overview">See every run →</a>') + "</div></section>"
     );
   }
 
@@ -377,7 +547,7 @@
         return '<div class="ac-note"><div class="ac-note-who"><span>' + esc(x.who || "deterministic") + (x.second ? " · second opinion" : "") + "</span>" + (x.verdict ? '<span class="' + VERDICT_CLASS[x.verdict] + '">' + esc(x.verdict) + "</span>" : "") + "</div>" + esc(x.text) + "</div>";
       }).join("");
       var pct = Math.round(Math.max(0, Math.min(1, f.confidence)) * 100);
-      return '<details class="sr-finding"><summary>' + statusBadge(f.status) + '<span class="sr-finding-text">' + esc(f.statement) + '</span><span class="sr-finding-conf">conf ' + esc(f.confidence) + '<span class="ac-meter"><i style="width:' + pct + '%"></i></span></span></summary>' +
+      return '<details class="sr-finding"><summary>' + statusBadge(f.status) + '<span class="sr-finding-text">' + esc(f.statement) + '</span><span class="sr-finding-conf">confidence ' + esc(f.confidence) + '<span class="ac-meter"><i style="width:' + pct + '%"></i></span></span></summary>' +
         (notes ? '<div class="ac-notes">' + notes + "</div>" : "") + "</details>";
     }).join("");
     return '<section class="ac-card"><div class="ac-card-head"><h3 class="ac-card-title">Findings and audit</h3><span class="ac-card-meta">open one for the auditors\' notes</span></div><div class="sr-findings">' + list + "</div></section>";
@@ -405,7 +575,7 @@
         (x.f.audit_notes || []).map(function (raw) { var p = parseNote(raw); return '<div class="ac-note"><div class="ac-note-who"><span>' + esc(p.who || "deterministic") + (p.second ? " · second opinion" : "") + "</span>" + (p.verdict ? '<span class="' + VERDICT_CLASS[p.verdict] + '">' + esc(p.verdict) + "</span>" : "") + "</div>" + esc(p.text) + "</div>"; }).join("") + "</div></section>";
     }).join('<div style="height:var(--space-5)"></div>');
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">The agent disproved itself</h1><p class="ac-subtitle">Every finding the self-audit overturned or downgraded, newest first, with the auditors\' own words.</p></div><div class="ac-seg" role="group" aria-label="Filter">' + seg + "</div></div>" +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">The agent disproved itself</h1><p class="ac-subtitle">Every finding the self-audit overturned or downgraded, newest first, with the auditors\' own words. The ML/AI verdicts here once varied between runs on identical data; since <a href="' + BLOB + 'evidence/case-studies/05-audit-verdict-variance.md" target="_blank" rel="noopener">case study 05</a> that finding is downgraded the same way every time, because its competitor signals disagree.</p></div><div class="ac-seg" role="group" aria-label="Filter">' + seg + "</div></div>" +
       '<div class="ac-stats" data-enter>' +
         stat("Findings overturned", n(D.summary.findings_overturned), "kept out of the report") +
         stat("Findings downgraded", n(D.summary.findings_downgraded), "kept, with confidence cut") +
@@ -458,7 +628,11 @@
         return '<div class="ac-ba-side"><div class="sr-ba-side-label">' + label + '</div><div class="sr-ba-runs">' + ids.map(function (id) {
           var r = runOf(c, id); if (!r) return "";
           var m = r.metrics, ok = allCaught(m);
-          return '<a class="sr-ba-run sr-tilt" href="#run" data-open-run="' + id + '" data-company="' + c.key + '"><div><div class="ac-code ac-muted">' + id + " · " + esc(r.variant) + '</div><div class="ac-cells" style="margin-top:6px">' + cells(r, 0) + '</div></div><span class="sr-ba-score ' + (ok ? "ac-up" : "ac-down") + '">' + score(m) + '</span><span class="sr-ba-meta">' +
+          var fnd = cmp.finding && (r.findings || []).filter(function (f) { return f.id === cmp.finding; })[0];
+          var verdict = fnd ? '<div class="sr-ba-verdict">ML/AI audit verdict: ' + statusBadge(fnd.status) + "</div>" : "";
+          var pr = cmp.per_run && cmp.per_run.values[id];
+          if (pr) verdict += '<div class="sr-ba-verdict">' + esc(cmp.per_run.label) + ': <b class="' + (pr.good ? "ac-up" : "ac-down") + '">' + esc(pr.text) + "</b></div>";
+          return '<a class="sr-ba-run sr-tilt" href="#run" data-open-run="' + id + '" data-company="' + c.key + '"><div><div class="ac-code ac-muted">' + id + " · " + esc(r.variant) + '</div><div class="ac-cells" style="margin-top:6px">' + cells(r, 0) + "</div>" + verdict + '</div><span class="sr-ba-score ' + (ok ? "ac-up" : "ac-down") + '">' + score(m) + '</span><span class="sr-ba-meta">' +
             (m.false_alarms == null ? "false alarms not counted" : n(m.false_alarms) + " false alarms") + " · " + n(m.fallback_hops) + " fallback hops" + (r.phase !== "done" ? " · did not finish" : "") + "</span></a>";
         }).join("") + "</div></div>";
       }
@@ -483,35 +657,206 @@
     var tiers = '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Tier</th><th>Price</th><th>Includes</th><th class="ac-r">Margin, half the runs cached</th><th class="ac-r">Margin, nothing cached</th><th class="ac-r">With a 10 fresh-run cap</th></tr></thead><tbody>' +
       b.tiers.map(function (t) { return '<tr><td class="ac-li-name" style="font-size:15px">' + esc(t.name) + "</td><td>" + esc(t.price) + " / month</td><td>" + esc(t.runs) + '</td><td class="ac-r ac-up">' + esc(t.margin_base_50pct_cached) + '</td><td class="ac-r ac-down">' + esc(t.margin_base_uncached) + '</td><td class="ac-r">' + (t.margin_with_cap ? '<span class="ac-up">' + esc(t.margin_with_cap) + "</span>" : '<span class="sr-muted">—</span>') + "</td></tr>"; }).join("") +
       "</tbody></table></div>";
+    // The live cfo.ai workspace (read over its MCP, read-only): six scenarios, 24 months of ending cash each.
+    var M = D.business.cfoai_model, live = "";
+    if (M && M.scenarios) {
+      var money = function (v) { return (v < 0 ? "−$" : "$") + Math.round(Math.abs(v)).toLocaleString("en-US"); };
+      var COLS = { "Base": "var(--accent)", "Growth": "var(--up)", "Downside": "var(--down)", "Team uncached cap": "#6fb6d6", "Team repriced": "#c9a3e8", "Industry mix": "var(--text-tertiary)" };
+      var all = []; M.scenarios.forEach(function (x) { all = all.concat(x.ending_cash); });
+      var hi = Math.max.apply(null, all), lo = Math.min(0, Math.min.apply(null, all)), W = 920, H = 260;
+      var X = function (i) { return (i / 23) * W; }, Y = function (v) { return H - ((v - lo) / (hi - lo)) * H; };
+      var lines = M.scenarios.map(function (x) {
+        var d = x.ending_cash.map(function (v, i) { return (i ? "L" : "M") + X(i).toFixed(1) + "," + Y(v).toFixed(1); }).join(" ");
+        var major = x.name === "Base" || x.name === "Growth" || x.name === "Downside";
+        return '<path d="' + d + '" fill="none" stroke="' + (COLS[x.name] || "currentColor") + '" stroke-width="' + (major ? 3 : 1.75) + '" opacity="' + (major ? 1 : 0.75) + '"/>';
+      }).join("");
+      var chart = '<div class="ac-scroll"><svg viewBox="-60 -10 ' + (W + 80) + " " + (H + 40) + '" style="width:100%;min-width:560px;height:auto;display:block" role="img" aria-label="Ending cash by scenario, 24 months">' +
+        '<line x1="0" x2="' + W + '" y1="' + Y(0) + '" y2="' + Y(0) + '" stroke="var(--border-control)" stroke-dasharray="4 4"/>' +
+        '<text x="-10" y="' + (Y(0) + 4) + '" text-anchor="end" font-size="12" fill="var(--text-tertiary)">$0</text>' +
+        '<text x="-10" y="' + (Y(hi) + 4) + '" text-anchor="end" font-size="12" fill="var(--text-tertiary)">' + money(hi) + "</text>" + lines +
+        '<text x="0" y="' + (H + 26) + '" font-size="12" fill="var(--text-tertiary)">' + esc(M.months[0]) + '</text><text x="' + W + '" y="' + (H + 26) + '" text-anchor="end" font-size="12" fill="var(--text-tertiary)">' + esc(M.months[23]) + "</text></svg></div>";
+      var rows = M.scenarios.map(function (x) {
+        return '<tr><td class="ac-li-name" style="font-size:15px"><span style="display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:8px;vertical-align:middle;background:' + (COLS[x.name] || "currentColor") + '"></span>' + esc(x.name) + "</td>" +
+          "<td>" + esc(x.first_cash_flow_positive_month || "not within 24 months") + "</td>" +
+          '<td class="ac-r">' + money(x.lowest_ending_cash) + ' <span class="ac-muted">' + esc(x.lowest_ending_cash_month) + "</span></td>" +
+          '<td class="ac-r">' + money(x.revenue_month_24) + "</td>" +
+          '<td class="ac-r">' + (x.gross_margin_month_24 * 100).toFixed(1) + "%</td>" +
+          '<td class="ac-r ' + (x.ending_cash_month_24 < 0 ? "ac-down" : "ac-up") + '">' + money(x.ending_cash_month_24) + "</td></tr>";
+      }).join("");
+      live = '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">The live cfo.ai model · ' + M.scenarios.length + ' scenarios</h3>' +
+        '<span class="ac-card-meta">read over the cfo.ai MCP, read-only · ' + esc(String(M.changelog_entries)) + " model changes · " + esc(String(M.canvas_blocks)) + " canvas blocks</span></div>" + chart +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Scenario</th><th>First cash-flow-positive month</th><th class="ac-r">Lowest cash</th><th class="ac-r">Revenue, month 24</th><th class="ac-r">Gross margin, month 24</th><th class="ac-r">Cash, month 24</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+        '<p class="ac-muted" style="margin:10px 0 0">Pages: ' + M.pages.map(esc).join(" · ") + '. Export: <a class="ac-link" href="' + BLOB + esc(M.source) + '" target="_blank" rel="noopener">' + esc(M.source) + "</a></p></section>";
+    }
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Business</h1><p class="ac-subtitle">Built in cfo.ai from measured costs: tokens per run from neatlogs traces at the same models\' published paid prices, plus Crustdata usage at its published prices. Development ran on free tiers.</p></div>' +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">cfo.ai business plan</h1><p class="ac-subtitle">Built in cfo.ai from measured costs: tokens per run from neatlogs traces at the same models\' published paid prices, plus Crustdata usage at its published prices. Development ran on free tiers.</p></div>' +
         '<a class="ac-btn ac-btn--ghost" href="' + BLOB + esc(b.source) + '" target="_blank" rel="noopener">' + icon("file") + "Full plan</a></div>" +
       '<div class="sr-callout" data-enter>' + esc(b.finding).replace("about 99%", "<b>about 99%</b>").replace("76.6%", "<b>76.6%</b>") + "<small>From " + esc(b.source) + ". Prices are proposals; scenarios are labelled assumptions in the plan.</small></div>" +
       '<div class="ac-stats sr-section" data-enter>' +
         stat("LLM cost per run", esc(b.llm_cost_per_run), "measured, paid-equivalent") +
         stat("Competitor data per uncached run", esc(b.crustdata_cost_per_uncached_run), "Crustdata, published prices") +
       "</div>" +
-      '<div class="sr-biz sr-section">' + scen + "</div>" +
+      '<div class="sr-biz sr-section">' + scen + "</div>" + live +
       '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Pricing tiers</h3><span class="ac-card-meta">Base scenario, gross margin per customer</span></div>' + tiers + "</section>"
     );
   }
 
+  function trLink(id) { return '<a class="ac-code" href="' + NL_TRACE + esc(id) + '" target="_blank" rel="noopener">' + esc(String(id).slice(0, 12)) + "…</a>" + copyBtn(id, "trace ID"); }
+  function docLink(path, label) { return '<a class="ac-link" href="' + BLOB + esc(path) + '" target="_blank" rel="noopener">' + esc(label) + " " + icon("arrow") + "</a>"; }
+
   function viewTraces() {
+    var N = D.neatlogs || {}, t = N.triage || {};
     var rows = [];
     D.companies.forEach(function (c) { c.runs.forEach(function (r) { rows.push({ c: c, r: r }); }); });
-    rows.sort(function (a, b) { return (b.r.started_at || b.r.scored_at) < (a.r.started_at || a.r.scored_at) ? -1 : 1; });
+    function runTime(r) { var v = Date.parse(r.started_at || r.scored_at); return isNaN(v) ? 0 : v; }
+    rows.sort(function (a, b) { return runTime(b.r) - runTime(a.r); });  // newest first; timestamps come in mixed formats
+    var evals = (N.eval_traces || []).slice().reverse();
     return enter(
-      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">neatlogs traces</h1><p class="ac-subtitle">Every scored run with its trace ID. Search an ID in the neatlogs dashboard to see each LLM call, tool call, retry and recovery span.</p></div></div>' +
-      '<section class="ac-card" data-enter><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Company</th><th>Run</th><th>Variant</th><th>Score</th><th>Mode</th><th>neatlogs trace</th><th>Commit</th></tr></thead><tbody>' +
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">neatlogs</h1><p class="ac-subtitle">The debugger, the eval board and the alarm system. Every run is one trace: each LLM call (with its versioned prompt template), tool call, retry, recovery decision, fallback hop and audit verdict is a span with its input and output.</p></div>' +
+        '<div class="ac-row">' + docLink(N.docs && N.docs.coverage || "evidence/neatlogs/coverage.md", "Feature coverage") + "</div></div>" +
+      '<div class="ac-stats sr-section" data-enter>' +
+        stat("Traced runs", n(rows.length), "one trace per run, tagged sha / run / variant") +
+        stat("Detections", n((N.detections || []).length), "group \u201cSpend Radar\u201d, created over the MCP") +
+        stat("Eval traces", n(evals.length), "scorecards published as spendradar_eval") +
+        stat("Prompt templates", n((N.prompts || []).length), "versioned on every LLM span") +
+      "</div>" +
+      (t.id ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">A bug neatlogs found on its own</h3><span class="ac-badge ac-badge--up">' + esc(t.status) + '</span></div>' +
+        '<dl class="sr-dl"><dt>Fix</dt><dd>' + esc(t.title) + "</dd><dt>Found by</dt><dd>" + esc(t.found_by) + "</dd>" +
+        "<dt>Before</dt><dd>" + trLink(t.before_trace) + " · Gemini 400 on a corrupt PDF sent to the LLM reader</dd>" +
+        "<dt>Fix commit</dt><dd class=\"ac-code\">" + esc(t.fix_commit) + "</dd><dt>After</dt><dd>" + trLink(t.after_trace) + " · " + esc(t.result) + "</dd></dl>" +
+        '<p class="ac-muted" style="margin:10px 0 0">Investigated and closed over the neatlogs MCP. The <a href="#entire">Entire</a> page follows this fix back to the coding-agent prompt that produced it.</p></section>' : "") +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Detections</h3>' + docLink(N.docs && N.docs.evals || "", "How they were built") + '</div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Detection</th><th>Runs on</th><th>Why</th></tr></thead><tbody>' +
+        (N.detections || []).map(function (d) { return "<tr><td>" + esc(d.name) + '</td><td class="ac-code ac-muted">' + esc(d.on) + "</td><td>" + esc(d.why) + "</td></tr>"; }).join("") + "</tbody></table></div></section>" +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Evals inside neatlogs</h3><span class="ac-card-meta">one eval:run span per run, PASS/FAIL, linked to the run\u2019s trace</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Eval trace</th><th>Variant</th><th class="ac-r">Runs passed</th><th style="padding-left:28px">Scorecard</th></tr></thead><tbody>' +
+        evals.map(function (e) { var ok = e.passed === e.runs; return "<tr><td>" + trLink(e.trace_id) + '</td><td class="ac-code ac-muted">' + esc(e.variant) + '</td><td class="ac-r ' + (ok ? "ac-up" : "ac-down") + '">' + e.passed + " / " + e.runs + '</td><td class="ac-code" style="padding-left:28px"><a href="' + BLOB + esc(e.scorecard) + '" target="_blank" rel="noopener">' + esc(e.scorecard.split("/").pop()) + "</a></td></tr>"; }).join("") +
+        '</tbody></table></div><p class="ac-muted" style="margin:10px 0 0">PASS = every planted error caught, no unsupported numbers, run finished. <span class="ac-code">history-all-acme-runs</span> and <span class="ac-code">before-fix-misses</span> re-score early runs, including runs killed on purpose and runs from before a fix, so their misses are real and expected.</p></section>' +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Every scored run</h3><span class="ac-card-meta">trace IDs open in the neatlogs dashboard (project members)</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Company</th><th>Run</th><th>Variant</th><th>Score</th><th>Mode</th><th>neatlogs trace</th><th>Code</th></tr></thead><tbody>' +
       rows.map(function (x) {
         var r = x.r, ok = allCaught(r.metrics);
+        var code = r.code && r.code.checkpoint ? '<a class="ac-code" href="' + esc(r.code.entire_url) + '" target="_blank" rel="noopener" title="Entire checkpoint ' + esc(r.code.checkpoint) + '">' + esc(r.git_sha) + "</a>" : '<span class="ac-code">' + esc(r.git_sha) + "</span>";
         return '<tr><td><span class="ac-cellid">' + avatar(x.c, "ac-avatar--sm") + esc(shortName(x.c)) + '</span></td><td class="ac-code"><a href="#run" data-open-run="' + r.run_id + '" data-company="' + x.c.key + '">' + r.run_id + '</a></td><td class="ac-code ac-muted">' + esc(r.variant) + '</td><td class="' + (ok ? "ac-up" : "ac-down") + '">' + score(r.metrics) + (r.phase !== "done" ? ' <span class="ac-badge ac-badge--down">unfinished</span>' : "") + "</td><td>" + (r.data_mode === "fixture" ? '<span class="ac-badge ac-badge--warn">Fixture</span>' : '<span class="ac-badge ac-badge--neutral">Real</span>') + (r.injected_faults.length ? ' <span class="ac-badge ac-badge--accent">Injected</span>' : "") +
-          '</td><td class="ac-code"><span class="ac-row" style="flex-wrap:nowrap">' + esc(r.neatlogs_trace_id) + copyBtn(r.neatlogs_trace_id, "trace ID") + '</span></td><td class="ac-code">' + esc(r.git_sha) + "</td></tr>";
+          '</td><td><span class="ac-row" style="flex-wrap:nowrap">' + trLink(r.neatlogs_trace_id) + "</span></td><td>" + code + "</td></tr>";
       }).join("") + "</tbody></table></div></section>"
     );
   }
 
-  var RENDER = { overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces };
+  function viewEntire() {
+    var E = D.entire || {};
+    var trails = (E.trails || []).map(function (t) {
+      var fs = (t.findings || []).map(function (f) {
+        return '<li class="sr-finding"><span class="ac-badge ' + (f.severity === "medium" ? "ac-badge--warn" : "ac-badge--neutral") + '">' + esc(f.severity) + '</span> <span class="ac-badge ac-badge--up">' + esc(f.status) + "</span> " + esc(f.summary) + ' <span class="ac-code ac-muted">fix ' + esc(f.fix) + "</span></li>";
+      }).join("");
+      return '<section class="ac-card sr-tilt" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Trail #' + t.number + " · " + esc(t.title) + '</h3><a class="ac-link" href="' + esc(E.repo) + "/trails/" + t.number + '" target="_blank" rel="noopener">Open trail ' + icon("arrow") + "</a></div>" +
+        '<p class="ac-muted" style="margin:0 0 8px"><span class="ac-code">' + esc(t.branch) + "</span> · runners: " + esc(t.runner_result) + "</p>" +
+        (fs ? '<ul class="sr-findings">' + fs + "</ul>" : '<p class="sr-empty" style="margin:0">No findings.</p>') + "</section>";
+    }).join("");
+    var caught = (E.trails || []).reduce(function (a, t) { return a + (t.findings || []).length; }, 0);
+    var dossiers = (E.explain || []).map(function (d) {
+      var spans = (d.spans || []).filter(function (s) { return s.commit_checkpoint; }).slice(0, 3).map(function (s) {
+        var cp = /checkpoint \[`([^`]+)`\]\(([^)]+)\)/.exec(s.commit_checkpoint || "");
+        var commit = /Commit `([^`]+)`/.exec(s.commit_checkpoint || "");
+        return '<ol class="sr-chain">' +
+          "<li><b>neatlogs span</b> <span class=\"ac-code\">" + esc(s.span) + "</span> " + ('<span class="ac-badge ' + (s.status === "ERROR" ? "ac-badge--down" : "ac-badge--neutral") + '">' + esc(s.status) + "</span>") + (s.via ? ' <span class="ac-muted">inside ' + esc(s.via) + "</span>" : "") + "</li>" +
+          "<li><b>Code</b> " + esc((s.code || "").replace(/`/g, "")) + "</li>" +
+          "<li><b>Written by</b> " + esc((s.written_by || "").replace(/`/g, "")) + "</li>" +
+          "<li><b>Commit · checkpoint</b> <span class=\"ac-code\">" + esc(commit ? commit[1] : "") + "</span> · " + (cp ? '<a class="ac-code" href="' + esc(cp[2]) + '" target="_blank" rel="noopener">' + esc(cp[1]) + "</a>" : "") + "</li>" +
+          "<li><b>Prompt</b> <span class=\"ac-muted\">" + esc((s.prompt || "").slice(0, 160)) + "</span></li></ol>";
+      }).join("");
+      return '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">spendradar explain ' + esc(d.trace_id.slice(0, 12)) + "…</h3>" + docLink(d.file, "Full dossier") + "</div>" + spans + "</section>";
+    }).join("");
+    return enter(
+      '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Entire</h1><p class="ac-subtitle">Spend Radar cites a source for every number. Entire extends that to the agent\u2019s own code: every run records its commit and Entire checkpoint, every change since 11 Oct went through a trail reviewed by repo-tailored runners, and <span class="ac-code">spendradar explain</span> follows a neatlogs span back to the coding-agent session and prompt that wrote the line.</p></div>' +
+        '<a class="ac-btn ac-btn--ghost" href="' + esc(E.repo) + '" target="_blank" rel="noopener">' + icon("branch") + "Repo on Entire</a></div>" +
+      '<div class="ac-stats sr-section" data-enter>' +
+        stat("Checkpoints", n(E.checkpoints), "commits linked to the agent session behind them") +
+        stat("Trails", n((E.trails || []).length), "one per change, each reviewed by runners") +
+        stat("Issues runners caught", n(caught), "both fixed before merge") +
+        stat("Runners", n((E.runners || []).length), esc((E.runners || []).join(", "))) +
+      "</div>" +
+      '<div class="sr-callout" data-enter>Closed loop on the corrupt-PDF bug: neatlogs auto-triage flagged a Gemini 400 \u2192 <span class="ac-code">read_pdf</span> \u2192 the guard at <span class="ac-code">files.py:139</span> \u2192 Entire checkpoint <span class="ac-code">01M4K4TJ\u2026</span>, whose prompt <b>is the neatlogs triage task</b>.<small>From <span class="ac-code">spendradar explain</span>; dossiers below.</small></div>' +
+      '<div class="sr-biz sr-section">' + trails + "</div>" + dossiers
+    );
+  }
+
+  // Plain-English header for each evidence page: what it is, why it matters, how to read it.
+  var HELP = {
+    overview: ["The scoreboard. We built seven fictional companies, hid mistakes in their finance files (wrong totals, a corrupt PDF, an invoice billed to the wrong team) and checked whether the agent finds them.",
+      "If the agent finds every hidden mistake, and makes none up, you can start to trust what it says about competitors too.",
+      "Each green square is one hidden mistake the agent found. Six of the seven companies were made after the agent was built, so it could not have been tuned to them."],
+    run: ["One run of the agent from start to finish: what it was given, every step it took, what went wrong, and what it concluded.",
+      "This is the raw record behind every claim on this site.",
+      "Pick a company and a run at the top. Scroll down for the step-by-step log, the findings and the decisions it made when something failed."],
+    disproved: ["Findings the agent itself threw out or weakened before reporting them.",
+      "Most AI tools report whatever they first conclude. This agent attacks each finding first, so weak claims do not reach the finance team.",
+      "Overturned means the claim was removed from the report. Downgraded means it stayed in with lower confidence. Each card quotes the reason."],
+    recovery: ["Every time a check failed (a total did not add up, a file would not open, a competitor had too little data) and what the agent chose to do about it.",
+      "Things go wrong in real data. The agent does not crash or guess; it picks a fix from a fixed menu and says why.",
+      "\"Rule default\" is what a simple if/else would have done. An Override badge marks the times the LLM chose something different, with its reason."],
+    compare: ["Bugs we found by reading the agent's traces, and the same test run again after the fix.",
+      "This is the proof the agent got better during the hackathon, with numbers, not claims.",
+      "Before is on the left, after on the right. n is how many runs sit on each side."],
+    business: ["The business plan, built in cfo.ai from what a run actually costs.",
+      "It shows whether Spend Radar could be a real business: pricing, costs, revenue and how long the cash lasts.",
+      "Costs are measured from real runs at the published paid prices of the same models. During the hackathon the actual spend was $0."],
+    real: ["The agent's invoice reader run on real invoices that someone else published, not on files we made.",
+      "Our test companies are fictional, so a fair question is whether the agent copes with real paperwork. These are real TV-advertising invoices from public FCC political-ad files, with totals checked by Amazon's researchers.",
+      "Each row is one real invoice. \"Total correct\" compares what the agent read with the checked total. \"Line items add up\" is the agent's own check; when it fails, the agent would flag the invoice for a human."],
+    traces: ["neatlogs records every step of every run: each AI call, each tool call, each retry and each decision.",
+      "It is how we debugged the agent. Every fix on the Before / after page started from one of these traces.",
+      "Each row is one run. The trace ID opens the full step-by-step record in neatlogs."],
+    entire: ["Entire records which AI coding session wrote each piece of code, and reviewed changes before they were merged.",
+      "When a step fails in a trace, we can follow it to the exact line of code and the conversation that produced it.",
+      "Checkpoints link commits to coding sessions. Trails are reviewed changes. The explain chain goes from a failed step to the code to the session."]
+  };
+  function helpBox(v) {
+    var h = HELP[v]; if (!h) return "";
+    return '<section class="ac-card sr-help" aria-label="About this page"><div><div class="ac-overline">What you are looking at</div>' + h[0] + '</div><div><div class="ac-overline">Why it matters</div>' + h[1] + '</div><div><div class="ac-overline">How to read it</div>' + h[2] + "</div></section>";
+  }
+
+  function viewReal() {
+    var R = D.real_invoices;
+    var head = '<div class="ac-pagehead" data-enter><div><h1 class="ac-title">Real invoices</h1><p class="ac-subtitle">The same invoice reader an agent run uses (text parser first, then the LLM reader as its recovery), on real public invoices with verified totals.</p></div></div>';
+    if (!R) return enter(head + '<p class="sr-empty">No real-invoice scorecard yet. Run <span class="sr-mono">python -m evals.real_invoices</span>.</p>');
+    var silent = R.silent_misses;
+    var passes = (R.passes || []).map(function (x) {
+      return "<tr><td>" + esc(x.variant) + "</td><td>" + esc(x.invoice_set || "") + '</td><td class="ac-code">' + esc(x.created) + '</td><td class="ac-code">' + esc(x.git_sha) + "</td><td>" + n(x.total_correct) + " / " + n(x.n_invoices) + "</td><td>" + n(x.silent_misses) + '</td><td class="ac-code">' + esc(String(x.neatlogs_trace_id || "").slice(0, 12)) + "…</td></tr>";
+    }).join("");
+    var VLABEL = { "real-before-prompt-v2": "v1 · copy the stated total", "real-after-prompt-v2": "v2 · gross total",
+      "heldout-prompt-v1": "v1 · copy the stated total", "heldout-prompt-v2": "v2 · gross total",
+      "tuned-v3": "v3 · gross total + printed net", "heldout-v3": "v3 · gross total + printed net",
+      "third-v2": "v2 · gross total", "third-v3": "v3 · gross total + printed net" };
+    var summary = (R.summary || []).map(function (g) {
+      var bad = g.silent_misses.some(function (v) { return v > 0; });
+      return "<tr><td><b>" + esc(VLABEL[g.variant] || g.variant) + '</b><div class="sr-muted" style="font-size:12px">' + esc(g.variant) + "</div></td><td>" + esc(g.invoice_set) + "</td><td>" + n(g.passes) + "</td>" +
+        '<td class="ac-code">' + g.total_correct.map(function (v) { return v + " / " + g.n_invoices; }).join(" · ") + '</td><td class="ac-code ' + (bad ? "ac-down" : "ac-up") + '">' + g.silent_misses.join(" · ") + '</td><td class="ac-code">' + (g.flagged_correct || []).join(" · ") + "</td></tr>";
+    }).join("");
+    var money = function (v) { return v == null ? "—" : "$" + Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+    var rows = R.invoices.map(function (x) {
+      var chk = x.agent_totals_check;
+      return "<tr><td>" + esc(x.advertiser || "—") + '<div class="sr-muted" style="font-size:12px">' + esc(x.agency || "") + "</div></td>" +
+        '<td class="ac-code">' + money(x.verified_gross_total) + '</td><td class="ac-code">' + money(x.extracted_total) + "</td>" +
+        "<td>" + (x.total_correct ? '<span class="ac-badge ac-badge--up">✓ correct</span>' : '<span class="ac-badge ac-badge--down">✗ wrong</span>') + "</td>" +
+        "<td>" + (chk ? (chk.passed ? '<span class="ac-badge ac-badge--up">✓ adds up</span>' : '<span class="ac-badge ac-badge--neutral">✗ flagged for review</span><div class="ac-muted" style="font-size:13px">' + esc(chk.detail) + "</div>") : '<span class="sr-muted">' + esc(x.error || "not read") + "</span>") + "</td>" +
+        '<td class="sr-wrap" style="font-size:13px">' + (x.route === "text" ? "Text parser" : "Text parser failed → LLM reader") + (x.parser && x.parser.indexOf("llm:") === 0 ? '<div class="ac-code ac-muted">' + esc(x.parser.slice(4)) + "</div>" : "") + "</td></tr>";
+    }).join("");
+    return enter(head +
+      '<div class="ac-stats" data-enter>' +
+        stat("Real invoices", n(R.n_invoices), "from public FCC political-ad files", 0) +
+        stat("Total read correctly", '<span class="' + (R.total_correct === R.n_invoices ? "ac-up" : "") + '">' + n(R.total_correct) + " / " + n(R.n_invoices) + "</span>", "within 1% of the verified total", 1) +
+        stat("Line items add up", n(R.agent_totals_check_passed) + " / " + n(R.read_ok), "the rest are flagged for a human", 2) +
+        stat("Wrong and not flagged", '<span class="' + (silent ? "ac-down" : "ac-up") + '">' + n(silent) + "</span>", "a wrong total whose line items still add up: the only kind a human would not be warned about", 3) +
+      "</div>" +
+      (summary ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Bugs these real invoices exposed, and the fixes</h3><span class="ac-card-meta">each number is one full pass over the set</span></div>' +
+        '<p style="margin:0 0 var(--space-4);color:var(--text-secondary);max-width:80ch">Real TV-ad invoices print a <b>Gross Total</b>, then subtract an agency commission to give a <b>Net Amount Due</b>. The old extraction prompt said only "copy the stated total", and the model often copied the net figure. v2 asks for the gross total. v3 also accepts line items that add up to the printed net amount due. "Held out" is 12 more invoices picked after v2 was written; "third, fresh" is 12 more picked after v3. On the third set v3 is no clear improvement over v2: the differences are within run-to-run noise.</p>' +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Version</th><th>Invoice set</th><th>Passes</th><th>Totals correct, per pass</th><th>Wrong and not flagged</th><th>Correct but flagged</th></tr></thead><tbody>' + summary + "</tbody></table></div></section>" : "") +
+      '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Invoice by invoice (latest held-out pass, v3)</h3><span class="ac-card-meta">neatlogs trace <span class="sr-mono">' + esc(String(R.neatlogs_trace_id || "").slice(0, 12)) + "…</span>" + (R.neatlogs_trace_id ? copyBtn(R.neatlogs_trace_id, "trace ID") : "") + "</span></div>" +
+        '<div class="ac-scroll"><table class="ac-table"><thead><tr><th>Advertiser / agency</th><th>Verified total</th><th>Agent read</th><th>Total</th><th>Line items add up?</th><th>How it was read</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+        '<p class="sr-chart-note">Source: <a class="ac-link" href="' + esc(R.source) + '" target="_blank" rel="noopener">amazon/ConfBench</a> · ' + esc(R.license) + ' Scorecard: <a class="ac-link" href="' + BLOB + esc(R.scorecard) + '" target="_blank" rel="noopener">' + esc(R.scorecard) + "</a> · commit " + esc(R.git_sha) + "</p>" + (R.what_changed ? '<p class="sr-chart-note"><b>' + esc(R.what_changed) + "</b></p>" : "") + "</section>" +
+      (passes ? '<section class="ac-card sr-section" data-enter><div class="ac-card-head"><h3 class="ac-card-title">Every pass over the 12 invoices</h3><span class="ac-card-meta">each pass is a fresh set of real model calls</span></div><div class="ac-scroll"><table class="ac-table"><thead><tr><th>Variant</th><th>Invoice set</th><th>When</th><th>Commit</th><th>Total correct</th><th>Wrong and not flagged</th><th>neatlogs trace</th></tr></thead><tbody>' + passes + "</tbody></table></div></section>" : "")
+    );
+  }
+
+  var RENDER = { story: viewStory, real: viewReal, overview: viewOverview, run: viewRun, disproved: viewDisproved, recovery: viewRecovery, compare: viewCompare, business: viewBusiness, traces: viewTraces, entire: viewEntire };
 
   // ── render + routing ─────────────────────────────────────────────
   function render(opts) {
@@ -529,7 +874,8 @@
     document.title = (v === "overview" ? "Spend Radar" : label + " · Spend Radar");
 
     var swap = function () {
-      main.innerHTML = '<div class="sr-enter' + (opts.play ? " sr-play" : "") + '">' + RENDER[v]() + "</div>";
+      main.innerHTML = '<div class="sr-enter' + (opts.play ? " sr-play" : "") + '">' + (v === "overview" || v === "story" ? "" : helpBox(v)) + RENDER[v]() + "</div>";
+      var ph = main.querySelector(".ac-pagehead"), hb = main.querySelector(".sr-help"); if (ph && hb) ph.parentNode.insertBefore(hb, ph.nextSibling);
       var chain = main.querySelector("#featured .ac-card");
       if (chain && opts.play) chain.classList.add("sr-chain-play");
       if (!opts.keepScroll) window.scrollTo(0, 0);
@@ -579,8 +925,12 @@
     if (t.matches("[data-more]")) { S.recoveryShown += 30; render({ keepScroll: true }); return; }
     if (t.matches("[data-replay-chain]")) { var ch = main.querySelector("#featured .ac-card"); ch.classList.remove("sr-chain-play"); void ch.offsetWidth; ch.classList.add("sr-chain-play"); return; }
     if (t.matches("[data-replay-run]")) { replayRun(t); return; }
+    if (t.matches("[data-story]")) { S.story = +t.getAttribute("data-story"); render({ keepScroll: true }); return; }
   });
   document.addEventListener("keydown", function (e) {
+    if (S.view === "story" && (e.key === "ArrowRight" || e.key === "ArrowLeft") && !e.target.matches("input, select, textarea")) {
+      var nx = S.story + (e.key === "ArrowRight" ? 1 : -1); if (nx >= 0 && nx <= 5) { S.story = nx; render({ keepScroll: true }); } return;
+    }
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("[role=button]")) { e.preventDefault(); e.target.click(); }
   });
   document.addEventListener("change", function (e) { if (e.target.id === "runselect") { S.runId = e.target.value; render({ transition: true, keepScroll: true }); } });
