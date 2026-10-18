@@ -790,9 +790,14 @@ def run_phases(state: RunState) -> RunState:
         state.trace_ids.append(tid)
         root.set_attribute("spendradar.run_id", state.run_id)
         root.set_attribute("spendradar.resumed_at_phase", state.phase)
+        for k in ("commit", "checkpoint", "entire_url"):  # trace → code → the agent session that wrote it
+            if state.code.get(k):
+                root.set_attribute(f"spendradar.code.{k}", str(state.code[k]))
         set_io(root, input={"goal": state.goal, "input_dir": state.input_dir, "run_id": state.run_id,
                             "resumed_at_phase": state.phase, "data_mode": state.data_mode,
-                            "injected_faults": faults.active()})
+                            "injected_faults": faults.active(),
+                            "code_commit": state.code.get("commit", ""),
+                            "entire_checkpoint": state.code.get("checkpoint", "")})
         neatlogs.log("run {run_id} starting at phase {phase}", run_id=state.run_id, phase=state.phase)
         if state.phase == "plan":
             plan(state)
@@ -848,5 +853,7 @@ def validate_inputs(input_dir: str) -> None:
 
 
 def new_state(input_dir: str, tags: list[str], sha: str, run_id: str) -> RunState:
-    return RunState(run_id=run_id, goal=GOAL, input_dir=input_dir, git_sha=sha, tags=tags,
+    from spendradar.provenance import code_provenance
+
+    return RunState(run_id=run_id, goal=GOAL, input_dir=input_dir, git_sha=sha, tags=tags, code=code_provenance(),
                     injected=faults.active())
